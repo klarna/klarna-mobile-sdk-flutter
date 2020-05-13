@@ -15,7 +15,7 @@ internal abstract class BaseMethodHandler<T>(val parser: MethodParser<T>) : Meth
                 result.notImplemented()
             }
         } catch (e: Throwable) {
-            result.error(ResultError.EXCEPTION.errorCode, call.method, e.message)
+            result.error(ResultError.PLUGIN_METHOD_ERROR.errorCode, call.method, e.message)
         }
     }
 
