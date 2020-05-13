@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:klarna_inapp_flutter_plugin/klarna_hybrid_sdk.dart';
 import 'package:klarna_inapp_flutter_plugin/klarna_web_view.dart';
 
 void main() => runApp(MyApp());
@@ -17,11 +18,16 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initWebView();
+    initHybridSDK();
   }
 
   Future<void> initWebView() async {
-    await KlarnaWebView.show();
     await KlarnaWebView.loadURL("https://www.google.com");
+  }
+
+  Future<void> initHybridSDK() async {
+    await KlarnaHybridSDK.initialize("");
+    await KlarnaHybridSDK.setupWebView();
   }
 
   @override

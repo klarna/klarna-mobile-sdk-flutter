@@ -13,8 +13,10 @@ import io.flutter.plugin.common.MethodChannel
 
 internal class WebViewHandler : MethodChannel.MethodCallHandler {
 
-    private val webView: WebView by lazy {
-        WebView(PluginContext.activity)
+    companion object {
+        internal val webView: WebView by lazy {
+            WebView(PluginContext.activity)
+        }
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
