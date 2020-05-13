@@ -3,7 +3,7 @@ package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid
 import android.webkit.WebView
 import android.webkit.WebViewClient
 
-class KlarnaWebViewClient : WebViewClient() {
+internal class KlarnaWebViewClient : WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
         return !KlarnaHybridSDKHandler.hybridSDK.shouldFollowNavigation(url)

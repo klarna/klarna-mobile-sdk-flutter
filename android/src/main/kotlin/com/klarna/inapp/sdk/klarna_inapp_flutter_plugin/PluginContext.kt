@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import java.lang.ref.WeakReference
 
-object PluginContext {
+internal object PluginContext {
 
     private var weakReferenceActivity: WeakReference<Activity?> = WeakReference(null)
     var activity: Activity?
