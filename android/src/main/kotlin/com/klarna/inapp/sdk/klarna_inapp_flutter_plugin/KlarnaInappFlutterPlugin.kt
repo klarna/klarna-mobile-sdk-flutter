@@ -1,7 +1,6 @@
 package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin
 
 import androidx.annotation.NonNull
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.MethodCallHandlerManager
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding

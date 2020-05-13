@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.util
+package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.util
 
 import android.os.Build
 import android.webkit.ValueCallback

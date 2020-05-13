@@ -1,7 +1,7 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler
+package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.hybrid.KlarnaHybridSDKHandler
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.webview.WebViewHandler
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid.KlarnaHybridSDKHandler
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview.WebViewHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal object MethodCallHandlerManager {

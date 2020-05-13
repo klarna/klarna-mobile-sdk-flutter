@@ -1,28 +1,18 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.hybrid
+package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.webview.WebViewHandler
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview.WebViewHandler
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
-import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-internal class KlarnaHybridSDKHandler : MethodChannel.MethodCallHandler {
+internal class KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod>(KlarnaHybridSDKMethod.Parser) {
 
     companion object {
         internal lateinit var hybridSDK: KlarnaHybridSDK
         internal lateinit var hybridSDKCallback: KlarnaHybridSDKCallback
     }
 
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        try {
-            val method = KlarnaHybridSDKMethod.findMethod(call)
-            method?.let { onMethod(it, result) } ?: result.notImplemented()
-        } catch (e: Throwable) {
-            result.error(ResultError.EXCEPTION.errorCode, call.method, e.message)
-        }
-    }
-
-    private fun onMethod(method: KlarnaHybridSDKMethod, result: MethodChannel.Result) {
+    override fun onMethod(method: KlarnaHybridSDKMethod, result: MethodChannel.Result) {
         when (method) {
             is KlarnaHybridSDKMethod.Initialize -> initialize(method, result)
             is KlarnaHybridSDKMethod.SetupWebView -> addWebView(method, result)

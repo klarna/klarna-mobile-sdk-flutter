@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.hybrid
+package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid
 
 import android.webkit.WebView
 import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError

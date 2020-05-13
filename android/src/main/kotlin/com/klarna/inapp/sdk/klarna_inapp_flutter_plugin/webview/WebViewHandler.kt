@@ -1,17 +1,16 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.handler.webview
+package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview
 
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.PluginContext
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.util.evaluateJavascriptCompat
-import io.flutter.plugin.common.MethodCall
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.util.evaluateJavascriptCompat
 import io.flutter.plugin.common.MethodChannel
 
 
-internal class WebViewHandler : MethodChannel.MethodCallHandler {
+internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.Parser) {
 
     companion object {
         internal val webView: WebView by lazy {
@@ -19,16 +18,7 @@ internal class WebViewHandler : MethodChannel.MethodCallHandler {
         }
     }
 
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        try {
-            val method = WebViewMethod.findMethod(call)
-            method?.let { onMethod(it, result) } ?: result.notImplemented()
-        } catch (e: Throwable) {
-            result.error(ResultError.EXCEPTION.errorCode, call.method, e.message)
-        }
-    }
-
-    private fun onMethod(method: WebViewMethod, result: MethodChannel.Result) {
+    override fun onMethod(method: WebViewMethod, result: MethodChannel.Result) {
         when (method) {
             is WebViewMethod.Show -> show(method, result)
             is WebViewMethod.Hide -> hide(method, result)
