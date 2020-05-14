@@ -4,6 +4,8 @@ import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.method.MethodParser
 import io.flutter.plugin.common.MethodCall
 
 internal sealed class WebViewMethod {
+    object Initialize : WebViewMethod()
+    object Destroy : WebViewMethod()
     object Show : WebViewMethod()
     object Hide : WebViewMethod()
     class LoadURL(val url: String?) : WebViewMethod()
@@ -12,6 +14,8 @@ internal sealed class WebViewMethod {
     internal object Parser : MethodParser<WebViewMethod> {
         override fun parse(call: MethodCall): WebViewMethod? {
             return when (call.method) {
+                "initialize" -> Initialize
+                "destroy" -> Destroy
                 "show" -> Show
                 "hide" -> Hide
                 "loadURL" -> LoadURL(call.argument("url"))

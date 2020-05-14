@@ -27,9 +27,13 @@ internal class KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod>
     }
 
     private fun setupWebView(method: KlarnaHybridSDKMethod.SetupWebView, result: MethodChannel.Result) {
-        hybridSDKCallback.result = result
-        WebViewHandler.webView.webViewClient = KlarnaWebViewClient()
-        hybridSDK.addWebView(WebViewHandler.webView)
-        result.success(null)
+        WebViewHandler.webView?.let {
+            hybridSDKCallback.result = result
+            it.webViewClient = KlarnaWebViewClient()
+            hybridSDK.addWebView(it)
+            result.success(null)
+            return
+        }
+        WebViewHandler.notInitialized(result)
     }
 }

@@ -5,6 +5,14 @@ import 'package:flutter/services.dart';
 class KlarnaWebView {
   static const MethodChannel _channel = const MethodChannel('klarna_web_view');
 
+  static Future<void> initialize() async {
+    return await _channel.invokeMethod('initialize');
+  }
+
+  static Future<void> destroy() async {
+    return await _channel.invokeMethod('destroy');
+  }
+
   static Future<void> show() async {
     return await _channel.invokeMethod('show');
   }

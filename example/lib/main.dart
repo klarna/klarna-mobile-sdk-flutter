@@ -23,8 +23,9 @@ class _MyAppState extends State<MyApp> {
     initPostPurchaseExperience();
   }
 
-  Future<void> initWebView() async {
-    await KlarnaWebView.loadURL("https://www.google.com");
+  void initWebView() async {
+    KlarnaWebView.initialize();
+    KlarnaWebView.loadURL("https://www.google.com");
   }
 
   Future<void> initHybridSDK() async {

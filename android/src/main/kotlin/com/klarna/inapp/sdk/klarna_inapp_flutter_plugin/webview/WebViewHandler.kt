@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.PluginContext
+import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError
 import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler.BaseMethodHandler
 import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.util.evaluateJavascriptCompat
 import io.flutter.plugin.common.MethodChannel
@@ -13,13 +14,22 @@ import io.flutter.plugin.common.MethodChannel
 internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.Parser) {
 
     companion object {
-        internal val webView: WebView by lazy {
-            WebView(PluginContext.activity)
+        internal var webView: WebView? = null
+            private set
+
+        internal fun notInitialized(result: MethodChannel.Result) {
+            result.error(
+                    ResultError.WEB_VIEW_ERROR.errorCode,
+                    "WebView is not initialized.",
+                    "Call 'KlarnaWebView.initialize()' before using this method."
+            )
         }
     }
 
     override fun onMethod(method: WebViewMethod, result: MethodChannel.Result) {
         when (method) {
+            is WebViewMethod.Initialize -> initialize(method, result)
+            is WebViewMethod.Destroy -> destroy(method, result)
             is WebViewMethod.Show -> show(method, result)
             is WebViewMethod.Hide -> hide(method, result)
             is WebViewMethod.LoadURL -> loadURL(method, result)
@@ -27,32 +37,66 @@ internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.P
         }
     }
 
+    private fun initialize(method: WebViewMethod.Initialize, result: MethodChannel.Result) {
+        if (webView == null) {
+            webView = WebView(PluginContext.activity)
+            addToActivityIfDetached()
+            result.success(null)
+            return
+        }
+        result.error(ResultError.WEB_VIEW_ERROR.errorCode, "WebView is already initialized.", null)
+    }
+
+    private fun destroy(method: WebViewMethod.Destroy, result: MethodChannel.Result) {
+        webView?.parent?.let {
+            if (it is ViewGroup) {
+                it.removeView(webView)
+                result.success(null)
+                return
+            }
+        }
+        notInitialized(result)
+    }
+
     private fun show(method: WebViewMethod.Show, result: MethodChannel.Result) {
-        addToActivityIfDetached()
-        webView.visibility = View.VISIBLE
-        result.success(null)
+        webView?.apply {
+            visibility = View.VISIBLE
+            result.success(null)
+            return
+        }
+        notInitialized(result)
     }
 
     private fun hide(method: WebViewMethod.Hide, result: MethodChannel.Result) {
-        webView.visibility = View.GONE
-        result.success(null)
+        webView?.apply {
+            visibility = View.GONE
+            result.success(null)
+            return
+        }
+        notInitialized(result)
     }
 
     private fun loadURL(method: WebViewMethod.LoadURL, result: MethodChannel.Result) {
-        addToActivityIfDetached()
-        webView.loadUrl(method.url)
-        result.success(method.url)
+        webView?.apply {
+            loadUrl(method.url)
+            result.success(method.url)
+            return
+        }
+        notInitialized(result)
     }
 
     private fun loadJS(method: WebViewMethod.LoadJS, result: MethodChannel.Result) {
-        addToActivityIfDetached()
-        webView.evaluateJavascriptCompat(method.js, null)
-        result.success(method.js)
+        webView?.apply {
+            evaluateJavascriptCompat(method.js, null)
+            result.success(method.js)
+            return
+        }
+        notInitialized(result)
     }
 
     private fun addToActivityIfDetached() {
         PluginContext.activity?.let {
-            if (webView.parent == null) {
+            if (webView?.parent == null) {
                 val params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
