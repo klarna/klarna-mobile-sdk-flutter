@@ -51,6 +51,7 @@ internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.P
         webView?.parent?.let {
             if (it is ViewGroup) {
                 it.removeView(webView)
+                webView = null
                 result.success(null)
                 return
             }
