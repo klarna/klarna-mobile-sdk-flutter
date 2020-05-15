@@ -6,14 +6,12 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.KlarnaWebViewClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
-import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {
 
     private var webViewManager: WebViewManager = WebViewManager()
-    private var klarnaHybridSDK: KlarnaHybridSDK? = null
-    private val hybridSDKCallback: PPEKlarnaHybridSDKCallback = PPEKlarnaHybridSDKCallback()
 
     override fun onMethod(method: PostPurchaseExperienceMethod, result: MethodChannel.Result) {
         when (method) {
@@ -24,22 +22,25 @@ internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExp
     }
 
     private fun initialize(method: PostPurchaseExperienceMethod.Initialize, result: MethodChannel.Result) {
+        val klarnaHybridSDK = KlarnaHybridSDKHandler.hybridSDK
         if (klarnaHybridSDK == null) {
-            klarnaHybridSDK = KlarnaHybridSDK(method.returnUrl, hybridSDKCallback)
-        } else {
-            result.error(ResultError.POST_PURCHASE_ERROR.errorCode, "Already initialized.", null)
+            result.error(
+                    ResultError.POST_PURCHASE_ERROR.errorCode,
+                    "Hybrid SDK is not initialized, call 'KlarnaHybridSDK.initialize' before this.",
+                    null
+            )
             return
         }
 
         webViewManager.initialize(result)
         webViewManager.webView?.apply {
-            webViewClient = KlarnaWebViewClient(klarnaHybridSDK!!)
+            webViewClient = KlarnaWebViewClient(klarnaHybridSDK)
             webChromeClient = WebChromeClient()
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             visibility = View.INVISIBLE
 
-            klarnaHybridSDK?.addWebView(this)
+            klarnaHybridSDK.addWebView(this)
 
             // TODO: html & callback interface
 //            addJavascriptInterface(javascriptInterface, "PPECallback")

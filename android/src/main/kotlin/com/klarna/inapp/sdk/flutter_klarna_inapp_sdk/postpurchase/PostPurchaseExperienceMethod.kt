@@ -7,8 +7,7 @@ import io.flutter.plugin.common.MethodCall
 internal sealed class PostPurchaseExperienceMethod {
     class Initialize(
             val locale: String,
-            val purchaseCountry: String,
-            val returnUrl: String
+            val purchaseCountry: String
     ) : PostPurchaseExperienceMethod()
 
     class RenderOperation(val locale: String, val operationToken: String) : PostPurchaseExperienceMethod()
@@ -26,8 +25,7 @@ internal sealed class PostPurchaseExperienceMethod {
             return when (call.method) {
                 "initialize" -> Initialize(
                         call.requireArgument("locale"),
-                        call.requireArgument("purchaseCountry"),
-                        call.requireArgument("returnUrl")
+                        call.requireArgument("purchaseCountry")
                 )
                 "renderOperation" -> RenderOperation(
                         call.requireArgument("locale"),
