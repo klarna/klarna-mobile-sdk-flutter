@@ -1,6 +1,6 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.postpurchase
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {

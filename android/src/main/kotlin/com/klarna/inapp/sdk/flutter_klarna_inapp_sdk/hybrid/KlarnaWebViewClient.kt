@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid
 
 import android.webkit.WebView
 import android.webkit.WebViewClient

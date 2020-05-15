@@ -1,7 +1,7 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview.WebViewHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview.WebViewHandler
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
 

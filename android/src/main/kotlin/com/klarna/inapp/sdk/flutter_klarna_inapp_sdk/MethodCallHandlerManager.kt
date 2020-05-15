@@ -1,8 +1,8 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid.KlarnaHybridSDKHandler
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.postpurchase.PostPurchaseExperienceHandler
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview.WebViewHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.PostPurchaseExperienceHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview.WebViewHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal object MethodCallHandlerManager {

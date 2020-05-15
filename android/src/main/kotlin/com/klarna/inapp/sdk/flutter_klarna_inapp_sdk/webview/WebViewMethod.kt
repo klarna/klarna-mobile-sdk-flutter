@@ -1,6 +1,6 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.method.MethodParser
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.method.MethodParser
 import io.flutter.plugin.common.MethodCall
 
 internal sealed class WebViewMethod {

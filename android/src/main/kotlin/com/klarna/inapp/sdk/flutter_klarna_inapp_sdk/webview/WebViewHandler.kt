@@ -1,13 +1,13 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.webview
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview
 
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.PluginContext
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.util.evaluateJavascriptCompat
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.evaluateJavascriptCompat
 import io.flutter.plugin.common.MethodChannel
 
 

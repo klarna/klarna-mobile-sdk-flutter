@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.klarna.inapp.sdk.klarna_inapp_flutter_plugin_example">
+    package="com.klarna.inapp.sdk.flutter_klarna_inapp_sdk_example">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -10,7 +10,7 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="klarna_inapp_flutter_plugin_example"
+        android:label="flutter_klarna_inapp_sdk_example"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -1,21 +1,21 @@
 PODS:
   - Flutter (1.0.0)
-  - klarna_inapp_flutter_plugin (0.0.1):
+  - flutter_klarna_inapp_sdk (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - klarna_inapp_flutter_plugin (from `.symlinks/plugins/klarna_inapp_flutter_plugin/ios`)
+  - flutter_klarna_inapp_sdk (from `.symlinks/plugins/flutter_klarna_inapp_sdk/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  klarna_inapp_flutter_plugin:
-    :path: ".symlinks/plugins/klarna_inapp_flutter_plugin/ios"
+  flutter_klarna_inapp_sdk:
+    :path: ".symlinks/plugins/flutter_klarna_inapp_sdk/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  klarna_inapp_flutter_plugin: 66268d655dddb4b48b907dc764c4e7089341c075
+  flutter_klarna_inapp_sdk: 5de9bca62e5d32cd53b5d9749ec1bb31413be669
 
 PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
 

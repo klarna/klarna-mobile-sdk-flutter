@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -7,8 +7,8 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
-/** KlarnaInappFlutterPlugin */
-public class KlarnaInappFlutterPlugin : FlutterPlugin, ActivityAware {
+/** FlutterKlarnaInappSdk */
+public class FlutterKlarnaInappSdk : FlutterPlugin, ActivityAware {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         MethodCallHandlerManager.handlerMap.forEach {
             val channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, it.key)

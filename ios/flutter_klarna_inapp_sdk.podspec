@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint klarna_inapp_flutter_plugin.podspec' to validate before publishing.
+# Run `pod lib lint flutter_klarna_inapp_sdk.podspec' to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'klarna_inapp_flutter_plugin'
+  s.name             = 'flutter_klarna_inapp_sdk'
   s.version          = '0.0.1'
   s.summary          = 'Klarna&#x27;s Flutter wrapper for the In-App SDK'
   s.description      = <<-DESC

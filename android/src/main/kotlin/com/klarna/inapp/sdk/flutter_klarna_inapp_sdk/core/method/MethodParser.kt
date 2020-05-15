@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.method
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.method
 
 import io.flutter.plugin.common.MethodCall
 

@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
 import android.app.Activity
 import android.content.Context

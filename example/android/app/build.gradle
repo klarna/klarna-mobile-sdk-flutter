@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.klarna.inapp.sdk.klarna_inapp_flutter_plugin_example"
+        applicationId "com.klarna.inapp.sdk.flutter_klarna_inapp_sdk_example"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()

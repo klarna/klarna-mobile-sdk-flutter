@@ -1,7 +1,7 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.handler
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler
 
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.core.method.MethodParser
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.method.MethodParser
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 

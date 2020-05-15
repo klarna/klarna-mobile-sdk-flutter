@@ -1,7 +1,7 @@
-package com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.hybrid
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid
 
 import android.webkit.WebView
-import com.klarna.inapp.sdk.klarna_inapp_flutter_plugin.ResultError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.mobile.sdk.KlarnaMobileSDKError
 import com.klarna.mobile.sdk.api.OnCompletion
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDKCallback

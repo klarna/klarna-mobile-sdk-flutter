@@ -14,14 +14,14 @@ flutter packages get
 1. Execute `cd example; flutter build apk`
 2. Import the `example/android/build.gradle` file or open `example/android` folder from Android Studio.
 
-Plugin implementation will be located at `klarna_inapp_flutter_plugin/java/com.klarna.inapp.sdk.klarna_inapp_flutter_plugin/`.
+Plugin implementation will be located at `flutter_klarna_inapp_sdk/java/com.klarna.inapp.sdk.flutter_klarna_inapp_sdk/`.
 
 ### XCode
 
 1. Execute `cd example; flutter build ios --no-codesign`
 2. Import the `example/ios/Runner.xcworkspace` file from XCode.
 
-Plugin implementation will be located at `Pods/Development Pods/klarna_inapp_flutter_plugin/../../example/ios/.symlinks/plugins/klarna_inapp_flutter_plugin/ios/Classes`.
+Plugin implementation will be located at `Pods/Development Pods/flutter_klarna_inapp_sdk/../../example/ios/.symlinks/plugins/flutter_klarna_inapp_sdk/ios/Classes`.
 
 ### Official Flutter Documentations
 

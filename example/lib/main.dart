@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:klarna_inapp_flutter_plugin/klarna_hybrid_sdk.dart';
-import 'package:klarna_inapp_flutter_plugin/klarna_web_view.dart';
-import 'package:klarna_inapp_flutter_plugin/klarna_post_purchase_experience.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_hybrid_sdk.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_web_view.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_experience.dart';
 
 void main() => runApp(MyApp());
 

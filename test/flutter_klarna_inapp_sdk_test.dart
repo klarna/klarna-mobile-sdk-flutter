@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:klarna_inapp_flutter_plugin/klarna_inapp_flutter_plugin.dart';
+import 'package:flutter_klarna_inapp_sdk/flutter_klarna_inapp_sdk.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('klarna_inapp_flutter_plugin');
+  const MethodChannel channel = MethodChannel('flutter_klarna_inapp_sdk');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -18,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await KlarnaInappFlutterPlugin.platformVersion, '42');
+    expect(await FlutterKlarnaInappSdk.platformVersion, '42');
   });
 }
