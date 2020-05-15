@@ -2,14 +2,15 @@ package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid
 
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 
-internal class KlarnaWebViewClient : WebViewClient() {
+internal class KlarnaWebViewClient(private val klarnaHybridSDK: KlarnaHybridSDK) : WebViewClient() {
 
     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        return !KlarnaHybridSDKHandler.hybridSDK.shouldFollowNavigation(url)
+        return !klarnaHybridSDK.shouldFollowNavigation(url)
     }
 
     override fun onPageFinished(view: WebView, url: String) {
-        KlarnaHybridSDKHandler.hybridSDK.newPageLoad(view)
+        klarnaHybridSDK.newPageLoad(view)
     }
 }

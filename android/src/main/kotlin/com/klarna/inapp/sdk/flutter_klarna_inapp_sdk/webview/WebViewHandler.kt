@@ -1,29 +1,13 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview
 
-import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebView
-import android.widget.FrameLayout
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.evaluateJavascriptCompat
 import io.flutter.plugin.common.MethodChannel
 
 
 internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.Parser) {
 
     companion object {
-        internal var webView: WebView? = null
-            private set
-
-        internal fun notInitialized(result: MethodChannel.Result) {
-            result.error(
-                    ResultError.WEB_VIEW_ERROR.errorCode,
-                    "WebView is not initialized.",
-                    "Call 'KlarnaWebView.initialize()' before using this method."
-            )
-        }
+        internal val webViewManager = WebViewManager()
     }
 
     override fun onMethod(method: WebViewMethod, result: MethodChannel.Result) {
@@ -38,74 +22,27 @@ internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.P
     }
 
     private fun initialize(method: WebViewMethod.Initialize, result: MethodChannel.Result) {
-        if (webView == null) {
-            webView = WebView(PluginContext.activity)
-            addToActivityIfDetached()
-            result.success(null)
-            return
-        }
-        result.error(ResultError.WEB_VIEW_ERROR.errorCode, "WebView is already initialized.", null)
+        webViewManager.initialize(result)
     }
 
     private fun destroy(method: WebViewMethod.Destroy, result: MethodChannel.Result) {
-        webView?.parent?.let {
-            if (it is ViewGroup) {
-                it.removeView(webView)
-                webView = null
-                result.success(null)
-                return
-            }
-        }
-        notInitialized(result)
+        webViewManager.destroy(result)
     }
 
     private fun show(method: WebViewMethod.Show, result: MethodChannel.Result) {
-        webView?.apply {
-            visibility = View.VISIBLE
-            result.success(null)
-            return
-        }
-        notInitialized(result)
+        webViewManager.show(result)
     }
 
     private fun hide(method: WebViewMethod.Hide, result: MethodChannel.Result) {
-        webView?.apply {
-            visibility = View.GONE
-            result.success(null)
-            return
-        }
-        notInitialized(result)
+        webViewManager.hide(result)
     }
 
     private fun loadURL(method: WebViewMethod.LoadURL, result: MethodChannel.Result) {
-        webView?.apply {
-            loadUrl(method.url)
-            result.success(method.url)
-            return
-        }
-        notInitialized(result)
+        webViewManager.loadURL(method.url, result)
     }
 
     private fun loadJS(method: WebViewMethod.LoadJS, result: MethodChannel.Result) {
-        webView?.apply {
-            evaluateJavascriptCompat(method.js, null)
-            result.success(method.js)
-            return
-        }
-        notInitialized(result)
-    }
-
-    private fun addToActivityIfDetached() {
-        PluginContext.activity?.let {
-            if (webView?.parent == null) {
-                val params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                )
-
-                it.addContentView(webView, params)
-            }
-        }
+        webViewManager.loadJS(method.js, result)
     }
 
 }
