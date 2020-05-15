@@ -1,9 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_hybrid_sdk.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_web_view.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_experience.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_web_view.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,19 +16,20 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initWebView();
     initHybridSDK();
+    initWebView();
     initPostPurchaseExperience();
+  }
+
+  void initHybridSDK() async {
+    await KlarnaHybridSDK.initialize("");
   }
 
   void initWebView() async {
     KlarnaWebView.initialize();
     KlarnaWebView.loadURL("https://www.google.com");
-  }
-
-  Future<void> initHybridSDK() async {
-    await KlarnaHybridSDK.initialize("");
-    await KlarnaHybridSDK.setupWebView();
+    KlarnaWebView.show();
+    KlarnaWebView.addToHybridSdk();
   }
 
   void initPostPurchaseExperience() async {
