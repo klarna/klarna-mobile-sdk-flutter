@@ -11,6 +11,7 @@ internal sealed class WebViewMethod {
     object Hide : WebViewMethod()
     class LoadURL(val url: String) : WebViewMethod()
     class LoadJS(val js: String) : WebViewMethod()
+    object AddToHybridSDK : WebViewMethod()
 
     internal object Parser : MethodParser<WebViewMethod> {
         override fun parse(call: MethodCall): WebViewMethod? {
@@ -21,6 +22,7 @@ internal sealed class WebViewMethod {
                 "hide" -> Hide
                 "loadURL" -> LoadURL(call.requireArgument("url"))
                 "loadJS" -> LoadJS(call.requireArgument("js"))
+                "addToHybridSdk" -> AddToHybridSDK
                 else -> null
             }
         }

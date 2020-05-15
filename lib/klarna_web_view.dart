@@ -32,4 +32,8 @@ class KlarnaWebView {
         await _channel.invokeMethod('loadURL', <String, dynamic>{'js': js});
     return result;
   }
+
+  static Future<void> addToHybridSdk() async {
+    await _channel.invokeMethod('addToHybridSdk');
+  }
 }

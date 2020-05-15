@@ -12,10 +12,12 @@ import io.flutter.plugin.common.MethodChannel
 internal class WebViewManager {
 
     companion object {
+        const val NOT_INITIALIZED = "WebView is not initialized."
+
         internal fun notInitialized(result: MethodChannel.Result) {
             result.error(
                     ResultError.WEB_VIEW_ERROR.errorCode,
-                    "WebView is not initialized.",
+                    NOT_INITIALIZED,
                     "Call 'initialize' before using this method."
             )
         }
@@ -23,6 +25,10 @@ internal class WebViewManager {
 
     var webView: WebView? = null
         private set
+
+    fun requireWebView(): WebView {
+        return webView ?: throw IllegalStateException(NOT_INITIALIZED)
+    }
 
     fun initialize(result: MethodChannel.Result) {
         if (webView == null) {
