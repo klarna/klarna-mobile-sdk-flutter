@@ -4,8 +4,8 @@ import android.view.View
 import android.webkit.WebChromeClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaWebViewClient
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview.WebViewManager
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.KlarnaWebViewClient
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
 

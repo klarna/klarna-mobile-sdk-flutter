@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview
 
 import android.view.View
 import android.view.ViewGroup
@@ -90,6 +90,7 @@ internal class WebViewManager {
                         ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
+                webView?.visibility = View.GONE
                 it.addContentView(webView, params)
             }
         }
