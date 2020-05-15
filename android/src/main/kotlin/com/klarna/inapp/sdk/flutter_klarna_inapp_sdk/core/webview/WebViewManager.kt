@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.evaluateJavascriptCompat
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal class WebViewManager {
@@ -84,6 +85,23 @@ internal class WebViewManager {
             evaluateJavascriptCompat(js, null)
             result.success(js)
             return
+        }
+        notInitialized(result)
+    }
+
+    fun addToHybridSdk(result: MethodChannel.Result) {
+        val klarnaHybridSDK = KlarnaHybridSDKHandler.hybridSDK
+        if (klarnaHybridSDK == null) {
+            result.error(
+                    ResultError.HYBRID_SDK_ERROR.errorCode,
+                    "Hybrid SDK is not initialized, call 'KlarnaHybridSDK.initialize' before this.",
+                    null
+            )
+            return
+        }
+        webView?.apply {
+            webViewClient = KlarnaWebViewClient(klarnaHybridSDK)
+            klarnaHybridSDK.addWebView(this)
         }
         notInitialized(result)
     }

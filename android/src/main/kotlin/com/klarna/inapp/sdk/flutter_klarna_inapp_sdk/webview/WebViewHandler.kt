@@ -1,9 +1,7 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.webview
 
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.KlarnaWebViewClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
 
 
@@ -50,12 +48,7 @@ internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.P
     }
 
     private fun addToHybridSdk(method: WebViewMethod.AddToHybridSDK, result: MethodChannel.Result) {
-        KlarnaHybridSDKHandler.hybridSDK?.let {
-            val webView = webViewManager.requireWebView()
-            webView.webViewClient = KlarnaWebViewClient(it)
-            it.addWebView(webView)
-            result.success(null)
-        }
+        webViewManager.addToHybridSdk(result)
     }
 
 }

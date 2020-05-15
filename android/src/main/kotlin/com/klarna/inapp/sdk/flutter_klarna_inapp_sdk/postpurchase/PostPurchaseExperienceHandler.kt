@@ -2,11 +2,8 @@ package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
 import android.view.View
 import android.webkit.WebChromeClient
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.KlarnaWebViewClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {
@@ -22,30 +19,18 @@ internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExp
     }
 
     private fun initialize(method: PostPurchaseExperienceMethod.Initialize, result: MethodChannel.Result) {
-        val klarnaHybridSDK = KlarnaHybridSDKHandler.hybridSDK
-        if (klarnaHybridSDK == null) {
-            result.error(
-                    ResultError.POST_PURCHASE_ERROR.errorCode,
-                    "Hybrid SDK is not initialized, call 'KlarnaHybridSDK.initialize' before this.",
-                    null
-            )
-            return
-        }
-
         webViewManager.initialize(result)
-        webViewManager.webView?.apply {
-            webViewClient = KlarnaWebViewClient(klarnaHybridSDK)
-            webChromeClient = WebChromeClient()
-            settings.javaScriptEnabled = true
-            settings.domStorageEnabled = true
-            visibility = View.INVISIBLE
+        webViewManager.addToHybridSdk(result)
 
-            klarnaHybridSDK.addWebView(this)
+        val webView = webViewManager.requireWebView()
+        webView.webChromeClient = WebChromeClient()
+        webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        webView.visibility = View.INVISIBLE
 
-            // TODO: html & callback interface
-//            addJavascriptInterface(javascriptInterface, "PPECallback")
-//            loadDataWithBaseURL("", html, "text/html", "utf-8", null)
-        }
+        // TODO: html & callback interface
+//        webView.addJavascriptInterface(javascriptInterface, "PPECallback")
+//        webView.loadDataWithBaseURL("", html, "text/html", "utf-8", null)
     }
 
     private fun renderOperation(method: PostPurchaseExperienceMethod.RenderOperation, result: MethodChannel.Result) {
