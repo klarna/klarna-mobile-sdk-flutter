@@ -24,12 +24,11 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
         override fun onInitialized(success: Boolean) {
             if (success) {
                 initResult?.success(null)
-                initResult = null
                 initialized = true
             } else {
                 initResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, "initialize failed", null)
-                initResult = null
             }
+            initResult = null
         }
 
         override fun onRenderOperation(result: PostPurchaseExperienceJSInterface.JSResult) {
@@ -41,8 +40,12 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
             renderResult = null
         }
 
-        override fun onAuthorizationRequest() {
-            authResult?.success(null)
+        override fun onAuthorizationRequest(success: Boolean, error: String?) {
+            if (success) {
+                authResult?.success(null)
+            } else {
+                authResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, null)
+            }
             authResult = null
         }
     })

@@ -27,9 +27,10 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     }
 
     @JavascriptInterface
-    fun onAuthorizationRequest() {
+    fun onAuthorizationRequest(error: String?) {
+        val success = error == null || error == "undefined"
         mainHandler.post {
-            resultCallback?.onAuthorizationRequest()
+            resultCallback?.onAuthorizationRequest(success, error)
         }
     }
 
@@ -40,7 +41,7 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
 
     internal interface ResultCallback {
         fun onInitialized(success: Boolean)
-        fun onAuthorizationRequest()
+        fun onAuthorizationRequest(success: Boolean, error: String?)
         fun onRenderOperation(result: JSResult)
     }
 }
