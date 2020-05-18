@@ -118,7 +118,8 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
                 "'${method.scope}', " +
                 "'${method.redirectUri}', " +
                 "'${method.state}', " +
-                "'${method.loginHint}')")
+                "'${method.loginHint}', " +
+                "'${method.responseType}')")
     }
 
 }

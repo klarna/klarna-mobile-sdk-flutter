@@ -34,7 +34,7 @@
     }
 
 
-    function authorizationRequest(locale, clientId, scope, redirectUri, state, loginHint) {
+    function authorizationRequest(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
         log('authorizationRequest');
         ppe.authorizationRequest({
             locale: locale,
@@ -42,7 +42,8 @@
             scope: scope,
             redirect_uri: redirectUri,
             state: state,
-            login_hint: loginHint
+            login_hint: loginHint,
+            response_type: responseType
         });
         PPECallback.onAuthorizationRequest();
     }
