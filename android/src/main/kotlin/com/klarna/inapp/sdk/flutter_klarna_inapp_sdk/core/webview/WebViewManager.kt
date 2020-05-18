@@ -15,8 +15,8 @@ internal class WebViewManager {
     companion object {
         const val NOT_INITIALIZED = "WebView is not initialized"
 
-        internal fun notInitialized(result: MethodChannel.Result) {
-            result.error(
+        internal fun notInitialized(result: MethodChannel.Result?) {
+            result?.error(
                     ResultError.WEB_VIEW_ERROR.errorCode,
                     NOT_INITIALIZED,
                     "Call 'initialize' before using this method."
@@ -31,22 +31,22 @@ internal class WebViewManager {
         return webView ?: throw IllegalStateException(NOT_INITIALIZED)
     }
 
-    fun initialize(result: MethodChannel.Result) {
+    fun initialize(result: MethodChannel.Result?) {
         if (webView == null) {
             webView = WebView(PluginContext.activity)
             addToActivityIfDetached()
-            result.success(null)
+            result?.success(null)
             return
         }
-        result.error(ResultError.WEB_VIEW_ERROR.errorCode, "WebView is already initialized.", null)
+        result?.error(ResultError.WEB_VIEW_ERROR.errorCode, "WebView is already initialized.", null)
     }
 
-    fun destroy(result: MethodChannel.Result) {
+    fun destroy(result: MethodChannel.Result?) {
         webView?.parent?.let {
             if (it is ViewGroup) {
                 it.removeView(webView)
                 webView = null
-                result.success(null)
+                result?.success(null)
                 return
             }
         }
@@ -62,50 +62,47 @@ internal class WebViewManager {
         notInitialized(result)
     }
 
-    fun hide(result: MethodChannel.Result) {
+    fun hide(result: MethodChannel.Result?) {
         webView?.apply {
             visibility = View.GONE
-            result.success(null)
+            result?.success(null)
             return
         }
         notInitialized(result)
     }
 
-    fun loadURL(url: String, result: MethodChannel.Result) {
+    fun loadURL(url: String, result: MethodChannel.Result?) {
         webView?.apply {
             loadUrl(url)
-            result.success(url)
+            result?.success(url)
             return
         }
         notInitialized(result)
     }
 
-    fun loadJS(js: String, result: MethodChannel.Result) {
+    fun loadJS(js: String, result: MethodChannel.Result?) {
         webView?.apply {
             evaluateJavascriptCompat(js, null)
-            result.success(js)
+            result?.success(js)
             return
         }
         notInitialized(result)
     }
 
-    fun addToHybridSdk(result: MethodChannel.Result) {
+    fun addToHybridSdk(result: MethodChannel.Result?) {
         val klarnaHybridSDK = KlarnaHybridSDKHandler.hybridSDK
         if (klarnaHybridSDK == null) {
-            result.error(
-                    ResultError.HYBRID_SDK_ERROR.errorCode,
-                    "Hybrid SDK is not initialized, call 'KlarnaHybridSDK.initialize' before this.",
-                    null
-            )
+            KlarnaHybridSDKHandler.notInitialized(result)
             return
         }
         webView?.apply {
             webViewClient = KlarnaWebViewClient(klarnaHybridSDK)
             klarnaHybridSDK.addWebView(this)
-            result.success(null)
+            result?.success(null)
             return
         }
         notInitialized(result)
+        return
     }
 
     private fun addToActivityIfDetached() {

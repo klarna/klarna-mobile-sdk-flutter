@@ -6,10 +6,11 @@ class KlarnaPostPurchaseExperience {
   static const MethodChannel _channel =
       const MethodChannel('klarna_post_purchase_experience');
 
-  static Future<void> initialize(String locale, String purchaseCountry) async {
+  static Future<void> initialize(String locale, String purchaseCountry, String design) async {
     return await _channel.invokeMethod('initialize', <String, dynamic>{
       'locale': locale,
-      'purchaseCountry': purchaseCountry
+      'purchaseCountry': purchaseCountry,
+      'design': design
     });
   }
 
