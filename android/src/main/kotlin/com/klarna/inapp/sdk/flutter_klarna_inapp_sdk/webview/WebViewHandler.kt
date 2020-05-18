@@ -5,11 +5,9 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import io.flutter.plugin.common.MethodChannel
 
 
-internal class WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.Parser) {
+internal object WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.Parser) {
 
-    companion object {
-        internal val webViewManager = WebViewManager()
-    }
+    internal val webViewManager = WebViewManager()
 
     override fun onMethod(method: WebViewMethod, result: MethodChannel.Result) {
         when (method) {

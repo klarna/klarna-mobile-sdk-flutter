@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel
 internal class WebViewManager {
 
     companion object {
-        const val NOT_INITIALIZED = "WebView is not initialized."
+        const val NOT_INITIALIZED = "WebView is not initialized"
 
         internal fun notInitialized(result: MethodChannel.Result) {
             result.error(
@@ -102,6 +102,8 @@ internal class WebViewManager {
         webView?.apply {
             webViewClient = KlarnaWebViewClient(klarnaHybridSDK)
             klarnaHybridSDK.addWebView(this)
+            result.success(null)
+            return
         }
         notInitialized(result)
     }

@@ -5,12 +5,10 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHand
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
 
-internal class KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod>(KlarnaHybridSDKMethod.Parser) {
+internal object KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod>(KlarnaHybridSDKMethod.Parser) {
 
-    companion object {
-        internal var hybridSDK: KlarnaHybridSDK? = null
-        internal val hybridSDKCallback = KlarnaHybridSDKCallback()
-    }
+    internal var hybridSDK: KlarnaHybridSDK? = null
+    internal val hybridSDKCallback = KlarnaHybridSDKCallback()
 
     override fun onMethod(method: KlarnaHybridSDKMethod, result: MethodChannel.Result) {
         when (method) {

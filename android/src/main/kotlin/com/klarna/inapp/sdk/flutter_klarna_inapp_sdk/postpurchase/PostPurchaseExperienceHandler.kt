@@ -6,7 +6,7 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHand
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import io.flutter.plugin.common.MethodChannel
 
-internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {
+internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {
 
     private var webViewManager: WebViewManager = WebViewManager()
 
