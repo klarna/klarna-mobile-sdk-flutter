@@ -10,8 +10,4 @@ class KlarnaHybridSDK {
     return await _channel
         .invokeMethod('initialize', <String, dynamic>{'returnUrl': returnUrl});
   }
-
-  static Future<void> setupWebView() async {
-    return await _channel.invokeMethod('setupWebView');
-  }
 }
