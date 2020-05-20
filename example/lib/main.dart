@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_hybrid_sdk.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_web_view.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_experience.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_web_view.dart';
 
 void main() => runApp(MyApp());
 
@@ -34,6 +34,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initPostPurchaseExperience() async {
+    KlarnaPostPurchaseExperience.setCallback(
+      (event) {
+      print("Got PP Event: $event");
+      },
+      (error) {
+      print("Got PP Error: $error");
+    });
     KlarnaPostPurchaseExperience.initialize("sv-SE", "SE");
   }
 

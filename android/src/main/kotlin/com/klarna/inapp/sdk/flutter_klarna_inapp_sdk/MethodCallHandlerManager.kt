@@ -7,7 +7,7 @@ import io.flutter.plugin.common.MethodChannel
 
 internal object MethodCallHandlerManager {
 
-    val handlerMap: Map<String, MethodChannel.MethodCallHandler> = mapOf(
+    val methodHandlerMap: Map<String, MethodChannel.MethodCallHandler> = mapOf(
             "klarna_web_view" to WebViewHandler(),
             "klarna_hybrid_sdk" to KlarnaHybridSDKHandler(),
             "klarna_post_purchase_experience" to PostPurchaseExperienceHandler()

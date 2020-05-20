@@ -4,15 +4,21 @@ import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /** FlutterKlarnaInappSdk */
 public class FlutterKlarnaInappSdk : FlutterPlugin, ActivityAware {
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        MethodCallHandlerManager.handlerMap.forEach {
+        MethodCallHandlerManager.methodHandlerMap.forEach {
             val channel = MethodChannel(flutterPluginBinding.flutterEngine.dartExecutor, it.key)
             channel.setMethodCallHandler(it.value)
+        }
+
+        StreamCallHandlerManager.streamHandlerMap.forEach {
+            val eventChannel = EventChannel(flutterPluginBinding.flutterEngine.dartExecutor, it.key)
+            eventChannel.setStreamHandler(it.value)
         }
     }
 
@@ -28,9 +34,14 @@ public class FlutterKlarnaInappSdk : FlutterPlugin, ActivityAware {
     companion object {
         @JvmStatic
         fun registerWith(registrar: Registrar) {
-            MethodCallHandlerManager.handlerMap.forEach {
+            MethodCallHandlerManager.methodHandlerMap.forEach {
                 val channel = MethodChannel(registrar.messenger(), it.key)
                 channel.setMethodCallHandler(it.value)
+            }
+
+            StreamCallHandlerManager.streamHandlerMap.forEach {
+                val eventChannel = EventChannel(registrar.messenger(), it.key)
+                eventChannel.setStreamHandler(it.value)
             }
 
             PluginContext.activity = registrar.activity()

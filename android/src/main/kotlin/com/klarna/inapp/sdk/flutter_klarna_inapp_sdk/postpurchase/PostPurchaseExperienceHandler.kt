@@ -1,9 +1,15 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.stream.BaseStreamHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {
+
+    companion object {
+        var errorStreamHandler = BaseStreamHandler()
+        var eventStreamHandler = BaseStreamHandler()
+    }
 
     override fun onMethod(method: PostPurchaseExperienceMethod, result: MethodChannel.Result) {
         when (method) {
@@ -14,6 +20,13 @@ internal class PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExp
     }
 
     private fun initialize(method: PostPurchaseExperienceMethod.Initialize, result: MethodChannel.Result) {
+
+        // Event callback trigger example
+        //eventStreamHandler.sink?.success("PP INITIALIZE EVENT")
+
+        // Error callback trigger example
+        //errorStreamHandler.sink?.success("PP INITIALIZE ERROR")
+
         TODO()
     }
 
