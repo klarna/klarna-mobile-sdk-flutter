@@ -33,13 +33,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initPostPurchaseExperience() async {
-    KlarnaPostPurchaseExperience.setCallback(
-      (event) {
-      print("Got PP Event: $event");
-      },
-      (error) {
-      print("Got PP Error: $error");
-    });
     await KlarnaPostPurchaseExperience.initialize("sv-SE", "SE", design: null);
   }
 

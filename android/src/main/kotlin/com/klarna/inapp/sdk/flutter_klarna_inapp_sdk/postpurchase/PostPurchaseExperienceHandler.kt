@@ -4,7 +4,6 @@ import android.view.View
 import android.webkit.WebChromeClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.stream.BaseStreamHandler
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
@@ -21,14 +20,8 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
     private var authResult: MethodChannel.Result? = null
     private var renderResult: MethodChannel.Result? = null
 
-    var errorStreamHandler = BaseStreamHandler()
-    // Error callback trigger example
-    //errorStreamHandler.sink?.success("PP INITIALIZE ERROR")
-    var eventStreamHandler = BaseStreamHandler()
-    // Event callback trigger example
-    //eventStreamHandler.sink?.success("PP INITIALIZE EVENT")
-
     private val jsInterface = PostPurchaseExperienceJSInterface(object : PostPurchaseExperienceJSInterface.ResultCallback {
+
         override fun onInitialized(success: Boolean) {
             if (success) {
                 initResult?.success(null)
