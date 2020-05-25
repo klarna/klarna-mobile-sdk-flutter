@@ -10,26 +10,26 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  final localeController = TextEditingController();
+  final countryController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     initHybridSDK();
-    initWebView();
-    initPostPurchaseExperience();
+
+    localeController.text = "sv-SE";
+    countryController.text = "SE";
   }
 
   void initHybridSDK() async {
     await KlarnaHybridSDK.initialize("");
   }
 
-  void initWebView() async {
-    // TODO
-  }
-
   void initPostPurchaseExperience() async {
-    await KlarnaPostPurchaseExperience.initialize("sv-SE", "SE", design: null);
+    await KlarnaPostPurchaseExperience.initialize(
+        localeController.text, countryController.text,
+        design: null);
   }
 
   @override
@@ -37,10 +37,48 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Flutter Klarna In-App SDK Example'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: Opacity(
+                opacity: .25,
+                child: FittedBox(
+                  fit: BoxFit.cover,
+                  child: FlutterLogo(),
+                ),
+              ),
+            ),
+            Container(
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    controller: localeController,
+                    decoration: InputDecoration(
+                        border: InputBorder.none, labelText: "Locale"),
+                  ),
+                  TextFormField(
+                    controller: countryController,
+                    decoration: InputDecoration(
+                        border: InputBorder.none, labelText: 'Country'),
+                  ),
+                  MaterialButton(
+                    color: Theme.of(context).primaryColor,
+                    child: new Text("Initialize PostPurchaseExperience"),
+                    onPressed: initPostPurchaseExperience,
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
