@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initPostPurchaseExperience() async {
-    KlarnaPostPurchaseExperience.initialize("sv-SE", "SE");
+    await KlarnaPostPurchaseExperience.initialize("sv-SE", "SE", design: null);
   }
 
   @override

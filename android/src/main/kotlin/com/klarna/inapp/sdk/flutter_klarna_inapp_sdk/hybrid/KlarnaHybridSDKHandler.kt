@@ -10,6 +10,16 @@ internal object KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod
     internal var hybridSDK: KlarnaHybridSDK? = null
     internal val hybridSDKCallback = KlarnaHybridSDKCallback()
 
+    const val NOT_INITIALIZED = "KlarnaHybridSDK is not initialized"
+
+    internal fun notInitialized(result: MethodChannel.Result?) {
+        result?.error(
+                ResultError.HYBRID_SDK_ERROR.errorCode,
+                NOT_INITIALIZED,
+                "Call 'KlarnaHybridSDK.initialize' before this."
+        )
+    }
+
     override fun onMethod(method: KlarnaHybridSDKMethod, result: MethodChannel.Result) {
         when (method) {
             is KlarnaHybridSDKMethod.Initialize -> initialize(method, result)
