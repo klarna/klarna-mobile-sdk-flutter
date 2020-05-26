@@ -9,10 +9,10 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     private val mainHandler = Handler(Looper.getMainLooper())
 
     @JavascriptInterface
-    fun onInitialized(ppe: String?) {
-        val success = ppe != null && ppe != "undefined"
+    fun onInitialized(error: String?) {
+        val success = error == null || error == "undefined"
         mainHandler.post {
-            resultCallback?.onInitialized(success)
+            resultCallback?.onInitialized(success, error)
         }
     }
 
@@ -40,7 +40,7 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     )
 
     internal interface ResultCallback {
-        fun onInitialized(success: Boolean)
+        fun onInitialized(success: Boolean, error: String?)
         fun onAuthorizationRequest(success: Boolean, error: String?)
         fun onRenderOperation(result: JSResult)
     }

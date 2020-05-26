@@ -22,12 +22,12 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
 
     private val jsInterface = PostPurchaseExperienceJSInterface(object : PostPurchaseExperienceJSInterface.ResultCallback {
 
-        override fun onInitialized(success: Boolean) {
+        override fun onInitialized(success: Boolean, error: String?) {
             if (success) {
                 initResult?.success(null)
                 initialized = true
             } else {
-                initResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, "initialize failed", null)
+                initResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, null)
             }
             initResult = null
         }

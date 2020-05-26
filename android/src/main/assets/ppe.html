@@ -19,10 +19,10 @@
                 design: design
             });
             ppe = instance;
-            PPECallback.onInitialized(JSON.stringify(ppe));
+            PPECallback.onInitialized(null);
         } catch(error){
             log('initialize exception: ' + error.message);
-            PPECallback.onInitialized(null);
+            PPECallback.onInitialized(error.message);
         }
     }
 
@@ -42,7 +42,6 @@
             PPECallback.onRenderOperation(null, error.message);
         }
     }
-
 
     function authorizationRequest(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
         log('authorizationRequest');
