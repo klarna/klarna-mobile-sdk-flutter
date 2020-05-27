@@ -4,7 +4,7 @@ protocol KlarnaHybridSDKMethod {
     
 }
 
-class KlarnaHybridSDK {
+class KlarnaHybridSDKMethods {
 
     struct Initialize: KlarnaHybridSDKMethod {
         let returnUrl: String
