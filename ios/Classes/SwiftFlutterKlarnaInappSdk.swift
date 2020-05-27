@@ -1,14 +1,19 @@
 import Flutter
-import UIKit
 
+// MARK: - SwiftFlutterKlarnaInappSdk
 public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
-  public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "flutter_klarna_inapp_sdk", binaryMessenger: registrar.messenger())
-    let instance = SwiftFlutterKlarnaInappSdk()
-    registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
-  }
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let messenger = registrar.messenger()
+        
+        getHandlerMap().forEach { (key, value) in
+            let channel = FlutterMethodChannel(name: key, binaryMessenger: messenger)
+            registrar.addMethodCallDelegate(value, channel: channel)
+        }
+    }
+    
+    static func getHandlerMap() -> [String: FlutterPlugin] {
+        return [
+            "klarna_hybrid_sdk": KlarnaHybridSDKHandler()
+        ]
+    }
 }
