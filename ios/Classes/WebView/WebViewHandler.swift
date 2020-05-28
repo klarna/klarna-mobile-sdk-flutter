@@ -8,6 +8,8 @@ class WebViewHandler: BaseMethodHandler<WebViewMethod> {
         super.init(parser: WebViewMethods.Parser())
     }
     
+    let webViewManager = WebViewManager()
+    
     override func onMethod(method: WebViewMethod, result: @escaping FlutterResult) {
         switch method {
         case is WebViewMethods.Initialize:
@@ -30,31 +32,31 @@ class WebViewHandler: BaseMethodHandler<WebViewMethod> {
     }
     
     func initialize(method: WebViewMethods.Initialize, result: @escaping FlutterResult) {
-        
+        webViewManager.initialize(result: result)
     }
     
     func destroy(method: WebViewMethods.Destroy, result: @escaping FlutterResult) {
-        
+        webViewManager.destroy(result: result)
     }
     
     func show(method: WebViewMethods.Show, result: @escaping FlutterResult) {
-        
+        webViewManager.show(result: result)
     }
     
     func hide(method: WebViewMethods.Hide, result: @escaping FlutterResult) {
-        
+        webViewManager.hide(result: result)
     }
     
     func loadURL(method: WebViewMethods.LoadURL, result: @escaping FlutterResult) {
-        
+        webViewManager.loadURL(url: method.url, result: result)
     }
     
     func loadJS(method: WebViewMethods.LoadJS, result: @escaping FlutterResult) {
-        
+        webViewManager.loadJS(js: method.js, result: result)
     }
     
     func addToHybridSdk(method: WebViewMethods.AddToHybridSDK, result: @escaping FlutterResult) {
-        
+        webViewManager.addToHybridSdk(result: result)
     }
     
 }
