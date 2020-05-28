@@ -14,7 +14,7 @@ class KlarnaHybridSDKMethods {
         override func parse(call: FlutterMethodCall) -> KlarnaHybridSDKMethod? {
             switch call.method {
             case "initialize":
-                return Initialize(returnUrl: "")
+                return Initialize(returnUrl: call.requireArgument(key: "returnUrl"))
             default:
                 return nil
             }
