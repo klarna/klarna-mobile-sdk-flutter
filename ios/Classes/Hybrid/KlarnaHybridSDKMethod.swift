@@ -6,7 +6,7 @@ protocol KlarnaHybridSDKMethod {
 
 class KlarnaHybridSDKMethods {
 
-    struct Initialize: KlarnaHybridSDKMethod {
+    struct Initialize: KlarnaHybridSDKMethod, Decodable {
         let returnUrl: String
     }
 
@@ -14,7 +14,7 @@ class KlarnaHybridSDKMethods {
         override func parse(call: FlutterMethodCall) -> KlarnaHybridSDKMethod? {
             switch call.method {
             case "initialize":
-                return Initialize(returnUrl: call.requireArgument(key: "returnUrl"))
+                return call.decode(Initialize.self)
             default:
                 return nil
             }

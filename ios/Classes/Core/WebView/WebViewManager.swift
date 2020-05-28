@@ -134,7 +134,4 @@ class WKWebViewController: UIViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
-    private lazy var script = """
-    """
 }
