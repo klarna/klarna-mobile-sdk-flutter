@@ -20,6 +20,10 @@ class WebViewManager {
         }
     }
     
+    func requireWebview() -> WKWebView {
+        return webView!
+    }
+    
     func initialize(result: FlutterResult?) {
         if webView == nil {
             webView = WKWebView.init(frame: .zero, configuration: webConfiguration)

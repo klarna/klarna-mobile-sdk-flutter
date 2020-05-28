@@ -7,6 +7,12 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         super.init(parser: PostPurchaseMethods.Parser())
     }
     
+    let webViewManager = WebViewManager()
+    
+    var navigationDelegate: PostPurchaseWKNavigationDelegate?
+    
+    var initialized = false
+    
     override func onMethod(method: PostPurchaseMethod, result: @escaping FlutterResult) {
         switch method {
         case is PostPurchaseMethods.Initialize:
@@ -21,7 +27,29 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     }
     
     private func initialize(method: PostPurchaseMethods.Initialize, result: @escaping FlutterResult) {
-        // TODO
+        if (webViewManager.webView != nil || initialized) {
+            result(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: "Already initialized.", details: nil))
+            return
+        }
+        
+        if let hybridSDK = KlarnaHybridSDKHandler.hybridSDK {
+            navigationDelegate = PostPurchaseWKNavigationDelegate(hybridSDK: hybridSDK)
+        } else {
+            KlarnaHybridSDKHandler.notInitialized(result: result)
+            return
+        }
+
+        webViewManager.initialize(result: nil)
+        webViewManager.addToHybridSdk(result: nil)
+
+        let webView = webViewManager.requireWebview()
+        webView.navigationDelegate = navigationDelegate
+        
+//        webView.addJavascriptInterface(jsInterface, "PPECallback")
+//        webView.loadUrl("file:///android_asset/ppe.html")
+
+        let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
+        _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
     }
     
     private func renderOperation(method: PostPurchaseMethods.RenderOperation, result: @escaping FlutterResult) {
