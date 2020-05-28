@@ -15,7 +15,7 @@ class KlarnaHybridSDKHandler: BaseMethodHandler<KlarnaHybridSDKMethod> {
         case is KlarnaHybridSDKMethods.Initialize:
             initialize(method: method as! KlarnaHybridSDKMethods.Initialize, result: result)
         default:
-            return
+            result(FlutterMethodNotImplemented)
         }
     }
     
