@@ -24,8 +24,9 @@ class PostPurchaseScriptMessageHandler {
         weak var parent: PostPurchaseScriptMessageHandler?
         
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            print(message)
-            parent?.delegate?.onInitialized(success: true, error: nil)
+            let error = message.body as? String
+            let success = error == nil || error == "null" || error == "undefined"
+            parent?.delegate?.onInitialized(success: success, error: error)
         }
     }
     
@@ -33,8 +34,16 @@ class PostPurchaseScriptMessageHandler {
         weak var parent: PostPurchaseScriptMessageHandler?
         
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            print(message)
-            parent?.delegate?.onRenderOperation(success: true, data: nil, error: nil)
+            guard let resultDict = message.body as? [String: Any] else {
+                parent?.delegate?.onRenderOperation(success: false, data: nil, error: nil)
+                return
+            }
+            let data = resultDict["data"] as? String
+            let error = resultDict["error"] as? String
+            
+            let success = error == nil || error == "null" || error == "undefined"
+
+            parent?.delegate?.onRenderOperation(success: success, data: data, error: error)
         }
     }
     
@@ -42,8 +51,9 @@ class PostPurchaseScriptMessageHandler {
         weak var parent: PostPurchaseScriptMessageHandler?
         
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-            print(message)
-            parent?.delegate?.onAuthorizationRequest(success: true, error: nil)
+            let error = message.body as? String
+            let success = error == nil || error == "null" || error == "undefined"
+            parent?.delegate?.onAuthorizationRequest(success: success, error: error)
         }
     }
 }
