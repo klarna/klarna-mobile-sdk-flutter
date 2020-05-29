@@ -4,6 +4,12 @@ import KlarnaMobileSDK
 
 class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     
+    static let NOT_INTIAILIZED = "PostPurchaseExperience is not initialized"
+    
+    static func notInitialized(result: FlutterResult?) {
+        result?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: NOT_INTIAILIZED, details: "Call 'PostPurchaseExperience.initialize' before using this"))
+    }
+    
     init() {
         super.init(parser: PostPurchaseMethods.Parser())
     }
@@ -19,6 +25,10 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     }()
     
     var initialized = false
+    
+    var initResult: FlutterResult?
+    var authResult: FlutterResult?
+    var renderResult: FlutterResult?
     
     override func onMethod(method: PostPurchaseMethod, result: @escaping FlutterResult) {
         switch method {
@@ -59,16 +69,26 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "index", withExtension: "html")!
         webView.load(URLRequest.init(url: url))
 
-        let initScript = "window.initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
+        let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
     }
     
     private func renderOperation(method: PostPurchaseMethods.RenderOperation, result: @escaping FlutterResult) {
-        // TODO
+        if (!initialized) {
+            PostPurchaseHandler.notInitialized(result: result)
+            return
+        }
+        renderResult = result
+        _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "renderOperation(\(method.locale.jsScriptString()), \(method.operationToken.jsScriptString())")
     }
     
     private func authorizationRequest(method: PostPurchaseMethods.AuthorizationRequest, result: @escaping FlutterResult) {
-        // TODO
+        if (!initialized) {
+            PostPurchaseHandler.notInitialized(result: result)
+            return
+        }
+        renderResult = result
+        _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "authorizationRequest(\(method.locale.jsScriptString()), \(method.clientId.jsScriptString()), \(method.scope.jsScriptString()), \(method.redirectUri.jsScriptString()), \(method.state.jsScriptString()), \(method.loginHint.jsScriptString()), \(method.responseType.jsScriptString()))")
     }
     
     
@@ -76,15 +96,31 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
 
 extension PostPurchaseHandler: PostPurchaseScriptCallbackDelegate {
     func onInitialized(success: Bool, error: String?) {
-        print(success)
-    }
-    
-    func onAuthorizationRequest(success: Bool, error: String?) {
-        print(success)
+        if (success) {
+            initResult?(nil)
+            initialized = true
+        } else {
+            initResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
+        }
+        initResult = nil
     }
     
     func onRenderOperation(success: Bool, data: String?, error: String?) {
-        print(success)
+        if (success) {
+            renderResult?(data)
+        } else {
+            renderResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: data))
+        }
+        renderResult = nil
+    }
+    
+    func onAuthorizationRequest(success: Bool, error: String?) {
+        if (success) {
+            authResult?(nil)
+        } else {
+            authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
+        }
+        authResult = nil
     }
     
     

@@ -2,8 +2,8 @@ import WebKit
 
 protocol PostPurchaseScriptCallbackDelegate: class {
     func onInitialized(success: Bool, error: String?)
-    func onAuthorizationRequest(success: Bool, error: String?)
     func onRenderOperation(success: Bool, data: String?, error: String?)
+    func onAuthorizationRequest(success: Bool, error: String?)
 }
 
 class PostPurchaseScriptMessageHandler {
