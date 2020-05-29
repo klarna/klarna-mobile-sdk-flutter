@@ -14,6 +14,7 @@ Klarna&#x27;s Flutter wrapper for the In-App SDK
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
+  s.resources = 'Assets/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
 

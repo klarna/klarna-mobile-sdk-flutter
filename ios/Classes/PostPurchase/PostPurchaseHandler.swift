@@ -1,4 +1,5 @@
 import Flutter
+import WebKit
 import KlarnaMobileSDK
 
 class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
@@ -10,6 +11,12 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     let webViewManager = WebViewManager()
     
     var navigationDelegate: PostPurchaseWKNavigationDelegate?
+    
+    lazy var scriptMessageHandler: PostPurchaseScriptMessageHandler = {
+        let handler = PostPurchaseScriptMessageHandler()
+        handler.delegate = self
+        return handler
+    }()
     
     var initialized = false
     
@@ -38,17 +45,21 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
             KlarnaHybridSDKHandler.notInitialized(result: result)
             return
         }
-
+        
+        let contentController = WKUserContentController()
+        contentController.add(scriptMessageHandler.onInitialized, name: "onInitialized")
+        contentController.add(scriptMessageHandler.onRenderOperation, name: "onRenderOperation")
+        contentController.add(scriptMessageHandler.onAuthorazationRequest, name: "onAuthorazationRequest")
+        webViewManager.webConfiguration.userContentController = contentController
         webViewManager.initialize(result: nil)
         webViewManager.addToHybridSdk(result: nil)
 
         let webView = webViewManager.requireWebview()
         webView.navigationDelegate = navigationDelegate
-        
-//        webView.addJavascriptInterface(jsInterface, "PPECallback")
-//        webView.loadUrl("file:///android_asset/ppe.html")
+        let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "index", withExtension: "html")!
+        webView.load(URLRequest.init(url: url))
 
-        let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
+        let initScript = "window.initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
     }
     
@@ -58,6 +69,22 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     
     private func authorizationRequest(method: PostPurchaseMethods.AuthorizationRequest, result: @escaping FlutterResult) {
         // TODO
+    }
+    
+    
+}
+
+extension PostPurchaseHandler: PostPurchaseScriptCallbackDelegate {
+    func onInitialized(success: Bool, error: String?) {
+        
+    }
+    
+    func onAuthorizationRequest(success: Bool, error: String?) {
+        
+    }
+    
+    func onRenderOperation(success: Bool, data: String?, error: String?) {
+        
     }
     
     

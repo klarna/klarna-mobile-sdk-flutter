@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-type"/>
+    <script src="https://x.klarnacdn.net/postpurchaseexperience/lib/v1/api.js"></script>
+    <script>
+    window.ppe = null;
+
+    window.log = function(msg) {
+        console.log("PPE: " + msg);
+    }
+
+    window.initialize = function(locale, purchaseCountry, design) {
+        log('initialize');
+        var instance = new Klarna.PostPurchaseExperience.init({
+            locale: locale,
+            purchase_country: purchaseCountry,
+            design: design
+        });
+        ppe = instance;
+        webkit.messageHandlers.onInitialized.postMessage(JSON.stringify(ppe));
+    }
+
+    window.renderOperation = function(locale, operationToken) {
+        log('renderOperation');
+        ppe.renderOperation({
+            locale: locale,
+            operation_token: operationToken
+        }, function (error, data) {
+            var result = {
+                data: JSON.stringify(data),
+                error: JSON.stringify(error)
+            };
+            webkit.messageHandlers.onRenderOperation.postMessage(result);
+        });
+    }
+
+
+    window.authorizationRequest = function(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
+        log('authorizationRequest');
+        var error = ppe.authorizationRequest({
+            locale: locale,
+            client_id: clientId,
+            scope: scope,
+            redirect_uri: redirectUri,
+            state: state,
+            login_hint: loginHint,
+            response_type: responseType
+        });
+        webkit.messageHandlers.onAuthorizationRequest.postMessage(JSON.stringify(error));
+    }
+
+    log("PPE HTML loaded.");
+
+
+
+    </script>
+</head>
+<body></body>
+</html>

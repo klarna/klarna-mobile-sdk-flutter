@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void initHybridSDK() async {
-    await KlarnaHybridSDK.initialize("");
+    await KlarnaHybridSDK.initialize("https://www.klarna.com");
   }
 
   void ppeInitialize() async {
