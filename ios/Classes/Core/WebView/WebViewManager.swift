@@ -27,10 +27,6 @@ class WebViewManager {
     func initialize(result: FlutterResult?) {
         if webView == nil {
             webView = WKWebView.init(frame: .zero, configuration: webConfiguration)
-            webViewController = WKWebViewController(webView: webView!)
-            
-            UIApplication.shared.keyWindow?.rootViewController?.present(webViewController!, animated: true, completion: nil)
-            
             result?(nil)
         } else {
             result?(FlutterError.init(code: ResultError.webViewError.rawValue, message: "WebView is already initialized.", details: nil))
@@ -39,11 +35,9 @@ class WebViewManager {
     
     func destroy(result: FlutterResult?) {
         if let webViewController = webViewController {
+            webViewController.webViewManager = nil
             webViewController.dismiss(animated: true, completion: { [weak self] in
-                self?.webView = nil
-                self?.webViewController = nil
-                self?.webConfiguration = WKWebViewConfiguration()
-                self?.navigationDelegate = nil
+                self?.reset()
                 result?(nil)
             })
         } else {
@@ -52,8 +46,13 @@ class WebViewManager {
     }
     
     func show(result: FlutterResult?) {
-        if let webView = webView {
-            webView.isHidden = false
+        if let _ = webView {
+            if webViewController != nil {
+                result?(nil)
+                return
+            }
+            webViewController = WKWebViewController(webViewManager: self)
+            UIApplication.shared.keyWindow?.rootViewController?.present(webViewController!, animated: true, completion: nil)
             result?(nil)
         } else {
             WebViewManager.notInitialized(result: result)
@@ -61,8 +60,12 @@ class WebViewManager {
     }
     
     func hide(result: FlutterResult?) {
-        if let webView = webView {
-            webView.isHidden = true
+        if let _ = webView {
+            if let webViewController = webViewController {
+                webViewController.webViewManager = nil
+                webViewController.dismiss(animated: false, completion: nil)
+                self.webViewController = nil
+            }
             result?(nil)
         } else {
             WebViewManager.notInitialized(result: result)
@@ -107,14 +110,23 @@ class WebViewManager {
         }
     }
     
+    func reset() {
+        webView = nil
+        webViewController = nil
+        webConfiguration = WKWebViewConfiguration()
+        navigationDelegate = nil
+    }
+    
 }
 
 class WKWebViewController: UIViewController {
-
+    
+    weak var webViewManager: WebViewManager?
     private let webView: WKWebView
 
-    init(webView: WKWebView) {
-        self.webView = webView
+    init(webViewManager: WebViewManager) {
+        self.webViewManager = webViewManager
+        self.webView = webViewManager.requireWebview()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -125,6 +137,13 @@ class WKWebViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if isBeingDismissed {
+            webViewManager?.reset()
+        }
     }
 
     private func setupView() {

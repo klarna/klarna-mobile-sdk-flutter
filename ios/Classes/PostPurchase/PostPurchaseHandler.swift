@@ -44,7 +44,7 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     }
     
     private func initialize(method: PostPurchaseMethods.Initialize, result: @escaping FlutterResult) {
-        if (webViewManager.webView != nil || initialized) {
+        if (webViewManager.webView != nil) {
             result(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: "Already initialized.", details: nil))
             return
         }
@@ -69,6 +69,7 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "index", withExtension: "html")!
         webView.load(URLRequest.init(url: url))
 
+        initialized = false
         let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
     }
