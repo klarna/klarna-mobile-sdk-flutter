@@ -14,7 +14,6 @@ public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
     static func getHandlerMap() -> [String: FlutterPlugin] {
         return [
             "klarna_hybrid_sdk": KlarnaHybridSDKHandler(),
-            "klarna_web_view": WebViewHandler(),
             "klarna_post_purchase_experience": PostPurchaseHandler()
         ]
     }
