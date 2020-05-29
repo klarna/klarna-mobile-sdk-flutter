@@ -12,42 +12,61 @@
 
     window.initialize = function(locale, purchaseCountry, design) {
         log('initialize');
-        var instance = new Klarna.PostPurchaseExperience.init({
-            locale: locale,
-            purchase_country: purchaseCountry,
-            design: design
-        });
-        ppe = instance;
-        webkit.messageHandlers.onInitialized.postMessage(JSON.stringify(ppe));
+        try {
+            var instance = new Klarna.PostPurchaseExperience.init({
+                locale: locale,
+                purchase_country: purchaseCountry,
+                design: design
+            });
+            ppe = instance;
+            webkit.messageHandlers.onInitialized.postMessage(null);
+        } catch(error){
+            log('initialize exception: ' + error.message);
+            webkit.messageHandlers.onInitialized.postMessage(error.message);
+        }
     }
 
     window.renderOperation = function(locale, operationToken) {
         log('renderOperation');
-        ppe.renderOperation({
-            locale: locale,
-            operation_token: operationToken
-        }, function (error, data) {
+        try{
+            ppe.renderOperation({
+                locale: locale,
+                operation_token: operationToken
+            }, function (error, data) {
+                var result = {
+                    data: JSON.stringify(data),
+                    error: JSON.stringify(error)
+                };
+                webkit.messageHandlers.onRenderOperation.postMessage(result);
+            });
+        } catch(error) {
+            log('renderOperation exception: ' + error.message);
             var result = {
-                data: JSON.stringify(data),
-                error: JSON.stringify(error)
+                data: null,
+                error: error.message
             };
             webkit.messageHandlers.onRenderOperation.postMessage(result);
-        });
+        }
     }
 
 
     window.authorizationRequest = function(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
         log('authorizationRequest');
-        var error = ppe.authorizationRequest({
-            locale: locale,
-            client_id: clientId,
-            scope: scope,
-            redirect_uri: redirectUri,
-            state: state,
-            login_hint: loginHint,
-            response_type: responseType
-        });
-        webkit.messageHandlers.onAuthorizationRequest.postMessage(JSON.stringify(error));
+        try {
+            var error = ppe.authorizationRequest({
+                locale: locale,
+                client_id: clientId,
+                scope: scope,
+                redirect_uri: redirectUri,
+                state: state,
+                login_hint: loginHint,
+                response_type: responseType
+            });
+            webkit.messageHandlers.onAuthorizationRequest.postMessage(JSON.stringify(error));
+        } catch(error){
+            log('authorizationRequest exception: ' + error.message);
+            webkit.messageHandlers.onAuthorizationRequest.postMessage(error.message);
+        }
     }
 
     log("PPE HTML loaded.");

@@ -14,6 +14,12 @@ class PostPurchaseScriptMessageHandler {
     let onRenderOperation: OnRenderOperation = OnRenderOperation()
     let onAuthorazationRequest: OnAuthorizationRequest = OnAuthorizationRequest()
     
+    init() {
+        onInitialized.parent = self
+        onRenderOperation.parent = self
+        onAuthorazationRequest.parent = self
+    }
+    
     internal class OnInitialized: NSObject, WKScriptMessageHandler {
         weak var parent: PostPurchaseScriptMessageHandler?
         

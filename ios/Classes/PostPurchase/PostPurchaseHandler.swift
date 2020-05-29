@@ -76,15 +76,15 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
 
 extension PostPurchaseHandler: PostPurchaseScriptCallbackDelegate {
     func onInitialized(success: Bool, error: String?) {
-        
+        print(success)
     }
     
     func onAuthorizationRequest(success: Bool, error: String?) {
-        
+        print(success)
     }
     
     func onRenderOperation(success: Bool, data: String?, error: String?) {
-        
+        print(success)
     }
     
     
