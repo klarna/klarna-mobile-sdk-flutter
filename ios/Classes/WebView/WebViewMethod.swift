@@ -19,7 +19,7 @@ class WebViewMethods {
     struct AddToHybridSDK: WebViewMethod {}
 
     class Parser: MethodParser<WebViewMethod> {
-        override func parse(call: FlutterMethodCall) -> WebViewMethod? {
+        override func parse(call: FlutterMethodCall) throws -> WebViewMethod? {
             switch call.method {
             case "initialize":
                 return Initialize()

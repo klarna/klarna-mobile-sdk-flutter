@@ -11,7 +11,7 @@ class KlarnaHybridSDKMethods {
     }
 
     class Parser: MethodParser<KlarnaHybridSDKMethod> {
-        override func parse(call: FlutterMethodCall) -> KlarnaHybridSDKMethod? {
+        override func parse(call: FlutterMethodCall) throws -> KlarnaHybridSDKMethod? {
             switch call.method {
             case "initialize":
                 return call.decode(Initialize.self)

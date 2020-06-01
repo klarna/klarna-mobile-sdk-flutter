@@ -28,7 +28,7 @@ class PostPurchaseMethods {
     }
 
     class Parser: MethodParser<PostPurchaseMethod> {
-        override func parse(call: FlutterMethodCall) -> PostPurchaseMethod? {
+        override func parse(call: FlutterMethodCall) throws -> PostPurchaseMethod? {
             switch call.method {
             case "initialize":
                 return call.decode(Initialize.self)
