@@ -12,40 +12,54 @@
 
     function initialize(locale, purchaseCountry, design) {
         log('initialize');
-        const instance = new Klarna.PostPurchaseExperience.init({
-            locale: locale,
-            purchase_country: purchaseCountry,
-            design: design
-        });
-        ppe = instance;
-        PPECallback.onInitialized(JSON.stringify(ppe));
+        try {
+            const instance = new Klarna.PostPurchaseExperience.init({
+                locale: locale,
+                purchase_country: purchaseCountry,
+                design: design
+            });
+            ppe = instance;
+            PPECallback.onInitialized(null);
+        } catch(error){
+            log('initialize exception: ' + error.message);
+            PPECallback.onInitialized(error.message);
+        }
     }
 
     function renderOperation(locale, operationToken) {
         log('renderOperation');
-        ppe.renderOperation({
-            locale: locale,
-            operation_token: operationToken
-        }, function (error, data) {
-            log('result error is -> '+ JSON.stringify(error));
-            log('result data is -> '+ JSON.stringify(data));
-            PPECallback.onRenderOperation(JSON.stringify(data), JSON.stringify(error));
-        });
+        try{
+            ppe.renderOperation({
+                locale: locale,
+                operation_token: operationToken
+            }, function (error, data) {
+                log('result error is -> '+ JSON.stringify(error));
+                log('result data is -> '+ JSON.stringify(data));
+                PPECallback.onRenderOperation(JSON.stringify(data), JSON.stringify(error));
+            });
+        } catch(error) {
+            log('renderOperation exception: ' + error.message);
+            PPECallback.onRenderOperation(null, error.message);
+        }
     }
-
 
     function authorizationRequest(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
         log('authorizationRequest');
-        const error = ppe.authorizationRequest({
-            locale: locale,
-            client_id: clientId,
-            scope: scope,
-            redirect_uri: redirectUri,
-            state: state,
-            login_hint: loginHint,
-            response_type: responseType
-        });
-        PPECallback.onAuthorizationRequest(JSON.stringify(error));
+        try{
+            const error = ppe.authorizationRequest({
+                locale: locale,
+                client_id: clientId,
+                scope: scope,
+                redirect_uri: redirectUri,
+                state: state,
+                login_hint: loginHint,
+                response_type: responseType
+            });
+            PPECallback.onAuthorizationRequest(JSON.stringify(error));
+        } catch(error){
+            log('authorizationRequest exception: ' + error.message);
+            PPECallback.onAuthorizationRequest(error.message);
+        }
     }
 
     log("PPE HTML loaded.");

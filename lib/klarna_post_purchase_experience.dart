@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class KlarnaPostPurchaseExperience {
+
   static const MethodChannel _channel =
       const MethodChannel('klarna_post_purchase_experience');
 
