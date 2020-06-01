@@ -19,10 +19,10 @@
                 design: design
             });
             ppe = instance;
-            webkit.messageHandlers.onInitialized.postMessage(null);
+            nativeCallback('onInitialize', null);
         } catch(error){
             log('initialize exception: ' + error.message);
-            webkit.messageHandlers.onInitialized.postMessage(error.message);
+            nativeCallback('onInitialize', error.message);
         }
     }
 
@@ -37,7 +37,7 @@
                     data: JSON.stringify(data),
                     error: JSON.stringify(error)
                 };
-                webkit.messageHandlers.onRenderOperation.postMessage(result);
+                nativeCallback('onRenderOperation', result);
             });
         } catch(error) {
             log('renderOperation exception: ' + error.message);
@@ -45,7 +45,7 @@
                 data: null,
                 error: error.message
             };
-            webkit.messageHandlers.onRenderOperation.postMessage(result);
+            nativeCallback('onRenderOperation', result);
         }
     }
 
@@ -62,10 +62,25 @@
                 login_hint: loginHint,
                 response_type: responseType
             });
-            webkit.messageHandlers.onAuthorizationRequest.postMessage(JSON.stringify(error));
+            nativeCallback('onAuthorizationRequest', JSON.stringify(error));
         } catch(error){
             log('authorizationRequest exception: ' + error.message);
-            webkit.messageHandlers.onAuthorizationRequest.postMessage(error.message);
+            nativeCallback('onAuthorizationRequest', error.message);
+        }
+    }
+    
+    window.nativeCallback = function(action, message) {
+        let result = {
+            action: action,
+            message: message
+        };
+        
+        if (window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.PPECallback) {
+            window.webkit.messageHandlers.PPECallback.postMessage(JSON.stringify(result));
+        } else if (window.PPECallback) {
+            window.PPECallback.postMessage(JSON.stringify(result));
         }
     }
 

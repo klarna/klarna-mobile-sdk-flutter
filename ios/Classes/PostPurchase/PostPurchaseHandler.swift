@@ -57,9 +57,7 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         }
         
         let contentController = WKUserContentController()
-        contentController.add(scriptMessageHandler.onInitialized, name: "onInitialized")
-        contentController.add(scriptMessageHandler.onRenderOperation, name: "onRenderOperation")
-        contentController.add(scriptMessageHandler.onAuthorazationRequest, name: "onAuthorazationRequest")
+        contentController.add(scriptMessageHandler, name: "PPECallback")
         webViewManager.webConfiguration.userContentController = contentController
         webViewManager.initialize(result: nil)
         webViewManager.addToHybridSdk(result: nil)
@@ -122,6 +120,10 @@ extension PostPurchaseHandler: PostPurchaseScriptCallbackDelegate {
             authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
         }
         authResult = nil
+    }
+    
+    func onError(message: String?, error: Error?) {
+        /// TODO : call error callback channel
     }
     
     
