@@ -78,7 +78,7 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
             return
         }
         renderResult = result
-        _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "renderOperation(\(method.locale.jsScriptString()), \(method.operationToken.jsScriptString())")
+        _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "renderOperation(\(method.locale.jsScriptString()), \(method.operationToken.jsScriptString()))")
     }
     
     private func authorizationRequest(method: PostPurchaseMethods.AuthorizationRequest, result: @escaping FlutterResult) {
