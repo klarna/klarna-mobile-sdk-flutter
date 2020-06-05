@@ -64,7 +64,7 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
 
         let webView = webViewManager.requireWebview()
         webView.navigationDelegate = navigationDelegate
-        let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "index", withExtension: "html")!
+        let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "ppe", withExtension: "html")!
         webView.load(URLRequest.init(url: url))
 
         initialized = false
