@@ -123,7 +123,7 @@ extension PostPurchaseHandler: PostPurchaseScriptCallbackDelegate {
     }
     
     func onError(message: String?, error: Error?) {
-        /// TODO : call error callback channel
+        ErrorCallbackHandler.instance.sendValue(value: message)
     }
     
     
