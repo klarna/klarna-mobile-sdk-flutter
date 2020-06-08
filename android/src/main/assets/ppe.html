@@ -4,49 +4,56 @@
     <meta content="text/html; charset=utf-8" http-equiv="Content-type"/>
     <script src="https://x.klarnacdn.net/postpurchaseexperience/lib/v1/api.js"></script>
     <script>
-    let ppe = null;
+    window.ppe = null;
 
-    function log(msg) {
-        console.log("PPE: "+ msg);
+    window.log = function(msg) {
+        console.log("PPE: " + msg);
     }
 
-    function initialize(locale, purchaseCountry, design) {
+    window.initialize = function(locale, purchaseCountry, design) {
         log('initialize');
         try {
-            const instance = new Klarna.PostPurchaseExperience.init({
+            var instance = new Klarna.PostPurchaseExperience.init({
                 locale: locale,
                 purchase_country: purchaseCountry,
                 design: design
             });
             ppe = instance;
-            PPECallback.onInitialized(null);
+            nativeCallback('onInitialize', null);
         } catch(error){
             log('initialize exception: ' + error.message);
-            PPECallback.onInitialized(error.message);
+            nativeCallback('onInitialize', error.message);
         }
     }
 
-    function renderOperation(locale, operationToken) {
+    window.renderOperation = function(locale, operationToken) {
         log('renderOperation');
         try{
             ppe.renderOperation({
                 locale: locale,
                 operation_token: operationToken
             }, function (error, data) {
-                log('result error is -> '+ JSON.stringify(error));
-                log('result data is -> '+ JSON.stringify(data));
-                PPECallback.onRenderOperation(JSON.stringify(data), JSON.stringify(error));
+                var result = {
+                    data: JSON.stringify(data),
+                    error: JSON.stringify(error)
+                };
+                nativeCallback('onRenderOperation', JSON.stringify(result));
             });
         } catch(error) {
             log('renderOperation exception: ' + error.message);
-            PPECallback.onRenderOperation(null, error.message);
+            var result = {
+                data: null,
+                error: error.message
+            };
+            nativeCallback('onRenderOperation', JSON.stringify(result));
         }
     }
 
-    function authorizationRequest(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
+
+    window.authorizationRequest = function(locale, clientId, scope, redirectUri, state, loginHint, responseType) {
         log('authorizationRequest');
-        try{
-            const error = ppe.authorizationRequest({
+        try {
+            var error = ppe.authorizationRequest({
                 locale: locale,
                 client_id: clientId,
                 scope: scope,
@@ -55,10 +62,25 @@
                 login_hint: loginHint,
                 response_type: responseType
             });
-            PPECallback.onAuthorizationRequest(JSON.stringify(error));
+            nativeCallback('onAuthorizationRequest', JSON.stringify(error));
         } catch(error){
             log('authorizationRequest exception: ' + error.message);
-            PPECallback.onAuthorizationRequest(error.message);
+            nativeCallback('onAuthorizationRequest', error.message);
+        }
+    }
+
+    window.nativeCallback = function(action, message) {
+        let result = {
+            action: action,
+            message: message
+        };
+
+        if (window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.PPECallback) {
+            window.webkit.messageHandlers.PPECallback.postMessage(JSON.stringify(result));
+        } else if (window.PPECallback) {
+            window.PPECallback.postMessage(JSON.stringify(result));
         }
     }
 

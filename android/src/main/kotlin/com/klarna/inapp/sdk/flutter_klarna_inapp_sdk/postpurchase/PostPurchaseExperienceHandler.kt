@@ -2,8 +2,11 @@ package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
 import android.view.View
 import android.webkit.WebChromeClient
+import android.webkit.WebView
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.jsScriptString
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
@@ -32,11 +35,11 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
             initResult = null
         }
 
-        override fun onRenderOperation(result: PostPurchaseExperienceJSInterface.JSResult) {
-            if (result.error == null) {
-                renderResult?.success(result.data)
+        override fun onRenderOperation(success: Boolean, data: String?, error: String?) {
+            if (success) {
+                renderResult?.success(data)
             } else {
-                renderResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, result.error, result.data)
+                renderResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, data)
             }
             renderResult = null
         }
@@ -48,6 +51,10 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
                 authResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, null)
             }
             authResult = null
+        }
+
+        override fun onError(message: String?, throwable: Throwable?) {
+            ErrorCallbackHandler.sendValue(message)
         }
     })
 
@@ -96,7 +103,7 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
         webView.addJavascriptInterface(jsInterface, "PPECallback")
         webView.loadUrl("file:///android_asset/ppe.html")
 
-        val initScript = "initialize('${method.locale}', '${method.purchaseCountry}', '${method.design}')"
+        val initScript = "initialize(${method.locale.jsScriptString()}, ${method.purchaseCountry.jsScriptString()}, ${method.design.jsScriptString()})"
         webViewClient?.queueJS(webViewManager, initScript)
 
         initResult = result
@@ -108,7 +115,7 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
             return
         }
         renderResult = result
-        webViewClient?.queueJS(webViewManager, "renderOperation('${method.locale}', '${method.operationToken}')")
+        webViewClient?.queueJS(webViewManager, "renderOperation(${method.locale.jsScriptString()}, ${method.operationToken.jsScriptString()})")
     }
 
     private fun authorizationRequest(method: PostPurchaseExperienceMethod.AuthorizationRequest, result: MethodChannel.Result) {
@@ -117,12 +124,12 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
             return
         }
         authResult = result
-        webViewClient?.queueJS(webViewManager, "authorizationRequest('${method.locale}', " +
-                "'${method.clientId}', " +
-                "'${method.scope}', " +
-                "'${method.redirectUri}', " +
-                "'${method.state}', " +
-                "'${method.loginHint}', " +
-                "'${method.responseType}')")
+        webViewClient?.queueJS(webViewManager, "authorizationRequest(${method.locale.jsScriptString()}, " +
+                "${method.clientId.jsScriptString()}, " +
+                "${method.scope.jsScriptString()}, " +
+                "${method.redirectUri.jsScriptString()}, " +
+                "${method.state.jsScriptString()}, " +
+                "${method.loginHint.jsScriptString()}, " +
+                "${method.responseType.jsScriptString()})")
     }
 }
