@@ -148,7 +148,7 @@ class _MyAppState extends State<MyApp> {
                           MaterialButton(
                             color: Theme.of(context).accentColor,
                             child: new Text("Render Operation"),
-                            onPressed: ppeAuthorizationRequest,
+                            onPressed: ppeRenderOperation,
                           ),
                         ],
                       ),
