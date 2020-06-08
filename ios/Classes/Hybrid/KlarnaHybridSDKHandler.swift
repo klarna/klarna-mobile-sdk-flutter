@@ -6,10 +6,10 @@ class KlarnaHybridSDKHandler: BaseMethodHandler<KlarnaHybridSDKMethod> {
     static var hybridSDK: KlarnaHybridSDK? = nil
     static var hybridSDKEventListener: KlarnaHybridEventListener = PluginKlarnaHybridEventListener()
     
-    static let NOT_INTIAILIZED = "KlarnaHybridSDK is not initialized"
+    static let NOT_INITIAILIZED = "KlarnaHybridSDK is not initialized"
     
     static func notInitialized(result: FlutterResult?) {
-        result?(FlutterError.init(code: ResultError.hybridSdkError.rawValue, message: NOT_INTIAILIZED, details: "Call 'KlarnaHybridSDK.initialize' before using this"))
+        result?(FlutterError.init(code: ResultError.hybridSdkError.rawValue, message: NOT_INITIAILIZED, details: "Call 'KlarnaHybridSDK.initialize' before using this"))
     }
     
     init() {

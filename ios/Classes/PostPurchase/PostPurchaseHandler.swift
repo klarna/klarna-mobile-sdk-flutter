@@ -4,10 +4,10 @@ import KlarnaMobileSDK
 
 class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
     
-    static let NOT_INTIAILIZED = "PostPurchaseExperience is not initialized"
+    static let NOT_INITIAILIZED = "PostPurchaseExperience is not initialized"
     
     static func notInitialized(result: FlutterResult?) {
-        result?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: NOT_INTIAILIZED, details: "Call 'PostPurchaseExperience.initialize' before using this"))
+        result?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: NOT_INITIAILIZED, details: "Call 'PostPurchaseExperience.initialize' before using this"))
     }
     
     init() {

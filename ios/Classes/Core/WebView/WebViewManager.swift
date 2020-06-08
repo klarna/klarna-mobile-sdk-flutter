@@ -5,10 +5,10 @@ import KlarnaMobileSDK
 
 class WebViewManager {
     
-    static let NOT_INTIAILIZED = "WebView is not initialized"
+    static let NOT_INITIAILIZED = "WebView is not initialized"
     
     static func notInitialized(result: FlutterResult?) {
-        result?(FlutterError.init(code: ResultError.webViewError.rawValue, message: NOT_INTIAILIZED, details: "Call 'initialize' before using this method."))
+        result?(FlutterError.init(code: ResultError.webViewError.rawValue, message: NOT_INITIAILIZED, details: "Call 'initialize' before using this method."))
     }
     
     var webView: WKWebView?
