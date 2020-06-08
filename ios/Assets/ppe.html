@@ -37,7 +37,7 @@
                     data: JSON.stringify(data),
                     error: JSON.stringify(error)
                 };
-                nativeCallback('onRenderOperation', result);
+                nativeCallback('onRenderOperation', JSON.stringify(result));
             });
         } catch(error) {
             log('renderOperation exception: ' + error.message);
@@ -45,7 +45,7 @@
                 data: null,
                 error: error.message
             };
-            nativeCallback('onRenderOperation', result);
+            nativeCallback('onRenderOperation', JSON.stringify(result));
         }
     }
 
