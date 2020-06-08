@@ -30,9 +30,9 @@ class WebViewMethods {
             case "hide":
                 return Hide()
             case "loadURL":
-                return LoadURL(url: call.requireArgument(key: "url"))
+                return LoadURL(url: try call.requireArgument(key: "url"))
             case "loadJS":
-                return LoadJS(js: call.requireArgument(key: "js"))
+                return LoadJS(js: try call.requireArgument(key: "js"))
             case "addToHybridSdk":
                 return AddToHybridSDK()
             default:

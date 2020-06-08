@@ -22,9 +22,13 @@ internal extension FlutterMethodCall {
         return value as? T
     }
     
-    func requireArgument<T>(key: String) -> T {
+    func requireArgument<T>(key: String) throws -> T {
         let value = argumentDictionary![key]
-        return value as! T
+        if let result = value as? T {
+            return result
+        } else {
+            throw "Argument \(key) can not be null."
+        }
     }
     
     func decode<T>(_ type: T.Type) -> T? where T : Decodable {
