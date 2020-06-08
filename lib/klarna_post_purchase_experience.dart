@@ -16,7 +16,7 @@ class KlarnaPostPurchaseExperience {
     });
   }
 
-  static Future<void> renderOperation(String operationToken,
+  static Future<String> renderOperation(String operationToken,
       {String locale}) async {
     return await _channel.invokeMethod('renderOperation',
         <String, dynamic>{'locale': locale, 'operationToken': operationToken});
