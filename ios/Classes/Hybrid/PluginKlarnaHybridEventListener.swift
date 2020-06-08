@@ -21,7 +21,9 @@ class PluginKlarnaHybridEventListener: KlarnaHybridEventListener {
     }
     
     func klarnaFailed(inWebView webView: KlarnaWebView, withError error: KlarnaMobileSDKError) {
-        result?(FlutterError.init(code: ResultError.hybridSdkError.rawValue, message: "\(error.name):\(error.message):\(error.isFatal)", details: error.message))
+        let errorMessage = "\(error.name):\(error.message):\(error.isFatal)"
+        result?(FlutterError.init(code: ResultError.hybridSdkError.rawValue, message: errorMessage, details: error.message))
+        ErrorCallbackHandler.instance.sendValue(value: errorMessage)
     }
     
     
