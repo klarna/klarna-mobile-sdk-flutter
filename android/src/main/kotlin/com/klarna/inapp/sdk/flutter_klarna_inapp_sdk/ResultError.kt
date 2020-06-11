@@ -5,5 +5,5 @@ internal enum class ResultError(val errorCode: String) {
     PLUGIN_METHOD_ERROR("KlarnaFlutterPluginMethodError"),
     HYBRID_SDK_ERROR("KlarnaHybridSDKError"),
     WEB_VIEW_ERROR("KlarnaWebViewError"),
-    POST_PURCHASE_ERROR("KlarnaPostPurchaseExperieneError")
+    POST_PURCHASE_ERROR("KlarnaPostPurchaseExperienceError")
 }

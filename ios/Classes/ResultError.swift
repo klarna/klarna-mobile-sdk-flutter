@@ -3,5 +3,5 @@ enum ResultError: String {
     case pluginMethodError = "KlarnaFlutterPluginMethodError"
     case hybridSdkError = "KlarnaHybridSDKError"
     case webViewError = "KlarnaWebViewError"
-    case postPurchaseError = "KlarnaPostPurchaseExperieneError"
+    case postPurchaseError = "KlarnaPostPurchaseExperienceError"
 }
