@@ -46,7 +46,7 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
 
         val resultData = if (data == "null") null else data
         val resultError = if (error == "null") null else error
-        val success = error == null
+        val success = resultError == null
 
         resultCallback?.onRenderOperation(success, resultData, resultError)
     }
