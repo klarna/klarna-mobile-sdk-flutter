@@ -16,4 +16,15 @@ extension Optional where Wrapped == String {
             return "null"
         }
     }
+    
+    func jsIsNullOrUndefined() -> Bool {
+        if let value = self {
+            return value == "null" || value == "undefined"
+        }
+        return true
+    }
+    
+    func jsValue() -> String? {
+        return self.jsIsNullOrUndefined() ? nil : self
+    }
 }

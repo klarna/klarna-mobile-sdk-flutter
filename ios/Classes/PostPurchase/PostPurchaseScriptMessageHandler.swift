@@ -23,22 +23,22 @@ internal class PostPurchaseScriptMessageHandler: NSObject, WKScriptMessageHandle
             let callbackMessage = try JSONDecoder().decode(PPECallbackMessage.self, from: messageData)
             switch callbackMessage.action {
             case "onInitialize":
-                let error = callbackMessage.message
-                let success = error == nil || error == "null" || error == "undefined"
+                let error = callbackMessage.message.jsValue()
+                let success = error == nil
                 delegate?.onInitialized(success: success, error: error)
             case "onRenderOperation":
                 guard let resultDict = callbackMessage.messageDictionary() else {
                     delegate?.onRenderOperation(success: false, data: nil, error: nil)
                     return
                 }
-                let data = resultDict["data"] as? String
-                let error = resultDict["error"] as? String
+                let resultData = (resultDict["data"] as? String).jsValue()
+                let resultError = (resultDict["error"] as? String).jsValue()
+                let success = resultError == nil
                 
-                let success = error == nil || error == "null" || error == "undefined"
-                delegate?.onRenderOperation(success: success, data: data, error: error)
+                delegate?.onRenderOperation(success: success, data: resultData, error: resultError)
             case "onAuthorizationRequest":
-                let error = callbackMessage.message
-                let success = error == nil || error == "null" || error == "undefined"
+                let error = callbackMessage.message.jsValue()
+                let success = error == nil
                 delegate?.onAuthorizationRequest(success: success, error: error)
             default:
                 delegate?.onError(message: "No handler for action \(callbackMessage.action ?? "null")", error: nil)

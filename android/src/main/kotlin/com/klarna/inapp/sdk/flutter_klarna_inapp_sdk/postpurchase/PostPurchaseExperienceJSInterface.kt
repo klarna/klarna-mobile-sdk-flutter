@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.webkit.JavascriptInterface
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.ParserUtil
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.jsValue
 
 internal class PostPurchaseExperienceJSInterface(private val resultCallback: ResultCallback?) {
 
@@ -35,25 +36,25 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     }
 
     private fun onInitialized(message: String?) {
-        val success = message == null || message == "undefined"
-        resultCallback?.onInitialized(success, message)
+        val error = message.jsValue()
+        val success = error == null
+        resultCallback?.onInitialized(success, error)
     }
 
     private fun onRenderOperation(message: String?) {
         val result = ParserUtil.fromJson<Map<String, String?>>(message)
-        val data = result?.get("data")
-        val error = result?.get("error")
 
-        val resultData = if (data == "null") null else data
-        val resultError = if (error == "null") null else error
+        val resultData = result?.get("data").jsValue()
+        val resultError = result?.get("error").jsValue()
         val success = resultError == null
 
         resultCallback?.onRenderOperation(success, resultData, resultError)
     }
 
     private fun onAuthorizationRequest(message: String?) {
-        val success = message == null || message == "undefined"
-        resultCallback?.onAuthorizationRequest(success, message)
+        val error = message.jsValue()
+        val success = error == null
+        resultCallback?.onAuthorizationRequest(success, error)
     }
 
     internal interface ResultCallback {
