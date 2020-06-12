@@ -14,7 +14,7 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         super.init(parser: PostPurchaseMethods.Parser())
     }
     
-    let webViewManager = WebViewManager()
+    var webViewManager = WebViewManager()
     
     var navigationDelegate: PostPurchaseWKNavigationDelegate?
     
@@ -34,6 +34,8 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         switch method {
         case is PostPurchaseMethods.Initialize:
             initialize(method: method as! PostPurchaseMethods.Initialize, result: result)
+        case is PostPurchaseMethods.Destroy:
+            destroy(method: method as! PostPurchaseMethods.Destroy, result: result)
         case is PostPurchaseMethods.RenderOperation:
             renderOperation(method: method as! PostPurchaseMethods.RenderOperation, result: result)
         case is PostPurchaseMethods.AuthorizationRequest:
@@ -70,6 +72,17 @@ class PostPurchaseHandler: BaseMethodHandler<PostPurchaseMethod> {
         initialized = false
         let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
+    }
+    
+    private func destroy(method: PostPurchaseMethods.Destroy, result: @escaping FlutterResult) {
+        webViewManager.destroy(result: nil)
+        webViewManager = WebViewManager()
+        navigationDelegate = nil
+        initialized = false
+        initResult = nil
+        renderResult = nil
+        authResult = nil
+        result(nil)
     }
     
     private func renderOperation(method: PostPurchaseMethods.RenderOperation, result: @escaping FlutterResult) {

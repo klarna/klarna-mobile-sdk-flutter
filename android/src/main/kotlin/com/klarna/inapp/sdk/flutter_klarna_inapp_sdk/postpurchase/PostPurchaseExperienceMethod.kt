@@ -10,6 +10,7 @@ internal sealed class PostPurchaseExperienceMethod {
             val purchaseCountry: String,
             val design: String?
     ) : PostPurchaseExperienceMethod()
+    object Destroy: PostPurchaseExperienceMethod()
 
     class RenderOperation(val locale: String?, val operationToken: String) : PostPurchaseExperienceMethod()
     class AuthorizationRequest(
@@ -30,6 +31,7 @@ internal sealed class PostPurchaseExperienceMethod {
                         call.requireArgument("purchaseCountry"),
                         call.argument("design")
                 )
+                "destroy" -> Destroy
                 "renderOperation" -> RenderOperation(
                         call.argument("locale"),
                         call.requireArgument("operationToken")

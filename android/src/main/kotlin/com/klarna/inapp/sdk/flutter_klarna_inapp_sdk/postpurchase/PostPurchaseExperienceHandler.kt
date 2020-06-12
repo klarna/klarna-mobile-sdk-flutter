@@ -2,7 +2,6 @@ package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
 import android.view.View
 import android.webkit.WebChromeClient
-import android.webkit.WebView
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.handler.BaseMethodHandler
@@ -71,6 +70,7 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
     override fun onMethod(method: PostPurchaseExperienceMethod, result: MethodChannel.Result) {
         when (method) {
             is PostPurchaseExperienceMethod.Initialize -> initialize(method, result)
+            is PostPurchaseExperienceMethod.Destroy -> destroy(method, result)
             is PostPurchaseExperienceMethod.RenderOperation -> renderOperation(method, result)
             is PostPurchaseExperienceMethod.AuthorizationRequest -> authorizationRequest(method, result)
         }
@@ -107,6 +107,17 @@ internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseEx
         webViewClient?.queueJS(webViewManager, initScript)
 
         initResult = result
+    }
+
+    private fun destroy(method: PostPurchaseExperienceMethod.Destroy, result: MethodChannel.Result) {
+        webViewManager.destroy(null)
+        webViewManager = WebViewManager()
+        webViewClient = null
+        initialized = false
+        initResult = null
+        renderResult = null
+        authResult = null
+        result.success(null)
     }
 
     private fun renderOperation(method: PostPurchaseExperienceMethod.RenderOperation, result: MethodChannel.Result) {

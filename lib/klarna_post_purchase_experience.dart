@@ -16,6 +16,10 @@ class KlarnaPostPurchaseExperience {
     });
   }
 
+  static Future<void> destroy() async {
+    return await _channel.invokeMethod('destroy');
+  }
+
   static Future<String> renderOperation(String operationToken,
       {String locale}) async {
     return await _channel.invokeMethod('renderOperation',

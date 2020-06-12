@@ -53,10 +53,10 @@ internal class WebViewManager {
         notInitialized(result)
     }
 
-    fun show(result: MethodChannel.Result) {
+    fun show(result: MethodChannel.Result?) {
         webView?.apply {
             visibility = View.VISIBLE
-            result.success(null)
+            result?.success(null)
             return
         }
         notInitialized(result)
