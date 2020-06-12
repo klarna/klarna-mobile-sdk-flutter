@@ -19,6 +19,8 @@ class _MyAppState extends State<MyApp> {
 
   final operationTokenController = TextEditingController(text: "");
 
+  KlarnaPostPurchaseExperience ppe;
+
   @override
   void initState() {
     super.initState();
@@ -30,21 +32,20 @@ class _MyAppState extends State<MyApp> {
   }
 
   void ppeInitialize() async {
-    await KlarnaPostPurchaseExperience.initialize(
-        localeController.text, countryController.text,
+    this.ppe = new KlarnaPostPurchaseExperience();
+    await ppe.initialize(localeController.text, countryController.text,
         design: null);
   }
 
   void ppeAuthorizationRequest() async {
-    await KlarnaPostPurchaseExperience.authorizationRequest(
+    await ppe?.authorizationRequest(
         clientIdController.text,
         scopeController.text,
         redirectUriController.text);
   }
 
   void ppeRenderOperation() async {
-    await KlarnaPostPurchaseExperience.renderOperation(
-        operationTokenController.text);
+    await ppe?.renderOperation(operationTokenController.text);
   }
 
   @override

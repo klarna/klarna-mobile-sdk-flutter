@@ -4,16 +4,19 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.method.MethodParser
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.requireArgument
 import io.flutter.plugin.common.MethodCall
 
-internal sealed class PostPurchaseExperienceMethod {
+internal sealed class PostPurchaseExperienceMethod(val id: Int) {
     class Initialize(
+            id: Int,
             val locale: String,
             val purchaseCountry: String,
             val design: String?
-    ) : PostPurchaseExperienceMethod()
-    object Destroy: PostPurchaseExperienceMethod()
+    ) : PostPurchaseExperienceMethod(id)
 
-    class RenderOperation(val locale: String?, val operationToken: String) : PostPurchaseExperienceMethod()
+    class Destroy(id: Int) : PostPurchaseExperienceMethod(id)
+
+    class RenderOperation(id: Int, val locale: String?, val operationToken: String) : PostPurchaseExperienceMethod(id)
     class AuthorizationRequest(
+            id: Int,
             val locale: String?,
             val clientId: String,
             val scope: String,
@@ -21,22 +24,27 @@ internal sealed class PostPurchaseExperienceMethod {
             val state: String?,
             val loginHint: String?,
             val responseType: String?
-    ) : PostPurchaseExperienceMethod()
+    ) : PostPurchaseExperienceMethod(id)
 
     internal object Parser : MethodParser<PostPurchaseExperienceMethod> {
         override fun parse(call: MethodCall): PostPurchaseExperienceMethod? {
             return when (call.method) {
                 "initialize" -> Initialize(
+                        call.requireArgument("id"),
                         call.requireArgument("locale"),
                         call.requireArgument("purchaseCountry"),
                         call.argument("design")
                 )
-                "destroy" -> Destroy
+                "destroy" -> Destroy(
+                        call.requireArgument("id")
+                )
                 "renderOperation" -> RenderOperation(
+                        call.requireArgument("id"),
                         call.argument("locale"),
                         call.requireArgument("operationToken")
                 )
                 "authorizationRequest" -> AuthorizationRequest(
+                        call.requireArgument("id"),
                         call.argument("locale"),
                         call.requireArgument("clientId"),
                         call.requireArgument("scope"),

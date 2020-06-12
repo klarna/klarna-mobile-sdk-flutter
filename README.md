@@ -8,37 +8,100 @@
 [![License][license-image]][license-url]
 [![Developed at Klarna][klarna-image]][klarna-url]
 
-## Getting Started
+**Looking for the pure native Klarna In-App SDK?** Check out the [Klarna In-App SDK](https://github.com/klarna/klarna-inapp-sdk) repo instead.
+
+**Looking for the React Native Klarna In-App SDK?** Check out the [React Native Klarna In-App SDK](https://github.com/klarna/react-native-klarna-inapp-sdk) repo instead.
+
+## Integration
+
+### Requirements
+* iOS 9 or later.
+* Android 4.4 or later.
+
+### Klarna In-App SDK documentation
+[Overview of the SDK](https://developers.klarna.com/documentation/in-app/)
+
+### Flutter Dependency
+
+Add `flutter_klarna_inapp_sdk` as a dependency in your `pubspec.yaml` file according to the [official documentation](https://flutter.dev/docs/development/packages-and-plugins/using-packages#adding-a-package-dependency-to-an-app).
+
+### Usage
+
+#### KlarnaHybridSDK
+
+##### initialize()
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. | 
+
+#### KlarnaPostPurchaseExperience
+
+##### initialize()
+
+Initializes new `WebView` and javascript Klarna Post Purchase Experience library.
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| locale | `String` | A string representing the user locale. For example: `se-SE` | 
+| purchaseCountry | `String` | A string representing the purchase country. For example: `SE` | 
+| design | `named optional` `String?` | A string representing the design ID. | 
+
+##### destroy()
+
+Destroys any object, including `WebView` attached to the client.
+
+##### renderOperation()
+
+Load the Klarna widget for the operation.
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| locale | `named optional` `String?` | A string representing the user locale. | 
+| operationToken | `String` | The operation token for the related order returned from the post purchase api. |
+
+##### authorizationRequest()
+
+Called to kick off the oauth flow.
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| locale | `named optional` `String?` | A string representing the user locale. | 
+| clientId | `String` | The client_id for your application. | 
+| scope | `String` | A space-delimited list of scopes that identify the resources that your application could access on the user's behalf. These values define the consent screen that Klarna displays to the user. | 
+| redirectUri | `String` | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance. | 
+| state | `named optional` `String?` | A string value that your application uses to maintain state between your authorization request and the authorization server's response. The Authorization server returns the exact value that you send to the redirect_url as a URL parameter. | 
+| loginHint | `named optional` `String?` | If your application knows which user is trying to authenticate, it can use this parameter to provide a hint to the Klarna’s Authorization Server. The server uses the hint to simplify the login flow by prefilling the email field in the sign-in form. It’s recommended to use this as it will improve the customer experience. | 
+| responseType | `named optional` `String?` | The desired grant type. The value MUST be one of "code" for requesting an authorization code or "token" for requesting an access token (implicit grant). The default is "code" | 
+
+
+## Contribution & Development
+
+### Getting Started
 
 After cloning the repository run the command below to setup the project.
 ```shell script
 flutter packages get
 ```
 
-### Android Studio
+#### Android Studio
 
 1. Execute `cd example; flutter build apk`
 2. Import the `example/android/build.gradle` file or open `example/android` folder from Android Studio.
 
 Plugin implementation will be located at `flutter_klarna_inapp_sdk/java/com.klarna.inapp.sdk.flutter_klarna_inapp_sdk/`.
 
-### XCode
+#### XCode
 
 1. Execute `cd example; flutter build ios --no-codesign`
 2. Import the `example/ios/Runner.xcworkspace` file from XCode.
 
 Plugin implementation will be located at `Pods/Development Pods/flutter_klarna_inapp_sdk/../../example/ios/.symlinks/plugins/flutter_klarna_inapp_sdk/ios/Classes`.
 
-### Official Flutter Documentations
-
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
 
 <!-- Markdown link & img dfn's -->
 [ci-image]: https://img.shields.io/badge/build-passing-brightgreen?style=flat-square
