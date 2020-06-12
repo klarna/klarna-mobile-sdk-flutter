@@ -32,8 +32,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void ppeInitialize() async {
-    ppe = await KlarnaPostPurchaseExperience.initialize(
-        localeController.text, countryController.text,
+    this.ppe = new KlarnaPostPurchaseExperience();
+    ppe.initialize(localeController.text, countryController.text,
         design: null);
   }
 

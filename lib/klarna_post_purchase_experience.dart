@@ -7,31 +7,37 @@ class KlarnaPostPurchaseExperience {
   static const MethodChannel _channel =
       const MethodChannel('klarna_post_purchase_experience');
 
-  static final idRandom = Random.secure();
+  static final _idRandom = Random.secure();
 
-  var id = idRandom.nextInt(999999999);
+  var _id = _idRandom.nextInt(999999999);
 
-  KlarnaPostPurchaseExperience._();
+  KlarnaPostPurchaseExperience();
 
-  static Future<KlarnaPostPurchaseExperience> initialize(String locale, String purchaseCountry,
+  static Future<KlarnaPostPurchaseExperience> init(
+      String locale, String purchaseCountry,
       {String design}) async {
-    var instance = KlarnaPostPurchaseExperience._();
-    await _channel.invokeMethod('initialize', <String, dynamic>{
-      'id': instance.id,
+    var instance = KlarnaPostPurchaseExperience();
+    await instance.initialize(locale, purchaseCountry, design: design);
+    return instance;
+  }
+
+  Future<void> initialize(String locale, String purchaseCountry,
+      {String design}) async {
+    return await _channel.invokeMethod('initialize', <String, dynamic>{
+      'id': _id,
       'locale': locale,
       'purchaseCountry': purchaseCountry,
       'design': design
     });
-    return instance;
   }
 
   Future<void> destroy() async {
-    return await _channel.invokeMethod('destroy', <String, dynamic>{'id': id});
+    return await _channel.invokeMethod('destroy', <String, dynamic>{'id': _id});
   }
 
   Future<String> renderOperation(String operationToken, {String locale}) async {
     return await _channel.invokeMethod('renderOperation', <String, dynamic>{
-      'id': id,
+      'id': _id,
       'locale': locale,
       'operationToken': operationToken
     });
@@ -45,7 +51,7 @@ class KlarnaPostPurchaseExperience {
       String responseType}) async {
     return await _channel
         .invokeMethod('authorizationRequest', <String, dynamic>{
-      'id': id,
+      'id': _id,
       'locale': locale,
       'clientId': clientId,
       'scope': scope,
