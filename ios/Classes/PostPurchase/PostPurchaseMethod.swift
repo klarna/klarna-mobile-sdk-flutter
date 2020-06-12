@@ -12,6 +12,8 @@ class PostPurchaseMethods {
         let design: String?
     }
     
+    struct Destroy: PostPurchaseMethod {}
+    
     struct RenderOperation: PostPurchaseMethod, Decodable {
         let locale: String?
         let operationToken: String?
@@ -32,6 +34,8 @@ class PostPurchaseMethods {
             switch call.method {
             case "initialize":
                 return call.decode(Initialize.self)
+            case "destroy":
+                return Destroy()
             case "renderOperation":
                 return call.decode(RenderOperation.self)
             case "authorizationRequest":

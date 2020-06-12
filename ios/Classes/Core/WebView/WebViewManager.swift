@@ -128,6 +128,7 @@ class WKWebViewController: UIViewController {
         self.webViewManager = webViewManager
         self.webView = webViewManager.requireWebview()
         super.init(nibName: nil, bundle: nil)
+        self.modalPresentationStyle = .overFullScreen
     }
 
     required init?(coder: NSCoder) {
