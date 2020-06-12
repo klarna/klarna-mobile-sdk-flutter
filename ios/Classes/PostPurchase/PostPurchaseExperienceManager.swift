@@ -73,6 +73,7 @@ class PostPurchaseExperienceManager {
         }
         renderResult = result
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "renderOperation(\(method.locale.jsScriptString()), \(method.operationToken.jsScriptString()))")
+        showWebView()
     }
     
     func authorizationRequest(method: PostPurchaseMethods.AuthorizationRequest, result: @escaping FlutterResult) {
@@ -82,6 +83,18 @@ class PostPurchaseExperienceManager {
         }
         renderResult = result
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "authorizationRequest(\(method.locale.jsScriptString()), \(method.clientId.jsScriptString()), \(method.scope.jsScriptString()), \(method.redirectUri.jsScriptString()), \(method.state.jsScriptString()), \(method.loginHint.jsScriptString()), \(method.responseType.jsScriptString()))")
+        showWebView()
+    }
+    
+    private func showWebView() {
+        webViewManager.show(result: nil)
+        webViewManager.webViewController?.view.backgroundColor = UIColor.clear
+        webViewManager.webView?.backgroundColor = UIColor.clear
+        webViewManager.webView?.isOpaque = false
+    }
+    
+    private func hideWebView() {
+        webViewManager.hide(result: nil)
     }
 }
 
@@ -103,6 +116,7 @@ extension PostPurchaseExperienceManager: PostPurchaseScriptCallbackDelegate {
             renderResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: data))
         }
         renderResult = nil
+        hideWebView()
     }
     
     func onAuthorizationRequest(success: Bool, error: String?) {
@@ -112,10 +126,12 @@ extension PostPurchaseExperienceManager: PostPurchaseScriptCallbackDelegate {
             authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
         }
         authResult = nil
+        hideWebView()
     }
     
     func onError(message: String?, error: Error?) {
         ErrorCallbackHandler.instance.sendValue(value: message)
+        hideWebView()
     }
     
     

@@ -1,5 +1,6 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
+import android.graphics.Color
 import android.view.View
 import android.webkit.WebChromeClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
@@ -86,6 +87,7 @@ internal class PostPurchaseExperienceManager {
         }
         renderResult = result
         webViewClient?.queueJS(webViewManager, "renderOperation(${method.locale.jsScriptString()}, ${method.operationToken.jsScriptString()})")
+        showWebView()
     }
 
     fun authorizationRequest(method: PostPurchaseExperienceMethod.AuthorizationRequest, result: MethodChannel.Result?) {
@@ -101,6 +103,16 @@ internal class PostPurchaseExperienceManager {
                 "${method.state.jsScriptString()}, " +
                 "${method.loginHint.jsScriptString()}, " +
                 "${method.responseType.jsScriptString()})")
+        showWebView()
+    }
+
+    private fun showWebView() {
+        webViewManager.show(null)
+        webViewManager.webView?.setBackgroundColor(Color.TRANSPARENT)
+    }
+
+    private fun hideWebView() {
+        webViewManager.hide(null)
     }
 
     inner class PPEResultCallback : PostPurchaseExperienceJSInterface.ResultCallback {
@@ -122,6 +134,7 @@ internal class PostPurchaseExperienceManager {
                 renderResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, data)
             }
             renderResult = null
+            hideWebView()
         }
 
         override fun onAuthorizationRequest(success: Boolean, error: String?) {
@@ -131,10 +144,12 @@ internal class PostPurchaseExperienceManager {
                 authResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, null)
             }
             authResult = null
+            hideWebView()
         }
 
         override fun onError(message: String?, throwable: Throwable?) {
             ErrorCallbackHandler.sendValue(message)
+            hideWebView()
         }
     }
 }
