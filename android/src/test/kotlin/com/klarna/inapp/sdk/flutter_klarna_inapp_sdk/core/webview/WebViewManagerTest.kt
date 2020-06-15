@@ -5,6 +5,7 @@ import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
 import io.mockk.*
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
@@ -24,7 +25,7 @@ class WebViewManagerTest {
 
         every { hybridSDK.addWebView(any()) } just runs
 
-        webViewManager.initialize(result)
+        webViewManager.initialize(null)
     }
 
     @After
@@ -50,12 +51,14 @@ class WebViewManagerTest {
         val webViewManager = WebViewManager()
         webViewManager.initialize(result)
         verify { result.success(any()) }
+        Assert.assertNotNull(webViewManager.webView)
     }
 
     @Test
     fun testDestroy() {
         webViewManager.destroy(result)
         verify { result.success(any()) }
+        Assert.assertNull(webViewManager.webView)
     }
 
     @Test

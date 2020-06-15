@@ -5,7 +5,7 @@ import io.flutter.plugin.common.MethodChannel
 
 internal object PostPurchaseExperienceHandler : BaseMethodHandler<PostPurchaseExperienceMethod>(PostPurchaseExperienceMethod.Parser) {
 
-    private val ppeManagerMap = mutableMapOf<Int, PostPurchaseExperienceManager>()
+    val ppeManagerMap = mutableMapOf<Int, PostPurchaseExperienceManager>()
 
     override fun onMethod(method: PostPurchaseExperienceMethod, result: MethodChannel.Result) {
         when (method) {
