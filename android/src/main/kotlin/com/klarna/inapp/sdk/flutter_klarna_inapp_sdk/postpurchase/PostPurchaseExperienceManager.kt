@@ -59,6 +59,7 @@ internal class PostPurchaseExperienceManager {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.visibility = View.INVISIBLE
+        webView.setBackgroundColor(Color.TRANSPARENT)
 
         webView.addJavascriptInterface(jsInterface, "PPECallback")
         webView.loadUrl("file:///android_asset/ppe.html")
@@ -108,7 +109,6 @@ internal class PostPurchaseExperienceManager {
 
     private fun showWebView() {
         webViewManager.show(null)
-        webViewManager.webView?.setBackgroundColor(Color.TRANSPARENT)
     }
 
     private fun hideWebView() {
