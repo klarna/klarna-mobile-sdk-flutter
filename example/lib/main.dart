@@ -41,14 +41,22 @@ class _MyAppState extends State<MyApp> {
   }
 
   void ppeAuthorizationRequest(BuildContext context) async {
-    final KlarnaResult result = await ppe?.authorizationRequest(clientIdController.text,
-        scopeController.text, redirectUriController.text);
+    final KlarnaResult result = await ppe?.authorizationRequest(
+        clientIdController.text,
+        scopeController.text,
+        redirectUriController.text);
     _showToast(context, result.toString());
   }
 
   void ppeRenderOperation(BuildContext context) async {
-    final KlarnaResult result = await ppe?.renderOperation(operationTokenController.text);
+    final KlarnaResult result =
+        await ppe?.renderOperation(operationTokenController.text);
     _showToast(context, result.toString());
+  }
+
+  void destroy(BuildContext context) async {
+    await ppe?.destroy();
+    _showToast(context, "Destroyed.");
   }
 
   void _showToast(BuildContext context, String text) {
@@ -102,12 +110,14 @@ class _MyAppState extends State<MyApp> {
                               TextFormField(
                                 controller: localeController,
                                 decoration: InputDecoration(
-                                    border: InputBorder.none, labelText: "Locale"),
+                                    border: InputBorder.none,
+                                    labelText: "Locale"),
                               ),
                               TextFormField(
                                 controller: countryController,
                                 decoration: InputDecoration(
-                                    border: InputBorder.none, labelText: 'Country'),
+                                    border: InputBorder.none,
+                                    labelText: 'Country'),
                               ),
                               MaterialButton(
                                 color: Theme.of(context).accentColor,
@@ -133,7 +143,8 @@ class _MyAppState extends State<MyApp> {
                               TextFormField(
                                 controller: scopeController,
                                 decoration: InputDecoration(
-                                    border: InputBorder.none, labelText: 'Scope'),
+                                    border: InputBorder.none,
+                                    labelText: 'Scope'),
                               ),
                               TextFormField(
                                 controller: redirectUriController,
@@ -144,7 +155,8 @@ class _MyAppState extends State<MyApp> {
                               MaterialButton(
                                 color: Theme.of(context).accentColor,
                                 child: new Text("Authorization Request"),
-                                onPressed: () => ppeAuthorizationRequest(context),
+                                onPressed: () =>
+                                    ppeAuthorizationRequest(context),
                               ),
                             ],
                           ),
@@ -166,6 +178,21 @@ class _MyAppState extends State<MyApp> {
                                 color: Theme.of(context).accentColor,
                                 child: new Text("Render Operation"),
                                 onPressed: () => ppeRenderOperation(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                "PostPurchaseExperience.destroy",
+                                style: Theme.of(context).textTheme.subtitle,
+                              ),
+                              MaterialButton(
+                                color: Theme.of(context).accentColor,
+                                child: new Text("Destroy"),
+                                onPressed: () => destroy(context),
                               ),
                             ],
                           ),
