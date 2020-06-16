@@ -6,7 +6,7 @@ import io.flutter.plugin.common.MethodChannel
 
 internal object WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.Parser) {
 
-    internal val webViewManager = WebViewManager()
+    var webViewManager = WebViewManager()
 
     override fun onMethod(method: WebViewMethod, result: MethodChannel.Result) {
         when (method) {

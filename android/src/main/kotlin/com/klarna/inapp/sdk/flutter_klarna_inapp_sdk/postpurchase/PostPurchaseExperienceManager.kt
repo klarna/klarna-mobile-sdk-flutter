@@ -15,7 +15,7 @@ internal class PostPurchaseExperienceManager {
     companion object {
         private const val NOT_INITIALIZED = "PostPurchaseExperience is not initialized"
 
-        private fun notInitialized(result: MethodChannel.Result?) {
+        fun notInitialized(result: MethodChannel.Result?) {
             result?.error(
                     ResultError.POST_PURCHASE_ERROR.errorCode,
                     NOT_INITIALIZED,
@@ -24,11 +24,11 @@ internal class PostPurchaseExperienceManager {
         }
     }
 
-    private var webViewManager: WebViewManager = WebViewManager()
+    var webViewManager: WebViewManager = WebViewManager()
 
-    private var webViewClient: PostPurchaseExperienceWebViewClient? = null
+    var webViewClient: PostPurchaseExperienceWebViewClient? = null
 
-    private var initialized = false
+    var initialized = false
 
     private var initResult: MethodChannel.Result? = null
     private var authResult: MethodChannel.Result? = null

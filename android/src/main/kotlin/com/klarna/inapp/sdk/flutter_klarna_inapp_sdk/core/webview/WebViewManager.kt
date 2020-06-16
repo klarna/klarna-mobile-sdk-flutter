@@ -42,13 +42,15 @@ internal class WebViewManager {
     }
 
     fun destroy(result: MethodChannel.Result?) {
-        webView?.parent?.let {
-            if (it is ViewGroup) {
-                it.removeView(webView)
-                webView = null
-                result?.success(null)
-                return
+        webView?.let { webView ->
+            webView.parent?.let {
+                if (it is ViewGroup) {
+                    it.removeView(webView)
+                }
             }
+            this.webView = null
+            result?.success(null)
+            return
         }
         notInitialized(result)
     }
