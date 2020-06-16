@@ -50,6 +50,7 @@ class PostPurchaseExperienceManager {
         let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "ppe", withExtension: "html")!
         webView.load(URLRequest.init(url: url))
 
+        initResult = result
         initialized = false
         let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
@@ -81,7 +82,7 @@ class PostPurchaseExperienceManager {
             PostPurchaseExperienceManager.notInitialized(result: result)
             return
         }
-        renderResult = result
+        authResult = result
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "authorizationRequest(\(method.locale.jsScriptString()), \(method.clientId.jsScriptString()), \(method.scope.jsScriptString()), \(method.redirectUri.jsScriptString()), \(method.state.jsScriptString()), \(method.loginHint.jsScriptString()), \(method.responseType.jsScriptString()))")
         showWebView()
     }

@@ -64,10 +64,10 @@ internal class PostPurchaseExperienceManager {
         webView.addJavascriptInterface(jsInterface, "PPECallback")
         webView.loadUrl("file:///android_asset/ppe.html")
 
+        initResult = result
+        initialized = false
         val initScript = "initialize(${method.locale.jsScriptString()}, ${method.purchaseCountry.jsScriptString()}, ${method.design.jsScriptString()})"
         webViewClient?.queueJS(webViewManager, initScript)
-
-        initResult = result
     }
 
     fun destroy(method: PostPurchaseExperienceMethod.Destroy, result: MethodChannel.Result?) {
