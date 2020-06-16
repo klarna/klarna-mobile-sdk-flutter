@@ -117,31 +117,31 @@ internal class PostPurchaseExperienceManager {
 
     inner class PPEResultCallback : PostPurchaseExperienceJSInterface.ResultCallback {
 
-        override fun onInitialized(success: Boolean, error: String?) {
+        override fun onInitialized(success: Boolean, message: String?, error: String?) {
             if (success) {
-                initResult?.success(null)
+                initResult?.success(message)
                 initialized = true
             } else {
-                initResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, null)
+                initResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, message, error)
             }
             initResult = null
         }
 
-        override fun onRenderOperation(success: Boolean, data: String?, error: String?) {
+        override fun onRenderOperation(success: Boolean, message: String?, error: String?) {
             if (success) {
-                renderResult?.success(data)
+                renderResult?.success(message)
             } else {
-                renderResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, data)
+                renderResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, message, error)
             }
             renderResult = null
             hideWebView()
         }
 
-        override fun onAuthorizationRequest(success: Boolean, error: String?) {
+        override fun onAuthorizationRequest(success: Boolean, message: String?, error: String?) {
             if (success) {
-                authResult?.success(null)
+                authResult?.success(message)
             } else {
-                authResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, error, null)
+                authResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, message, error)
             }
             authResult = null
             hideWebView()

@@ -13,59 +13,41 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     @JavascriptInterface
     fun postMessage(jsonMessage: String?) {
         mainHandler.post {
-            val message: PPECallbackMessage
+            val callbackMessage: PPECallbackMessage
             try {
-                message = ParserUtil.fromJson(jsonMessage)!!
+                callbackMessage = ParserUtil.fromJson(jsonMessage)!!
             } catch (t: Throwable) {
                 resultCallback?.onError("Can not parse web message", t)
                 return@post
             }
-            when (message.action) {
+            val message = callbackMessage.message.jsValue()
+            val error = callbackMessage.error.jsValue()
+            val success = error == null
+            when (callbackMessage.action) {
                 "onInitialize" -> {
-                    onInitialized(message.message)
+                    resultCallback?.onInitialized(success, message, error)
                 }
                 "onRenderOperation" -> {
-                    onRenderOperation(message.message)
+                    resultCallback?.onRenderOperation(success, message, error)
                 }
                 "onAuthorizationRequest" -> {
-                    onAuthorizationRequest(message.message)
+                    resultCallback?.onAuthorizationRequest(success, message, error)
                 }
-                else -> resultCallback?.onError("No handler for action ${message.action}", null)
+                else -> resultCallback?.onError("No handler for callback message: $jsonMessage", null)
             }
         }
     }
 
-    private fun onInitialized(message: String?) {
-        val error = message.jsValue()
-        val success = error == null
-        resultCallback?.onInitialized(success, error)
-    }
-
-    private fun onRenderOperation(message: String?) {
-        val result = ParserUtil.fromJson<Map<String, String?>>(message)
-
-        val resultData = result?.get("data").jsValue()
-        val resultError = result?.get("error").jsValue()
-        val success = resultError == null
-
-        resultCallback?.onRenderOperation(success, resultData, resultError)
-    }
-
-    private fun onAuthorizationRequest(message: String?) {
-        val error = message.jsValue()
-        val success = error == null
-        resultCallback?.onAuthorizationRequest(success, error)
-    }
-
     internal interface ResultCallback {
-        fun onInitialized(success: Boolean, error: String?)
-        fun onAuthorizationRequest(success: Boolean, error: String?)
-        fun onRenderOperation(success: Boolean, data: String?, error: String?)
+        fun onInitialized(success: Boolean, message: String?, error: String?)
+        fun onAuthorizationRequest(success: Boolean, message: String?, error: String?)
+        fun onRenderOperation(success: Boolean, message: String?, error: String?)
         fun onError(message: String?, throwable: Throwable?)
     }
 
     internal data class PPECallbackMessage(
             var action: String,
-            var message: String?
+            var message: String?,
+            var error: String?
     )
 }
