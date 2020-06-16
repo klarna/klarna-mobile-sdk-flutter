@@ -1,9 +1,9 @@
 import WebKit
 
 internal protocol PostPurchaseScriptCallbackDelegate: class {
-    func onInitialized(success: Bool, error: String?)
-    func onRenderOperation(success: Bool, data: String?, error: String?)
-    func onAuthorizationRequest(success: Bool, error: String?)
+    func onInitialize(success: Bool, message: String?, error: String?)
+    func onRenderOperation(success: Bool, message: String?, error: String?)
+    func onAuthorizationRequest(success: Bool, message: String?, error: String?)
     func onError(message: String?, error: Error?)
 }
 
@@ -21,27 +21,18 @@ internal class PostPurchaseScriptMessageHandler: NSObject, WKScriptMessageHandle
 
         do {
             let callbackMessage = try JSONDecoder().decode(PPECallbackMessage.self, from: messageData)
+            let message = callbackMessage.message.jsValue()
+            let error = callbackMessage.error.jsValue()
+            let success = error == nil
             switch callbackMessage.action {
             case "onInitialize":
-                let error = callbackMessage.message.jsValue()
-                let success = error == nil
-                delegate?.onInitialized(success: success, error: error)
+                delegate?.onInitialize(success: success, message: message, error: error)
             case "onRenderOperation":
-                guard let resultDict = callbackMessage.messageDictionary() else {
-                    delegate?.onRenderOperation(success: false, data: nil, error: nil)
-                    return
-                }
-                let resultData = (resultDict["data"] as? String).jsValue()
-                let resultError = (resultDict["error"] as? String).jsValue()
-                let success = resultError == nil
-                
-                delegate?.onRenderOperation(success: success, data: resultData, error: resultError)
+                delegate?.onRenderOperation(success: success, message: message, error: error)
             case "onAuthorizationRequest":
-                let error = callbackMessage.message.jsValue()
-                let success = error == nil
-                delegate?.onAuthorizationRequest(success: success, error: error)
+                delegate?.onAuthorizationRequest(success: success, message: message, error: error)
             default:
-                delegate?.onError(message: "No handler for action \(callbackMessage.action ?? "null")", error: nil)
+                delegate?.onError(message: "No handler for callback message: \(messageString)", error: nil)
             }
 
         } catch let error {
@@ -50,8 +41,9 @@ internal class PostPurchaseScriptMessageHandler: NSObject, WKScriptMessageHandle
     }
     
     struct PPECallbackMessage: Codable {
-        var action: String?
+        var action: String
         var message: String?
+        var error: String?
         
         func messageData() -> Data? {
             return message?.data(using: .utf8)

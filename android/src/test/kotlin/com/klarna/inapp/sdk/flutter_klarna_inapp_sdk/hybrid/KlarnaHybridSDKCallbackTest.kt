@@ -1,7 +1,7 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid
 
 import android.webkit.WebView
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
 import com.klarna.mobile.sdk.api.OnCompletion
 import com.klarna.mobile.sdk.api.hybrid.KlarnaMobileSDKError
 import io.mockk.*
@@ -18,9 +18,7 @@ class KlarnaHybridSDKCallbackTest {
 
     @Before
     fun setup() {
-        callback.result = mockk()
-
-        every { callback.result!!.error(any(), any(), any()) } just runs
+        mockkObject(ErrorCallbackHandler)
         every { completion.run() } just runs
     }
 
@@ -43,6 +41,6 @@ class KlarnaHybridSDKCallbackTest {
     fun testOnErrorOccurred() {
         callback.onErrorOccurred(webView, error)
 
-        verify { callback.result?.error(ResultError.HYBRID_SDK_ERROR.errorCode, "testError:test:true", "test") }
+        verify { ErrorCallbackHandler.sendValue(any()) }
     }
 }

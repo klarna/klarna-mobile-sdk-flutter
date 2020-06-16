@@ -50,6 +50,7 @@ class PostPurchaseExperienceManager {
         let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "ppe", withExtension: "html")!
         webView.load(URLRequest.init(url: url))
 
+        initResult = result
         initialized = false
         let initScript = "initialize(\(method.locale.jsScriptString()), \(method.purchaseCountry.jsScriptString()), \(method.design.jsScriptString()))"
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
@@ -81,7 +82,7 @@ class PostPurchaseExperienceManager {
             PostPurchaseExperienceManager.notInitialized(result: result)
             return
         }
-        renderResult = result
+        authResult = result
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: "authorizationRequest(\(method.locale.jsScriptString()), \(method.clientId.jsScriptString()), \(method.scope.jsScriptString()), \(method.redirectUri.jsScriptString()), \(method.state.jsScriptString()), \(method.loginHint.jsScriptString()), \(method.responseType.jsScriptString()))")
         showWebView()
     }
@@ -99,31 +100,31 @@ class PostPurchaseExperienceManager {
 }
 
 extension PostPurchaseExperienceManager: PostPurchaseScriptCallbackDelegate {
-    func onInitialized(success: Bool, error: String?) {
+    func onInitialize(success: Bool, message: String?, error: String?) {
         if (success) {
-            initResult?(nil)
+            initResult?(message)
             initialized = true
         } else {
-            initResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
+            initResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: message, details: error))
         }
         initResult = nil
     }
     
-    func onRenderOperation(success: Bool, data: String?, error: String?) {
+    func onRenderOperation(success: Bool, message: String?, error: String?) {
         if (success) {
-            renderResult?(data)
+            renderResult?(message)
         } else {
-            renderResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: data))
+            renderResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: message, details: error))
         }
         renderResult = nil
         hideWebView()
     }
     
-    func onAuthorizationRequest(success: Bool, error: String?) {
+    func onAuthorizationRequest(success: Bool, message: String?, error: String?) {
         if (success) {
-            authResult?(nil)
+            authResult?(message)
         } else {
-            authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
+            authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: message, details: error))
         }
         authResult = nil
         hideWebView()

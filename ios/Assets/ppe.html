@@ -20,10 +20,10 @@
                 design: design
             });
             ppe = instance;
-            nativeCallback('onInitialize', null);
+            nativeCallback('onInitialize', JSON.stringify(createResult(instance, null)), null);
         } catch(error){
             log('initialize exception: ' + error.message);
-            nativeCallback('onInitialize', error.message);
+            nativeCallback('onInitialize', null, JSON.stringify(error));
         }
     }
 
@@ -34,19 +34,12 @@
                 locale: locale,
                 operation_token: operationToken
             }, function (error, data) {
-                var result = {
-                    data: JSON.stringify(data),
-                    error: JSON.stringify(error)
-                };
-                nativeCallback('onRenderOperation', JSON.stringify(result));
+                var result = createResult(data, error);
+                nativeCallback('onRenderOperation', JSON.stringify(result), null);
             });
         } catch(error) {
             log('renderOperation exception: ' + error.message);
-            var result = {
-                data: null,
-                error: error.message
-            };
-            nativeCallback('onRenderOperation', JSON.stringify(result));
+            nativeCallback('onRenderOperation', null, JSON.stringify(error));
         }
     }
 
@@ -63,19 +56,27 @@
                 login_hint: loginHint,
                 response_type: responseType
             });
-            nativeCallback('onAuthorizationRequest', JSON.stringify(error));
+            nativeCallback('onAuthorizationRequest', JSON.stringify(createResult(null, error)), null);
         } catch(error){
             log('authorizationRequest exception: ' + error.message);
-            nativeCallback('onAuthorizationRequest', error.message);
+            nativeCallback('onAuthorizationRequest', null, JSON.stringify(error));
         }
     }
-    
-    window.nativeCallback = function(action, message) {
+
+    window.createResult = function(data, error) {
+        return {
+            data: JSON.stringify(data),
+            error: JSON.stringify(error)
+        };
+    }
+
+    window.nativeCallback = function(action, message, error) {
         let result = {
             action: action,
-            message: message
+            message: message,
+            error: error
         };
-        
+
         if (window.webkit &&
             window.webkit.messageHandlers &&
             window.webkit.messageHandlers.PPECallback) {

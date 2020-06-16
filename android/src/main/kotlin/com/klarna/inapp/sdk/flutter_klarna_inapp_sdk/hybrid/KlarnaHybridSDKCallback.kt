@@ -1,15 +1,12 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid
 
 import android.webkit.WebView
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
 import com.klarna.mobile.sdk.KlarnaMobileSDKError
 import com.klarna.mobile.sdk.api.OnCompletion
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDKCallback
-import io.flutter.plugin.common.MethodChannel
 
 internal class KlarnaHybridSDKCallback : KlarnaHybridSDKCallback {
-
-    var result: MethodChannel.Result? = null
 
     override fun didHideFullscreenContent(webView: WebView, completion: OnCompletion) {
         completion.run()
@@ -20,7 +17,7 @@ internal class KlarnaHybridSDKCallback : KlarnaHybridSDKCallback {
     }
 
     override fun onErrorOccurred(webView: WebView, error: KlarnaMobileSDKError) {
-        result?.error(ResultError.HYBRID_SDK_ERROR.errorCode, "${error.name}:${error.message}:${error.isFatal}", error.message)
+        ErrorCallbackHandler.sendValue("${error.name}:${error.message}:${error.isFatal}")
     }
 
     override fun willHideFullscreenContent(webView: WebView, completion: OnCompletion) {

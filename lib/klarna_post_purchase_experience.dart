@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
 
 class KlarnaPostPurchaseExperience {
   static const MethodChannel _channel =
@@ -21,35 +23,37 @@ class KlarnaPostPurchaseExperience {
     return instance;
   }
 
-  Future<void> initialize(String locale, String purchaseCountry,
-      {String design}) async {
-    return await _channel.invokeMethod('initialize', <String, dynamic>{
+  Future<KlarnaResult> initialize(String locale, String purchaseCountry,
+      {String design, Function(String error) failCallback}) async {
+    final String result = await _channel.invokeMethod('initialize', <String, dynamic>{
       'id': _id,
       'locale': locale,
       'purchaseCountry': purchaseCountry,
       'design': design
     });
+    return KlarnaResult.fromJson(json.decode(result));
   }
 
-  Future<void> destroy() async {
+  Future<Null> destroy() async {
     return await _channel.invokeMethod('destroy', <String, dynamic>{'id': _id});
   }
 
-  Future<String> renderOperation(String operationToken, {String locale}) async {
-    return await _channel.invokeMethod('renderOperation', <String, dynamic>{
+  Future<KlarnaResult> renderOperation(String operationToken, {String locale}) async {
+    final String result = await _channel.invokeMethod('renderOperation', <String, dynamic>{
       'id': _id,
       'locale': locale,
       'operationToken': operationToken
     });
+    return KlarnaResult.fromJson(json.decode(result));
   }
 
-  Future<void> authorizationRequest(
+  Future<KlarnaResult> authorizationRequest(
       String clientId, String scope, String redirectUri,
       {String locale,
       String state,
       String loginHint,
       String responseType}) async {
-    return await _channel
+    final String result = await _channel
         .invokeMethod('authorizationRequest', <String, dynamic>{
       'id': _id,
       'locale': locale,
@@ -60,5 +64,6 @@ class KlarnaPostPurchaseExperience {
       'loginHint': loginHint,
       'responseType': responseType
     });
+    return KlarnaResult.fromJson(json.decode(result));
   }
 }
