@@ -29,19 +29,19 @@ class PostPurchaseExperienceJSInterfaceTest {
     @Test
     fun testInitialize() {
         jsInterface.postMessage(createMessage("onInitialize", null, null))
-        verify { callback.onInitialized(true, null, null) }
+        verify { callback.onInitialize(true, null, null) }
 
         jsInterface.postMessage(createMessage("onInitialize", createResult(null, null), null))
-        verify { callback.onInitialized(true, createResult(null, null), null) }
+        verify { callback.onInitialize(true, createResult(null, null), null) }
 
         jsInterface.postMessage(createMessage("onInitialize", createResult("\"data\"", null), null))
-        verify { callback.onInitialized(true, createResult("\"data\"", null), null) }
+        verify { callback.onInitialize(true, createResult("\"data\"", null), null) }
 
         jsInterface.postMessage(createMessage("onInitialize", createResult("\"data\"", "\"null\""), null))
-        verify { callback.onInitialized(true, createResult("\"data\"", "\"null\""), null) }
+        verify { callback.onInitialize(true, createResult("\"data\"", "\"null\""), null) }
 
         jsInterface.postMessage(createMessage("onInitialize", createResult("\"data\"", "\"null\""), "error"))
-        verify { callback.onInitialized(false, createResult("\"data\"", "\"null\""), "error") }
+        verify { callback.onInitialize(false, createResult("\"data\"", "\"null\""), "error") }
     }
 
     @Test

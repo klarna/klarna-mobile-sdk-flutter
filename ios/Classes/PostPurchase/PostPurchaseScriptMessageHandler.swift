@@ -1,7 +1,7 @@
 import WebKit
 
 internal protocol PostPurchaseScriptCallbackDelegate: class {
-    func onInitialized(success: Bool, message: String?, error: String?)
+    func onInitialize(success: Bool, message: String?, error: String?)
     func onRenderOperation(success: Bool, message: String?, error: String?)
     func onAuthorizationRequest(success: Bool, message: String?, error: String?)
     func onError(message: String?, error: Error?)
@@ -26,7 +26,7 @@ internal class PostPurchaseScriptMessageHandler: NSObject, WKScriptMessageHandle
             let success = error == nil
             switch callbackMessage.action {
             case "onInitialize":
-                delegate?.onInitialized(success: success, message: message, error: error)
+                delegate?.onInitialize(success: success, message: message, error: error)
             case "onRenderOperation":
                 delegate?.onRenderOperation(success: success, message: message, error: error)
             case "onAuthorizationRequest":

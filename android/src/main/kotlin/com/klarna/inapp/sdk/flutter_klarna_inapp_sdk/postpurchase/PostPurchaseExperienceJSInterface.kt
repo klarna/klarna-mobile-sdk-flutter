@@ -25,7 +25,7 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
             val success = error == null
             when (callbackMessage.action) {
                 "onInitialize" -> {
-                    resultCallback?.onInitialized(success, message, error)
+                    resultCallback?.onInitialize(success, message, error)
                 }
                 "onRenderOperation" -> {
                     resultCallback?.onRenderOperation(success, message, error)
@@ -39,7 +39,7 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     }
 
     internal interface ResultCallback {
-        fun onInitialized(success: Boolean, message: String?, error: String?)
+        fun onInitialize(success: Boolean, message: String?, error: String?)
         fun onAuthorizationRequest(success: Boolean, message: String?, error: String?)
         fun onRenderOperation(success: Boolean, message: String?, error: String?)
         fun onError(message: String?, throwable: Throwable?)

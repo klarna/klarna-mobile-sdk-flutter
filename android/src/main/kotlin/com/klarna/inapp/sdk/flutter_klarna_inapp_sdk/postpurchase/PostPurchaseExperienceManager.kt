@@ -117,7 +117,7 @@ internal class PostPurchaseExperienceManager {
 
     inner class PPEResultCallback : PostPurchaseExperienceJSInterface.ResultCallback {
 
-        override fun onInitialized(success: Boolean, message: String?, error: String?) {
+        override fun onInitialize(success: Boolean, message: String?, error: String?) {
             if (success) {
                 initResult?.success(message)
                 initialized = true

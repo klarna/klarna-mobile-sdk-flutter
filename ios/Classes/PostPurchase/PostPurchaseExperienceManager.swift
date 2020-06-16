@@ -100,7 +100,7 @@ class PostPurchaseExperienceManager {
 }
 
 extension PostPurchaseExperienceManager: PostPurchaseScriptCallbackDelegate {
-    func onInitialized(success: Bool, message: String?, error: String?) {
+    func onInitialize(success: Bool, message: String?, error: String?) {
         if (success) {
             initResult?(message)
             initialized = true
