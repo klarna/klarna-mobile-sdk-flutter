@@ -99,31 +99,31 @@ class PostPurchaseExperienceManager {
 }
 
 extension PostPurchaseExperienceManager: PostPurchaseScriptCallbackDelegate {
-    func onInitialized(success: Bool, error: String?) {
+    func onInitialized(success: Bool, message: String?, error: String?) {
         if (success) {
-            initResult?(nil)
+            initResult?(message)
             initialized = true
         } else {
-            initResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
+            initResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: message, details: error))
         }
         initResult = nil
     }
     
-    func onRenderOperation(success: Bool, data: String?, error: String?) {
+    func onRenderOperation(success: Bool, message: String?, error: String?) {
         if (success) {
-            renderResult?(data)
+            renderResult?(message)
         } else {
-            renderResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: data))
+            renderResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: message, details: error))
         }
         renderResult = nil
         hideWebView()
     }
     
-    func onAuthorizationRequest(success: Bool, error: String?) {
+    func onAuthorizationRequest(success: Bool, message: String?, error: String?) {
         if (success) {
-            authResult?(nil)
+            authResult?(message)
         } else {
-            authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: error, details: nil))
+            authResult?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: message, details: error))
         }
         authResult = nil
         hideWebView()

@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
       SnackBar(
         content: Text(text),
         action: SnackBarAction(
-            label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
+            label: 'CLOSE', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
