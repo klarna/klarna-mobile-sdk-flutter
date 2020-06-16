@@ -28,7 +28,6 @@ internal object KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod
 
     private fun initialize(method: KlarnaHybridSDKMethod.Initialize, result: MethodChannel.Result) {
         if (hybridSDK == null) {
-            hybridSDKCallback.result = result
             hybridSDK = KlarnaHybridSDK(method.returnUrl, hybridSDKCallback)
             result.success(null)
             return
