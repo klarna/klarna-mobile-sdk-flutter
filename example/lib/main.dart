@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_callback.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_hybrid_sdk.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_experience.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
@@ -26,10 +27,19 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initHybridSDK();
+    initEventAndErrorCallbacks();
   }
 
   void initHybridSDK() async {
     await KlarnaHybridSDK.initialize("https://www.klarna.com");
+  }
+
+  void initEventAndErrorCallbacks() async {
+    KlarnaCallback.registerCallback((event) {
+      _showToast(context, "event: $event");
+    }, (error) {
+      _showToast(context, "error: $error");
+    });
   }
 
   void ppeInitialize(BuildContext context) async {
