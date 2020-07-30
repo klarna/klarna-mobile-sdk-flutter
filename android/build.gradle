@@ -52,8 +52,8 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.klarna.mobile:sdk:2.0.16'
-    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.klarna.mobile:sdk:2.0.23'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'androidx.test:core:1.2.0'

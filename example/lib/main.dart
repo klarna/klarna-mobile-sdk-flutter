@@ -32,6 +32,9 @@ class _MyAppState extends State<MyApp> {
 
   void initHybridSDK() async {
     await KlarnaHybridSDK.initialize("https://www.klarna.com");
+    await KlarnaHybridSDK.registerEventListener((event) {
+      this._showToast(context, "KlarbaHybridSDK Event: $event");
+    });
   }
 
   void initEventAndErrorCallbacks() async {

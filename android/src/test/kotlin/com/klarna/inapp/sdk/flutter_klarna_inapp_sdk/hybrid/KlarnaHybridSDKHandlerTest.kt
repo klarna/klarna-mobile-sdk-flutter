@@ -21,6 +21,7 @@ class KlarnaHybridSDKHandlerTest {
     @After
     fun teardown() {
         clearAllMocks()
+        hybridSDKHandler.hybridSDK = null
     }
 
     @Test
@@ -40,5 +41,12 @@ class KlarnaHybridSDKHandlerTest {
 
         hybridSDKHandler.onMethod(KlarnaHybridSDKMethod.Initialize("error"), result)
         verify { result.error(ResultError.HYBRID_SDK_ERROR.errorCode, "Already initialized.", null) }
+    }
+
+    @Test
+    fun testRegisterEventListener() {
+        hybridSDKHandler.onMethod(KlarnaHybridSDKMethod.Initialize("returnUrl"), result)
+        hybridSDKHandler.onMethod(KlarnaHybridSDKMethod.RegisterEventListener(), result)
+        verify(exactly = 2) { result.success(null) }
     }
 }
