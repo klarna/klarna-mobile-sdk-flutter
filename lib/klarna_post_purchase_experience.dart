@@ -24,7 +24,7 @@ class KlarnaPostPurchaseExperience {
   }
 
   Future<KlarnaResult> initialize(String locale, String purchaseCountry,
-      {String design, Function(String error) failCallback}) async {
+      {String design}) async {
     final String result = await _channel.invokeMethod('initialize', <String, dynamic>{
       'id': _id,
       'locale': locale,
