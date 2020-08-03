@@ -15,10 +15,16 @@ class KlarnaHybridSDKMethods {
             switch call.method {
             case "initialize":
                 return call.decode(Initialize.self)
+            case "registerEventListener":
+                return RegisterEventListener()
             default:
                 return nil
             }
         }
+    }
+
+    struct RegisterEventListener: KlarnaHybridSDKMethod {
+
     }
 }
 
