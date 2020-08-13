@@ -20,6 +20,8 @@ class KlarnaHybridSDKHandler: BaseMethodHandler<KlarnaHybridSDKMethod> {
         switch method {
         case is KlarnaHybridSDKMethods.Initialize:
             initialize(method: method as! KlarnaHybridSDKMethods.Initialize, result: result)
+        case is KlarnaHybridSDKMethods.RegisterEventListener:
+            registerEventListener(method: method as! KlarnaHybridSDKMethods.RegisterEventListener, result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -36,5 +38,18 @@ class KlarnaHybridSDKHandler: BaseMethodHandler<KlarnaHybridSDKMethod> {
         } else {
             result(FlutterError.init(code: ResultError.hybridSdkError.rawValue, message: "Already initialized.", details: nil))
         }
+    }
+
+    private func registerEventListener(method: KlarnaHybridSDKMethods.RegisterEventListener, result: @escaping FlutterResult) {
+        guard KlarnaHybridSDKHandler.hybridSDK != nil else {
+            result(FlutterError.init(code: ResultError.hybridSdkError.rawValue, message: "Invalid callback for event listener.", details: nil))
+            return
+        }
+
+        KlarnaHybridSDKHandler.hybridSDK?.registerEventListener(withCallback: { response in
+            KlarnaHybridSDKEventHandler.instance.sendValue(value: response.bodyString)
+        })
+
+        result(nil)
     }
 }
