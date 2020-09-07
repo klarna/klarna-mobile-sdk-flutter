@@ -5,6 +5,7 @@ import android.view.View
 import android.webkit.WebChromeClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.manager.AssetManager
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.jsScriptString
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
@@ -62,7 +63,12 @@ internal class PostPurchaseExperienceManager {
         webView.setBackgroundColor(Color.TRANSPARENT)
 
         webView.addJavascriptInterface(jsInterface, "PPECallback")
-        webView.loadUrl("file:///android_asset/ppe.html")
+
+        AssetManager.readAsset("ppe.html")?.let { html ->
+            html.replace("https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js", "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js").let {
+                webView.loadData(it, null, null)
+            }
+        } ?: webView.loadUrl("file:///android_asset/ppe.html")
 
         initResult = result
         initialized = false
