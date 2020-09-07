@@ -9,7 +9,8 @@ internal sealed class PostPurchaseExperienceMethod(val id: Int) {
             id: Int,
             val locale: String,
             val purchaseCountry: String,
-            val design: String?
+            val design: String?,
+            val sdkSource: String?
     ) : PostPurchaseExperienceMethod(id)
 
     class Destroy(id: Int) : PostPurchaseExperienceMethod(id)
@@ -33,7 +34,8 @@ internal sealed class PostPurchaseExperienceMethod(val id: Int) {
                         call.requireArgument("id"),
                         call.requireArgument("locale"),
                         call.requireArgument("purchaseCountry"),
-                        call.argument("design")
+                        call.argument("design"),
+                        call.argument("sdkSource")
                 )
                 "destroy" -> Destroy(
                         call.requireArgument("id")

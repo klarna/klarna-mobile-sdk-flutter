@@ -14,6 +14,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final localeController = TextEditingController(text: "en-SE");
   final countryController = TextEditingController(text: "SE");
+  final designController = TextEditingController(text: null);
+  final sdkSourceController = TextEditingController(text: "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js");
 
   final clientIdController = TextEditingController(text: "");
   final scopeController = TextEditingController(text: "read:consumer_order");
@@ -49,7 +51,7 @@ class _MyAppState extends State<MyApp> {
     this.ppe = new KlarnaPostPurchaseExperience();
     final KlarnaResult result = await ppe.initialize(
         localeController.text, countryController.text,
-        design: null);
+        design: designController.text, sdkSource: sdkSourceController.text);
     _showToast(context, result.toString());
   }
 
@@ -131,6 +133,18 @@ class _MyAppState extends State<MyApp> {
                                 decoration: InputDecoration(
                                     border: InputBorder.none,
                                     labelText: 'Country'),
+                              ),
+                              TextFormField(
+                                controller: designController,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    labelText: 'Design'),
+                              ),
+                              TextFormField(
+                                controller: sdkSourceController,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    labelText: 'Sdk Source'),
                               ),
                               MaterialButton(
                                 color: Theme.of(context).accentColor,

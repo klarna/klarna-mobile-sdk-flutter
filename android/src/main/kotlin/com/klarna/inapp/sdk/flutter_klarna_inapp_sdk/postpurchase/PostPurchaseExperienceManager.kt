@@ -64,11 +64,15 @@ internal class PostPurchaseExperienceManager {
 
         webView.addJavascriptInterface(jsInterface, "PPECallback")
 
-        AssetManager.readAsset("ppe.html")?.let { html ->
-            html.replace("https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js", "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js").let {
-                webView.loadData(it, null, null)
-            }
-        } ?: webView.loadUrl("file:///android_asset/ppe.html")
+        if (method.sdkSource.isNullOrBlank()) {
+            webView.loadUrl("file:///android_asset/ppe.html")
+        } else {
+            AssetManager.readAsset("ppe.html")?.let { html ->
+                html.replace("https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js", method.sdkSource).let {
+                    webView.loadData(it, null, null)
+                }
+            } ?: webView.loadUrl("file:///android_asset/ppe.html")
+        }
 
         initResult = result
         initialized = false
