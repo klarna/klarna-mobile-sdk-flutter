@@ -47,8 +47,18 @@ class PostPurchaseExperienceManager {
 
         let webView = webViewManager.requireWebview()
         webView.navigationDelegate = navigationDelegate
+
         let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "ppe", withExtension: "html")!
-        webView.load(URLRequest.init(url: url))
+        if let sdkSource = method.sdkSource, !sdkSource.isEmpty {
+            let html = AssetManager.readAsset(fileName: "ppe", fileExtension: "html")
+            if let replaced = html?.replacingOccurrences(of: "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js", with: sdkSource) {
+                webView.loadHTMLString(replaced, baseURL: nil)
+            } else {
+                webView.load(URLRequest.init(url: url))
+            }
+        } else {
+            webView.load(URLRequest.init(url: url))
+        }
 
         initResult = result
         initialized = false

@@ -11,6 +11,7 @@ class PostPurchaseMethods {
         let locale: String
         let purchaseCountry: String
         let design: String?
+        let sdkSource: String?
     }
     
     struct Destroy: PostPurchaseMethod {
