@@ -4,9 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.io.File
 
 internal object AssetManager {
@@ -25,7 +22,7 @@ internal object AssetManager {
 
                 return file.readText()
             } catch (t: Throwable) {
-                loge("Failed to read from assets, exception: ${t.message}")
+                loge("Failed to read from assets, asset: $fileName, exception: ${t.message}")
             }
         }
         return null
@@ -42,14 +39,12 @@ internal object AssetManager {
             input.close()
             output.close()
         } catch (t: Throwable) {
-            loge("Failed to copy from assets, exception: ${t.message}")
+            loge("Failed to copy from assets, asset:$original, exception: ${t.message}")
         }
     }
 
     private fun loge(log: String) {
-        GlobalScope.launch(Dispatchers.Main) {
-            Log.d(TAG, log)
-            ErrorCallbackHandler.sendValue(log)
-        }
+        Log.d(TAG, log)
+        ErrorCallbackHandler.sendValue(log)
     }
 }
