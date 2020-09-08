@@ -1,4 +1,4 @@
-enum KlarnaPPEEnvironment {
+enum KlarnaPostPurchaseEnvironment {
   EU,
   NA,
   OC,
@@ -7,20 +7,20 @@ enum KlarnaPPEEnvironment {
   OC_PLAYGROUND
 }
 
-class KlarnaPPEEnvironmentHelper {
-  static String getSdkSource(KlarnaPPEEnvironment environment) {
+class KlarnaPostPurchaseEnvironmentHelper {
+  static String getSdkSource(KlarnaPostPurchaseEnvironment environment) {
     switch (environment) {
-      case KlarnaPPEEnvironment.EU:
+      case KlarnaPostPurchaseEnvironment.EU:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js";
-      case KlarnaPPEEnvironment.NA:
+      case KlarnaPostPurchaseEnvironment.NA:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk-na.js";
-      case KlarnaPPEEnvironment.OC:
+      case KlarnaPostPurchaseEnvironment.OC:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk-oc.js";
-      case KlarnaPPEEnvironment.EU_PLAYGROUND:
+      case KlarnaPostPurchaseEnvironment.EU_PLAYGROUND:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/playground/sdk.js";
-      case KlarnaPPEEnvironment.NA_PLAYGROUND:
+      case KlarnaPostPurchaseEnvironment.NA_PLAYGROUND:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/playground/sdk-na.js";
-      case KlarnaPPEEnvironment.OC_PLAYGROUND:
+      case KlarnaPostPurchaseEnvironment.OC_PLAYGROUND:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/playground/sdk-oc.js";
       default:
         return null;

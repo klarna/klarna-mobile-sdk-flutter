@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_callback.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_hybrid_sdk.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_experience.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_ppe_environment.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_environment.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
 
 void main() => runApp(MyApp());
@@ -16,7 +16,7 @@ class _MyAppState extends State<MyApp> {
   final localeController = TextEditingController(text: "en-SE");
   final countryController = TextEditingController(text: "SE");
   final designController = TextEditingController(text: null);
-  KlarnaPPEEnvironment ppeEnvironment;
+  KlarnaPostPurchaseEnvironment ppeEnvironment;
 
   final clientIdController = TextEditingController(text: "");
   final scopeController = TextEditingController(text: "read:consumer_order");
@@ -141,19 +141,19 @@ class _MyAppState extends State<MyApp> {
                                     border: InputBorder.none,
                                     labelText: 'Design'),
                               ),
-                              DropdownButton<KlarnaPPEEnvironment>(
+                              DropdownButton<KlarnaPostPurchaseEnvironment>(
                                 value: ppeEnvironment,
                                 icon: Icon(Icons.arrow_drop_down),
-                                hint: Text("PPE Environment"),
+                                hint: Text("Post Purchase Environment"),
                                 iconSize: 24,
                                 elevation: 16,
-                                onChanged: (KlarnaPPEEnvironment newValue) {
+                                onChanged: (KlarnaPostPurchaseEnvironment newValue) {
                                   setState(() {
                                     ppeEnvironment = newValue;
                                   });
                                 },
-                                items: KlarnaPPEEnvironment.values.map<DropdownMenuItem<KlarnaPPEEnvironment>>((KlarnaPPEEnvironment value) {
-                                  return DropdownMenuItem<KlarnaPPEEnvironment>(
+                                items: KlarnaPostPurchaseEnvironment.values.map<DropdownMenuItem<KlarnaPostPurchaseEnvironment>>((KlarnaPostPurchaseEnvironment value) {
+                                  return DropdownMenuItem<KlarnaPostPurchaseEnvironment>(
                                     value: value,
                                     child: Text(value.toString()),
                                   );

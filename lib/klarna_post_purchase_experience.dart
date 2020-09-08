@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_ppe_environment.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_environment.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
 
 class KlarnaPostPurchaseExperience {
@@ -19,7 +19,7 @@ class KlarnaPostPurchaseExperience {
   static Future<KlarnaPostPurchaseExperience> init(
       String locale, String purchaseCountry,
       {String design,
-      /** source url of js sdk **/ KlarnaPPEEnvironment environment}) async {
+      /** post purchase environment **/ KlarnaPostPurchaseEnvironment environment}) async {
     var instance = KlarnaPostPurchaseExperience();
     await instance.initialize(locale, purchaseCountry,
         design: design, environment: environment);
@@ -28,14 +28,14 @@ class KlarnaPostPurchaseExperience {
 
   Future<KlarnaResult> initialize(String locale, String purchaseCountry,
       {String design,
-      /** ppe environment **/ KlarnaPPEEnvironment environment}) async {
+      /** post purchase environment **/ KlarnaPostPurchaseEnvironment environment}) async {
     final String result =
         await _channel.invokeMethod('initialize', <String, dynamic>{
       'id': _id,
       'locale': locale,
       'purchaseCountry': purchaseCountry,
       'design': design,
-      'sdkSource': KlarnaPPEEnvironmentHelper.getSdkSource(environment)
+      'sdkSource': KlarnaPostPurchaseEnvironmentHelper.getSdkSource(environment)
     });
     return KlarnaResult.fromJson(json.decode(result));
   }
