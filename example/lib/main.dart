@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_callback.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_hybrid_sdk.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_experience.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_ppe_environment.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
 
 void main() => runApp(MyApp());
@@ -15,7 +16,7 @@ class _MyAppState extends State<MyApp> {
   final localeController = TextEditingController(text: "en-SE");
   final countryController = TextEditingController(text: "SE");
   final designController = TextEditingController(text: null);
-  final sdkSourceController = TextEditingController(text: "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js");
+  KlarnaPPEEnvironment ppeEnvironment;
 
   final clientIdController = TextEditingController(text: "");
   final scopeController = TextEditingController(text: "read:consumer_order");
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     this.ppe = new KlarnaPostPurchaseExperience();
     final KlarnaResult result = await ppe.initialize(
         localeController.text, countryController.text,
-        design: designController.text, sdkSource: sdkSourceController.text);
+        design: designController.text, environment: ppeEnvironment);
     _showToast(context, result.toString());
   }
 
@@ -140,11 +141,23 @@ class _MyAppState extends State<MyApp> {
                                     border: InputBorder.none,
                                     labelText: 'Design'),
                               ),
-                              TextFormField(
-                                controller: sdkSourceController,
-                                decoration: InputDecoration(
-                                    border: InputBorder.none,
-                                    labelText: 'Sdk Source'),
+                              DropdownButton<KlarnaPPEEnvironment>(
+                                value: ppeEnvironment,
+                                icon: Icon(Icons.arrow_drop_down),
+                                hint: Text("PPE Environment"),
+                                iconSize: 24,
+                                elevation: 16,
+                                onChanged: (KlarnaPPEEnvironment newValue) {
+                                  setState(() {
+                                    ppeEnvironment = newValue;
+                                  });
+                                },
+                                items: KlarnaPPEEnvironment.values.map<DropdownMenuItem<KlarnaPPEEnvironment>>((KlarnaPPEEnvironment value) {
+                                  return DropdownMenuItem<KlarnaPPEEnvironment>(
+                                    value: value,
+                                    child: Text(value.toString()),
+                                  );
+                                }).toList(),
                               ),
                               MaterialButton(
                                 color: Theme.of(context).accentColor,
