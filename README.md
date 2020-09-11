@@ -48,6 +48,7 @@ Initializes new `WebView` and javascript Klarna Post Purchase Experience library
 | locale | `String` | A string representing the user locale. For example: `se-SE` | 
 | purchaseCountry | `String` | A string representing the purchase country. For example: `SE` | 
 | design | `named optional` `String?` | A string representing the design ID. | 
+| environment | `named optional` `KlarnaPostPurchaseEnvironment?` | Region or playground environment for Post Purchase SDK. | 
 
 ##### destroy()
 

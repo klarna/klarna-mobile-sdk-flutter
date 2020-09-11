@@ -15,7 +15,7 @@ internal object PluginContext {
 
     private var weakReferenceContext: WeakReference<Context?> = WeakReference(null)
     var context: Context?
-        get() = weakReferenceContext.get()
+        get() = weakReferenceContext.get() ?: activity
         set(value) {
             weakReferenceContext = WeakReference(value)
         }
