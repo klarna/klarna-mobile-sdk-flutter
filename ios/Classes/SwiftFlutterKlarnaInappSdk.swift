@@ -1,8 +1,12 @@
 import Flutter
+import os
 
 // MARK: - SwiftFlutterKlarnaInappSdk
 public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
+        let osLog = OSLog(subsystem: "Flutter", category: "KlarnaInappSdk")
+        os_log("register event", log: osLog, type: .debug)
+
         let messenger = registrar.messenger()
         
         getMethodHandlerMap().forEach { (key, value) in
