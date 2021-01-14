@@ -31,10 +31,20 @@ Add `flutter_klarna_inapp_sdk` as a dependency in your `pubspec.yaml` file accor
 
 ##### initialize()
 
+Initializes a KlarnaHybridSDK instance which will also be used for Post Purchase operations.
+
 ###### Parameters
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. | 
+
+##### registerEventListener()
+Registers a listener, receiving merchant events from Klarna web components.
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| listener | `Function(String)` | A listener function receiving the event body string as a parameter. | 
 
 #### KlarnaPostPurchaseExperience
 
