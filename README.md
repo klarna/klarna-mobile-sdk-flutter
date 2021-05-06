@@ -18,6 +18,16 @@
 * iOS 9 or later.
 * Android 4.4 or later.
 
+### Supported Products
+
+- :white_check_mark: Klarna Post Purchase Experience
+- :x: Klarna Payments
+- :x: Klarna Checkout
+
+#### Post Purchase Experience
+
+As of now, credentials needed for Post Purchase Experience is only available through Klarna Delivery Managers. If you want to test this integration, please contact your Delivery Manager to get required information regarding Post Purchase Experience.
+
 ### Klarna In-App SDK Documentation
 [Overview of the SDK](https://developers.klarna.com/documentation/in-app/)
 
