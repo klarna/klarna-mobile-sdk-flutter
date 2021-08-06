@@ -18,6 +18,8 @@ public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
             let channel = FlutterEventChannel(name: key, binaryMessenger: messenger)
             channel.setStreamHandler(value)
         }
+
+        PaymentViewPlugin.register(with: registrar)
     }
     
     static func getMethodHandlerMap() -> [String: FlutterPlugin] {
