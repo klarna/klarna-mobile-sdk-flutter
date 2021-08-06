@@ -1,6 +1,8 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
 import androidx.annotation.NonNull
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.payment.KlarnaPaymentViewWidgetFactory
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.payment.KlarnaPaymentViewPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -20,6 +22,10 @@ public class FlutterKlarnaInappSdk : FlutterPlugin, ActivityAware {
             val eventChannel = EventChannel(flutterPluginBinding.flutterEngine.dartExecutor, it.key)
             eventChannel.setStreamHandler(it.value)
         }
+
+        flutterPluginBinding
+                .platformViewRegistry
+                .registerViewFactory("plugins/klarna_payment_view", KlarnaPaymentViewWidgetFactory(flutterPluginBinding.binaryMessenger))
     }
 
     // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -46,6 +52,8 @@ public class FlutterKlarnaInappSdk : FlutterPlugin, ActivityAware {
 
             PluginContext.activity = registrar.activity()
             PluginContext.context = registrar.context()
+
+            KlarnaPaymentViewPlugin.registerWith(registrar)
         }
     }
 

@@ -72,7 +72,7 @@ packages:
   flutter_klarna_inapp_sdk:
     dependency: "direct dev"
     description:
-      path: ".."
+      path: "../.."
       relative: true
     source: path
     version: "0.0.1"
