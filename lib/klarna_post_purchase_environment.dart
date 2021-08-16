@@ -8,7 +8,7 @@ enum KlarnaPostPurchaseEnvironment {
 }
 
 class KlarnaPostPurchaseEnvironmentHelper {
-  static String getSdkSource(KlarnaPostPurchaseEnvironment environment) {
+  static String? getSdkSource(KlarnaPostPurchaseEnvironment? environment) {
     switch (environment) {
       case KlarnaPostPurchaseEnvironment.EU:
         return "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js";
