@@ -18,8 +18,8 @@ class KlarnaPostPurchaseExperience {
 
   static Future<KlarnaPostPurchaseExperience> init(
       String locale, String purchaseCountry,
-      {String design,
-      /** post purchase environment **/ KlarnaPostPurchaseEnvironment environment}) async {
+      {String? design,
+      /** post purchase environment **/ KlarnaPostPurchaseEnvironment? environment}) async {
     var instance = KlarnaPostPurchaseExperience();
     await instance.initialize(locale, purchaseCountry,
         design: design, environment: environment);
@@ -27,8 +27,8 @@ class KlarnaPostPurchaseExperience {
   }
 
   Future<KlarnaResult> initialize(String locale, String purchaseCountry,
-      {String design,
-      /** post purchase environment **/ KlarnaPostPurchaseEnvironment environment}) async {
+      {String? design,
+      /** post purchase environment **/ KlarnaPostPurchaseEnvironment? environment}) async {
     final String result =
         await _channel.invokeMethod('initialize', <String, dynamic>{
       'id': _id,
@@ -45,7 +45,7 @@ class KlarnaPostPurchaseExperience {
   }
 
   Future<KlarnaResult> renderOperation(String operationToken,
-      {String locale}) async {
+      {String? locale}) async {
     final String result = await _channel.invokeMethod(
         'renderOperation', <String, dynamic>{
       'id': _id,
@@ -57,10 +57,10 @@ class KlarnaPostPurchaseExperience {
 
   Future<KlarnaResult> authorizationRequest(
       String clientId, String scope, String redirectUri,
-      {String locale,
-      String state,
-      String loginHint,
-      String responseType}) async {
+      {String? locale,
+      String? state,
+      String? loginHint,
+      String? responseType}) async {
     final String result =
         await _channel.invokeMethod('authorizationRequest', <String, dynamic>{
       'id': _id,

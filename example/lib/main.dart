@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _showToast(BuildContext context, String text) {
-    final scaffold = Scaffold.of(context);
+    final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(
       SnackBar(
         content: Text(text),
@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
                             children: <Widget>[
                               Text(
                                 "PostPurchaseExperience.initialize",
-                                style: Theme.of(context).textTheme.subtitle,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
                               TextFormField(
                                 controller: localeController,
@@ -160,7 +160,7 @@ class _MyAppState extends State<MyApp> {
                                 }).toList(),
                               ),
                               MaterialButton(
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                                 child: new Text("Initialize"),
                                 onPressed: () => ppeInitialize(context),
                               ),
@@ -172,7 +172,7 @@ class _MyAppState extends State<MyApp> {
                             children: <Widget>[
                               Text(
                                 "PostPurchaseExperience.authorizationRequest",
-                                style: Theme.of(context).textTheme.subtitle,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
                               TextFormField(
                                 controller: clientIdController,
@@ -193,7 +193,7 @@ class _MyAppState extends State<MyApp> {
                                     labelText: 'Redirect URI'),
                               ),
                               MaterialButton(
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                                 child: new Text("Authorization Request"),
                                 onPressed: () =>
                                     ppeAuthorizationRequest(context),
@@ -206,7 +206,7 @@ class _MyAppState extends State<MyApp> {
                             children: <Widget>[
                               Text(
                                 "PostPurchaseExperience.renderOperation",
-                                style: Theme.of(context).textTheme.subtitle,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
                               TextFormField(
                                 controller: operationTokenController,
@@ -215,7 +215,7 @@ class _MyAppState extends State<MyApp> {
                                     labelText: "Operation Token"),
                               ),
                               MaterialButton(
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                                 child: new Text("Render Operation"),
                                 onPressed: () => ppeRenderOperation(context),
                               ),
@@ -227,10 +227,10 @@ class _MyAppState extends State<MyApp> {
                             children: <Widget>[
                               Text(
                                 "PostPurchaseExperience.destroy",
-                                style: Theme.of(context).textTheme.subtitle,
+                                style: Theme.of(context).textTheme.subtitle1,
                               ),
                               MaterialButton(
-                                color: Theme.of(context).accentColor,
+                                color: Theme.of(context).colorScheme.secondary,
                                 child: new Text("Destroy"),
                                 onPressed: () => destroy(context),
                               ),
