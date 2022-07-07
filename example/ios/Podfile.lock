@@ -22,10 +22,10 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_klarna_inapp_sdk/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_klarna_inapp_sdk: c982b60e946996cdf09667eaf6ee948eebdb4861
   KlarnaMobileSDK: 32db66abdfa7a1bb95379c8425e1e5da95e8f067
 
-PODFILE CHECKSUM: 0ba44ad07df4ab62269dc769727cf0f12b1e453d
+PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
 
 COCOAPODS: 1.11.3
