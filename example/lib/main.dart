@@ -29,15 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initHybridSDK();
     initEventAndErrorCallbacks();
-  }
-
-  void initHybridSDK() async {
-    await KlarnaHybridSDK.initialize("https://www.klarna.com");
-    await KlarnaHybridSDK.registerEventListener((event) {
-      this._showToast(context, "KlarbaHybridSDK Event: $event");
-    });
   }
 
   void initEventAndErrorCallbacks() async {
@@ -46,11 +38,15 @@ class _MyAppState extends State<MyApp> {
     }, (error) {
       _showToast(context, "error: $error");
     });
+    await KlarnaPostPurchaseExperience.registerEventListener((event) {
+      this._showToast(context, "KlarnaPostPurchaseExperience Event: $event");
+    });
   }
 
   void ppeInitialize(BuildContext context) async {
     this.ppe = new KlarnaPostPurchaseExperience();
     final KlarnaResult result = await ppe.initialize(
+        "https://www.klarna.com",
         localeController.text, countryController.text,
         design: designController.text, environment: ppeEnvironment);
     _showToast(context, result.toString());

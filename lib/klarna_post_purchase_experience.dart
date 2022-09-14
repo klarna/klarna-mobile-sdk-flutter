@@ -9,6 +9,8 @@ import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
 class KlarnaPostPurchaseExperience {
   static const MethodChannel _channel =
       const MethodChannel('klarna_post_purchase_experience');
+  static const EventChannel _eventChannel =
+      const EventChannel('klarna_post_purchase_experience_events');
 
   static final _idRandom = Random.secure();
 
@@ -17,21 +19,25 @@ class KlarnaPostPurchaseExperience {
   KlarnaPostPurchaseExperience();
 
   static Future<KlarnaPostPurchaseExperience> init(
-      String locale, String purchaseCountry,
+      String returnUrl, String locale, String purchaseCountry,
       {String? design,
-      /** post purchase environment **/ KlarnaPostPurchaseEnvironment? environment}) async {
+      /** post purchase environment **/ KlarnaPostPurchaseEnvironment?
+          environment}) async {
     var instance = KlarnaPostPurchaseExperience();
-    await instance.initialize(locale, purchaseCountry,
+    await instance.initialize(returnUrl, locale, purchaseCountry,
         design: design, environment: environment);
     return instance;
   }
 
-  Future<KlarnaResult> initialize(String locale, String purchaseCountry,
+  Future<KlarnaResult> initialize(
+      String returnUrl, String locale, String purchaseCountry,
       {String? design,
-      /** post purchase environment **/ KlarnaPostPurchaseEnvironment? environment}) async {
+      /** post purchase environment **/ KlarnaPostPurchaseEnvironment?
+          environment}) async {
     final String result =
         await _channel.invokeMethod('initialize', <String, dynamic>{
       'id': _id,
+      'returnUrl': returnUrl,
       'locale': locale,
       'purchaseCountry': purchaseCountry,
       'design': design,
@@ -73,5 +79,13 @@ class KlarnaPostPurchaseExperience {
       'responseType': responseType
     });
     return KlarnaResult.fromJson(json.decode(result));
+  }
+
+  static Future<Null> registerEventListener(Function(String) listener) async {
+    _eventChannel
+        .receiveBroadcastStream()
+        .map<String>((event) => event)
+        .listen(listener);
+    return null;
   }
 }

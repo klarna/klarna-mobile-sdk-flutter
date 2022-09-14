@@ -10,7 +10,7 @@ internal object KlarnaHybridSDKHandler : BaseMethodHandler<KlarnaHybridSDKMethod
 
     internal var hybridSDK: KlarnaHybridSDK? = null
     private val hybridSDKCallback = KlarnaHybridSDKCallback()
-    private val hybridSDKEventListener: KlarnaEventListener = KlarnaHybridSDKEventListener()
+    private val hybridSDKEventListener: KlarnaEventListener = KlarnaHybridSDKEventListener(KlarnaHybridSDKEventHandler)
 
     const val NOT_INITIALIZED = "KlarnaHybridSDK is not initialized"
 

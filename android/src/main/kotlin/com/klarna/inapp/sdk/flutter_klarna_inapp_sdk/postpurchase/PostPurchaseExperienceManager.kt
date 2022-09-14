@@ -8,7 +8,12 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.manager.AssetManager
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.jsScriptString
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKCallback
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKEventListener
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
+import com.klarna.mobile.sdk.api.KlarnaEventListener
+import com.klarna.mobile.sdk.api.callback.KlarnaEventCallback
+import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
 
 internal class PostPurchaseExperienceManager {
@@ -18,12 +23,14 @@ internal class PostPurchaseExperienceManager {
 
         fun notInitialized(result: MethodChannel.Result?) {
             result?.error(
-                    ResultError.POST_PURCHASE_ERROR.errorCode,
-                    NOT_INITIALIZED,
-                    "Call 'PostPurchaseExperience.initialize' before this."
+                ResultError.POST_PURCHASE_ERROR.errorCode,
+                NOT_INITIALIZED,
+                "Call 'PostPurchaseExperience.initialize' before this."
             )
         }
     }
+
+    var hybridSDK: KlarnaHybridSDK? = null
 
     var webViewManager: WebViewManager = WebViewManager()
 
@@ -36,6 +43,7 @@ internal class PostPurchaseExperienceManager {
     private var renderResult: MethodChannel.Result? = null
 
     private val jsInterface = PostPurchaseExperienceJSInterface(PPEResultCallback())
+    private val hybridSDKCallback = KlarnaHybridSDKCallback()
 
     fun initialize(method: PostPurchaseExperienceMethod.Initialize, result: MethodChannel.Result?) {
         if (webViewManager.webView != null || initialized) {
@@ -43,12 +51,14 @@ internal class PostPurchaseExperienceManager {
             return
         }
 
-        val hybridSDK = KlarnaHybridSDKHandler.hybridSDK
-        if (hybridSDK != null) {
-            webViewClient = PostPurchaseExperienceWebViewClient(hybridSDK)
-        } else {
-            KlarnaHybridSDKHandler.notInitialized(result)
-            return
+        KlarnaHybridSDK(method.returnUrl, hybridSDKCallback).let { klarnaHybridSDK: KlarnaHybridSDK ->
+            hybridSDK = klarnaHybridSDK
+            webViewClient = PostPurchaseExperienceWebViewClient(klarnaHybridSDK)
+            klarnaHybridSDK.registerEventListener(
+                KlarnaHybridSDKEventListener(
+                    PostPurchaseExperienceEventHandler
+                )
+            )
         }
 
         webViewManager.initialize(null)
@@ -68,7 +78,10 @@ internal class PostPurchaseExperienceManager {
             webView.loadUrl("file:///android_asset/ppe.html")
         } else {
             AssetManager.readAsset("ppe.html")?.let { html ->
-                html.replace("https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js", method.sdkSource).let {
+                html.replace(
+                    "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js",
+                    method.sdkSource
+                ).let {
                     webView.loadData(it, null, null)
                 }
             } ?: webView.loadUrl("file:///android_asset/ppe.html")
@@ -76,7 +89,8 @@ internal class PostPurchaseExperienceManager {
 
         initResult = result
         initialized = false
-        val initScript = "initialize(${method.locale.jsScriptString()}, ${method.purchaseCountry.jsScriptString()}, ${method.design.jsScriptString()})"
+        val initScript =
+            "initialize(${method.locale.jsScriptString()}, ${method.purchaseCountry.jsScriptString()}, ${method.design.jsScriptString()})"
         webViewClient?.queueJS(webViewManager, initScript)
     }
 
@@ -91,29 +105,40 @@ internal class PostPurchaseExperienceManager {
         result?.success(null)
     }
 
-    fun renderOperation(method: PostPurchaseExperienceMethod.RenderOperation, result: MethodChannel.Result?) {
+    fun renderOperation(
+        method: PostPurchaseExperienceMethod.RenderOperation,
+        result: MethodChannel.Result?
+    ) {
         if (!initialized) {
             notInitialized(result)
             return
         }
         renderResult = result
-        webViewClient?.queueJS(webViewManager, "renderOperation(${method.locale.jsScriptString()}, ${method.operationToken.jsScriptString()})")
+        webViewClient?.queueJS(
+            webViewManager,
+            "renderOperation(${method.locale.jsScriptString()}, ${method.operationToken.jsScriptString()})"
+        )
         showWebView()
     }
 
-    fun authorizationRequest(method: PostPurchaseExperienceMethod.AuthorizationRequest, result: MethodChannel.Result?) {
+    fun authorizationRequest(
+        method: PostPurchaseExperienceMethod.AuthorizationRequest,
+        result: MethodChannel.Result?
+    ) {
         if (!initialized) {
             notInitialized(result)
             return
         }
         authResult = result
-        webViewClient?.queueJS(webViewManager, "authorizationRequest(${method.locale.jsScriptString()}, " +
-                "${method.clientId.jsScriptString()}, " +
-                "${method.scope.jsScriptString()}, " +
-                "${method.redirectUri.jsScriptString()}, " +
-                "${method.state.jsScriptString()}, " +
-                "${method.loginHint.jsScriptString()}, " +
-                "${method.responseType.jsScriptString()})")
+        webViewClient?.queueJS(
+            webViewManager, "authorizationRequest(${method.locale.jsScriptString()}, " +
+                    "${method.clientId.jsScriptString()}, " +
+                    "${method.scope.jsScriptString()}, " +
+                    "${method.redirectUri.jsScriptString()}, " +
+                    "${method.state.jsScriptString()}, " +
+                    "${method.loginHint.jsScriptString()}, " +
+                    "${method.responseType.jsScriptString()})"
+        )
         showWebView()
     }
 

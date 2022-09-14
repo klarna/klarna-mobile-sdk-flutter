@@ -10,6 +10,8 @@ class PostPurchaseExperienceManager {
         result?(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: NOT_INITIAILIZED, details: "Call 'PostPurchaseExperience.initialize' before using this"))
     }
     
+    var hybridSDK: KlarnaHybridSDK?
+    
     var webViewManager = WebViewManager()
     
     var navigationDelegate: PostPurchaseWKNavigationDelegate?
@@ -26,16 +28,23 @@ class PostPurchaseExperienceManager {
     var authResult: FlutterResult?
     var renderResult: FlutterResult?
     
+    private let hybridSDKEventListener: KlarnaHybridEventListener = PluginKlarnaHybridEventListener()
+    
     func initialize(method: PostPurchaseMethods.Initialize, result: @escaping FlutterResult) {
         if (webViewManager.webView != nil) {
             result(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: "Already initialized.", details: nil))
             return
         }
         
-        if let hybridSDK = KlarnaHybridSDKHandler.hybridSDK {
-            navigationDelegate = PostPurchaseWKNavigationDelegate(hybridSDK: hybridSDK)
+        if let returnUrl = URL.init(string: method.returnUrl) {
+            let klarnaHybridSDK = KlarnaHybridSDK.init(returnUrl: returnUrl, eventListener: hybridSDKEventListener)
+            hybridSDK = klarnaHybridSDK
+            navigationDelegate = PostPurchaseWKNavigationDelegate(hybridSDK: klarnaHybridSDK)
+            klarnaHybridSDK.registerEventListener(withCallback: { response in
+                PostPurchaseExperienceEventHandler.instance.sendValue(value: response.bodyString)
+            })
         } else {
-            KlarnaHybridSDKHandler.notInitialized(result: result)
+            result(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: "Invalid ReturnURL.", details: nil))
             return
         }
         

@@ -7,6 +7,7 @@ import io.flutter.plugin.common.MethodCall
 internal sealed class PostPurchaseExperienceMethod(val id: Int) {
     class Initialize(
             id: Int,
+            val returnUrl: String,
             val locale: String,
             val purchaseCountry: String,
             val design: String?,
@@ -32,6 +33,7 @@ internal sealed class PostPurchaseExperienceMethod(val id: Int) {
             return when (call.method) {
                 "initialize" -> Initialize(
                         call.requireArgument("id"),
+                        call.requireArgument("returnUrl"),
                         call.requireArgument("locale"),
                         call.requireArgument("purchaseCountry"),
                         call.argument("design"),

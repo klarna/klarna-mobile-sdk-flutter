@@ -31,7 +31,8 @@ public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
         return [
             "klarna_events": EventCallbackHandler.instance,
             "klarna_errors": ErrorCallbackHandler.instance,
-            "klarna_hybrid_sdk_events": KlarnaHybridSDKEventHandler.instance
+            "klarna_hybrid_sdk_events": KlarnaHybridSDKEventHandler.instance,
+            "klarna_post_purchase_experience_events": PostPurchaseExperienceEventHandler.instance
         ]
     }
 }

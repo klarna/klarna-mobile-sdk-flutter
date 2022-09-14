@@ -8,6 +8,7 @@ class PostPurchaseMethods {
 
     struct Initialize: PostPurchaseMethod, Decodable {
         let id: Int
+        let returnUrl: String
         let locale: String
         let purchaseCountry: String
         let design: String?

@@ -37,25 +37,6 @@ Add `flutter_klarna_inapp_sdk` as a dependency in your `pubspec.yaml` file accor
 
 ### Usage
 
-#### KlarnaHybridSDK
-
-##### initialize()
-
-Initializes a KlarnaHybridSDK instance which will also be used for Post Purchase operations.
-
-###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. | 
-
-##### registerEventListener()
-Registers a listener, receiving merchant events from Klarna web components.
-
-###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| listener | `Function(String)` | A listener function receiving the event body string as a parameter. | 
-
 #### KlarnaPostPurchaseExperience
 
 ##### initialize()
@@ -65,6 +46,7 @@ Initializes new `WebView` and javascript Klarna Post Purchase Experience library
 ###### Parameters
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. | 
 | locale | `String` | A string representing the user locale. For example: `se-SE` | 
 | purchaseCountry | `String` | A string representing the purchase country. For example: `SE` | 
 | design | `named optional` `String?` | A string representing the design ID. | 
@@ -99,6 +81,13 @@ Called to kick off the oauth flow.
 | loginHint | `named optional` `String?` | If your application knows which user is trying to authenticate, it can use this parameter to provide a hint to the Klarna’s Authorization Server. The server uses the hint to simplify the login flow by prefilling the email field in the sign-in form. It’s recommended to use this as it will improve the customer experience. | 
 | responseType | `named optional` `String?` | The desired grant type. The value MUST be one of "code" for requesting an authorization code or "token" for requesting an access token (implicit grant). The default is "code" | 
 
+##### registerEventListener()
+Registers a listener, receiving merchant events from Klarna web components.
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| listener | `Function(String)` | A listener function receiving the event body string as a parameter. |
 
 ## Development
 
