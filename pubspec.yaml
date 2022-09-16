@@ -1,5 +1,5 @@
 name: flutter_klarna_inapp_sdk
-description: Klarna&#x27;s Flutter wrapper for the In-App SDK
+description: Klarna&#x27;s Flutter wrapper library for the native Klarna In-App SDK
 version: 0.0.1
 homepage: https://github.com/klarna/flutter-klarna-inapp-sdk
 
