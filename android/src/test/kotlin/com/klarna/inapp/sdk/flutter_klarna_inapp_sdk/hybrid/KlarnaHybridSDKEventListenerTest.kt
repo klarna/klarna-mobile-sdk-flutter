@@ -10,7 +10,7 @@ import org.junit.Test
 
 class KlarnaHybridSDKEventListenerTest {
 
-    private val eventListener = KlarnaHybridSDKEventListener()
+    private val eventListener = KlarnaHybridSDKEventListener(KlarnaHybridSDKEventHandler)
 
     @Before
     fun setup() {

@@ -1,6 +1,6 @@
 class KlarnaResult {
-  final String data;
-  final String error;
+  final String? data;
+  final String? error;
 
   KlarnaResult(this.data, this.error);
 

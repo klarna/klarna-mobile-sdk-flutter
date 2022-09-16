@@ -9,22 +9,23 @@ import io.mockk.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class PostPurchaseExperienceManagerTest {
 
     private val ppeManager = PostPurchaseExperienceManager()
     private val result: MethodChannel.Result = mockk()
     private val webViewManager: WebViewManager = mockk(relaxed = true)
     private val webView: WebView = mockk(relaxed = true)
-    private val hybridSDK: KlarnaHybridSDK = mockk()
 
     @Before
     fun setup() {
         mockkObject(PostPurchaseExperienceManager)
         mockkObject(KlarnaHybridSDKHandler)
 
-        every { KlarnaHybridSDKHandler.hybridSDK } returns hybridSDK
-        every { hybridSDK.addWebView(any()) } just runs
+        mockkConstructor(KlarnaHybridSDK::class)
 
         every { result.success(any()) } just runs
         every { result.error(any(), any(), any()) } just runs
@@ -54,7 +55,6 @@ class PostPurchaseExperienceManagerTest {
     @Test
     fun testInitialize() {
         ppeManager.initialize(mockk(relaxed = true), result)
-        verify { KlarnaHybridSDKHandler.hybridSDK }
         verify { webViewManager.initialize(null) }
         verify { webViewManager.addToHybridSdk(null) }
         verify { webView.webViewClient = any() }

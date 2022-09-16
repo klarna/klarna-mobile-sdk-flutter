@@ -34,7 +34,7 @@ class PostPurchaseExperienceHandlerTest {
 
     @Test
     fun testInitialize() {
-        val method = PostPurchaseExperienceMethod.Initialize(id, "sv-SE", "SE", null)
+        val method = PostPurchaseExperienceMethod.Initialize(id, "testReturnUrl", "sv-SE", "SE", null, null)
         ppeHandler.onMethod(method, result)
         verify { ppeManager.initialize(method, result) }
     }

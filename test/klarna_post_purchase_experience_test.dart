@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../lib/klarna_post_purchase_experience.dart';
@@ -9,12 +8,15 @@ const channel = const MethodChannel('klarna_post_purchase_experience');
 var clientId;
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+  TestWidgetsFlutterBinding.ensureInitialized();
   channel.setMockMethodCallHandler((MethodCall call) async {
     switch (call.method) {
       case "initialize":
         if (call.arguments["id"] == null) {
           throw methodException(call.method, "id");
+        }
+        if (call.arguments["returnUrl"] != "testReturnUrl") {
+          throw methodException(call.method, "returnUrl");
         }
         if (call.arguments["locale"] != "testLocale") {
           throw methodException(call.method, "locale");
@@ -53,13 +55,22 @@ void main() {
   });
 
   test("initialize with valid params", () async {
-    var client = await KlarnaPostPurchaseExperience.init("testLocale", "testPurchaseCountry");
+    var client = await KlarnaPostPurchaseExperience.init("testReturnUrl", "testLocale", "testPurchaseCountry");
     expect(client, isA<KlarnaPostPurchaseExperience>());
+  });
+
+  test("initialize with invalid returnUrl param", () async {
+    try {
+      await KlarnaPostPurchaseExperience.init("", "testLocale", "testPurchaseCountry");
+      fail("should have thrown an error for invalid returnUrl");
+    } catch (error) {
+      expect(error.toString(), methodException("initialize", "returnUrl").toString());
+    }
   });
 
   test("initialize with invalid locale param", () async {
     try {
-      await KlarnaPostPurchaseExperience.init("", "testPurchaseCountry");
+      await KlarnaPostPurchaseExperience.init("testReturnUrl", "", "testPurchaseCountry");
       fail("should have thrown an error for invalid locale");
     } catch (error) {
       expect(error.toString(), methodException("initialize", "locale").toString());
@@ -68,7 +79,7 @@ void main() {
 
   test("initialize with invalid purchaseCountry param", () async {
     try {
-      await KlarnaPostPurchaseExperience.init("testLocale", "");
+      await KlarnaPostPurchaseExperience.init("testReturnUrl", "testLocale", "");
       fail("should have thrown an error for invalid purchaseCountry");
     } catch (error) {
       expect(error.toString(), methodException("initialize", "purchaseCountry").toString());
@@ -76,12 +87,12 @@ void main() {
   });
 
   test("initialize with full params", () async {
-    var client = await KlarnaPostPurchaseExperience.init("testLocale", "testPurchaseCountry", design: "testDesign");
+    var client = await KlarnaPostPurchaseExperience.init("testReturnUrl", "testLocale", "testPurchaseCountry", design: "testDesign");
     expect(client, isA<KlarnaPostPurchaseExperience>());
   });
 
   test("destroy initialized client", () async {
-    var client = await KlarnaPostPurchaseExperience.init("testLocale", "testPurchaseCountry");
+    var client = await KlarnaPostPurchaseExperience.init("testReturnUrl", "testLocale", "testPurchaseCountry");
     expect(await client.destroy(), isNull);
   });
 
@@ -95,14 +106,14 @@ void main() {
   });
 
   test("renderOperation with full params", () async {
-    var client = await KlarnaPostPurchaseExperience.init("testLocale", "testPurchaseCountry");
+    var client = await KlarnaPostPurchaseExperience.init("testReturnUrl", "testLocale", "testPurchaseCountry");
     var result = await client.renderOperation("testOperationToken", locale: "testLocale");
     expect(result.data, "{id: $clientId, locale: testLocale, operationToken: testOperationToken}");
     expect(result.error, null);
   });
 
   test("authorizationRequest with full params", () async {
-    var client = await KlarnaPostPurchaseExperience.init("testLocale", "testPurchaseCountry");
+    var client = await KlarnaPostPurchaseExperience.init("testReturnUrl", "testLocale", "testPurchaseCountry");
     var result = await client.authorizationRequest("testClientId", "testScope", "testRedirectUri", locale: "testLocale", state: "testState", loginHint: "testLoginHint", responseType: "testResponseType");
     expect(result.data, "{id: $clientId, locale: testLocale, clientId: testClientId, scope: testScope, redirectUri: testRedirectUri, state: testState, loginHint: testLoginHint, responseType: testResponseType}");
     expect(result.error, null);
