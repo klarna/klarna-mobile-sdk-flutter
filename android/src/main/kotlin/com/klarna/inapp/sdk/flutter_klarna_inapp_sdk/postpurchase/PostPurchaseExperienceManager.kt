@@ -1,6 +1,7 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.webkit.WebChromeClient
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ErrorCallbackHandler
@@ -10,9 +11,6 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.jsScriptString
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview.WebViewManager
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKCallback
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKEventListener
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
-import com.klarna.mobile.sdk.api.KlarnaEventListener
-import com.klarna.mobile.sdk.api.callback.KlarnaEventCallback
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
 
@@ -51,18 +49,18 @@ internal class PostPurchaseExperienceManager {
             return
         }
 
-        KlarnaHybridSDK(method.returnUrl, hybridSDKCallback).let { klarnaHybridSDK: KlarnaHybridSDK ->
+        KlarnaHybridSDK(
+            method.returnUrl,
+            hybridSDKCallback
+        ).let { klarnaHybridSDK: KlarnaHybridSDK ->
             hybridSDK = klarnaHybridSDK
             webViewClient = PostPurchaseExperienceWebViewClient(klarnaHybridSDK)
             klarnaHybridSDK.registerEventListener(
-                KlarnaHybridSDKEventListener(
-                    PostPurchaseExperienceEventHandler
-                )
+                KlarnaHybridSDKEventListener(PostPurchaseExperienceEventHandler)
             )
-        }
 
-        webViewManager.initialize(null)
-        webViewManager.addToHybridSdk(null)
+            webViewManager.initialize(null)
+        }
 
         val webView = webViewManager.requireWebView()
         webView.webChromeClient = WebChromeClient()
@@ -72,17 +70,17 @@ internal class PostPurchaseExperienceManager {
         webView.visibility = View.INVISIBLE
         webView.setBackgroundColor(Color.TRANSPARENT)
 
+        hybridSDK?.addWebView(webView)
+
         webView.addJavascriptInterface(jsInterface, "PPECallback")
 
-        if (method.sdkSource.isNullOrBlank()) {
+        val defaultLibrarySource = "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js"
+        if (method.sdkSource.isNullOrBlank() || method.sdkSource == defaultLibrarySource) {
             webView.loadUrl("file:///android_asset/ppe.html")
         } else {
             AssetManager.readAsset("ppe.html")?.let { html ->
-                html.replace(
-                    "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js",
-                    method.sdkSource
-                ).let {
-                    webView.loadData(it, null, null)
+                html.replace(defaultLibrarySource, method.sdkSource).let {
+                    webView.loadDataWithBaseURL("https://app.klarna.com", it, "text/html", "UTF-8", null)
                 }
             } ?: webView.loadUrl("file:///android_asset/ppe.html")
         }
@@ -102,6 +100,7 @@ internal class PostPurchaseExperienceManager {
         initResult = null
         renderResult = null
         authResult = null
+        hybridSDK = null
         result?.success(null)
     }
 
@@ -156,8 +155,10 @@ internal class PostPurchaseExperienceManager {
             if (success) {
                 initResult?.success(message)
                 initialized = true
+                Log.d("PPEResultCallback", "initialize successful: $message - $error")
             } else {
                 initResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, message, error)
+                Log.d("PPEResultCallback", "initialize failed: $message - $error")
             }
             initResult = null
         }
@@ -165,8 +166,10 @@ internal class PostPurchaseExperienceManager {
         override fun onRenderOperation(success: Boolean, message: String?, error: String?) {
             if (success) {
                 renderResult?.success(message)
+                Log.d("PPEResultCallback", "renderOperation successful: $message - $error")
             } else {
                 renderResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, message, error)
+                Log.d("PPEResultCallback", "renderOperation failed: $message - $error")
             }
             renderResult = null
             hideWebView()
@@ -175,8 +178,10 @@ internal class PostPurchaseExperienceManager {
         override fun onAuthorizationRequest(success: Boolean, message: String?, error: String?) {
             if (success) {
                 authResult?.success(message)
+                Log.d("PPEResultCallback", "authorizationRequest successful: $message - $error")
             } else {
                 authResult?.error(ResultError.POST_PURCHASE_ERROR.errorCode, message, error)
+                Log.d("PPEResultCallback", "authorizationRequest failed: $message - $error")
             }
             authResult = null
             hideWebView()
@@ -185,6 +190,7 @@ internal class PostPurchaseExperienceManager {
         override fun onError(message: String?, throwable: Throwable?) {
             ErrorCallbackHandler.sendValue(message)
             hideWebView()
+            Log.d("PPEResultCallback", "error: $message")
         }
     }
 }

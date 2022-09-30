@@ -96,20 +96,6 @@ class WebViewManager {
         }
     }
     
-    func addToHybridSdk(result: FlutterResult?) {
-        if let webView = webView {
-            if let hybridSdk = KlarnaHybridSDKHandler.hybridSDK {
-                navigationDelegate = KlarnaWKNavigationDelegate(hybridSDK: hybridSdk)
-                hybridSdk.addWebView(webView)
-                result?(nil)
-            } else {
-                KlarnaHybridSDKHandler.notInitialized(result: result)
-            }
-        } else {
-            WebViewManager.notInitialized(result: result)
-        }
-    }
-    
     func reset() {
         webView = nil
         webViewController = nil

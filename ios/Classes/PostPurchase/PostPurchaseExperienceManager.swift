@@ -43,16 +43,17 @@ class PostPurchaseExperienceManager {
             klarnaHybridSDK.registerEventListener(withCallback: { response in
                 PostPurchaseExperienceEventHandler.instance.sendValue(value: response.bodyString)
             })
+            
+            let contentController = WKUserContentController()
+            contentController.add(scriptMessageHandler, name: "PPECallback")
+            webViewManager.webConfiguration.userContentController = contentController
+            
+            webViewManager.initialize(result: nil)
+            hybridSDK?.addWebView(webViewManager.requireWebview())
         } else {
             result(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: "Invalid ReturnURL.", details: nil))
             return
         }
-        
-        let contentController = WKUserContentController()
-        contentController.add(scriptMessageHandler, name: "PPECallback")
-        webViewManager.webConfiguration.userContentController = contentController
-        webViewManager.initialize(result: nil)
-        webViewManager.addToHybridSdk(result: nil)
 
         let webView = webViewManager.requireWebview()
         webView.navigationDelegate = navigationDelegate

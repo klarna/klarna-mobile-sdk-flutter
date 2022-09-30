@@ -7,7 +7,6 @@ import android.widget.FrameLayout
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.ResultError
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.evaluateJavascriptCompat
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import io.flutter.plugin.common.MethodChannel
 
 internal class WebViewManager {
@@ -17,9 +16,9 @@ internal class WebViewManager {
 
         internal fun notInitialized(result: MethodChannel.Result?) {
             result?.error(
-                    ResultError.WEB_VIEW_ERROR.errorCode,
-                    NOT_INITIALIZED,
-                    "Call 'initialize' before using this method."
+                ResultError.WEB_VIEW_ERROR.errorCode,
+                NOT_INITIALIZED,
+                "Call 'initialize' before using this method."
             )
         }
     }
@@ -91,28 +90,12 @@ internal class WebViewManager {
         notInitialized(result)
     }
 
-    fun addToHybridSdk(result: MethodChannel.Result?) {
-        val klarnaHybridSDK = KlarnaHybridSDKHandler.hybridSDK
-        if (klarnaHybridSDK == null) {
-            KlarnaHybridSDKHandler.notInitialized(result)
-            return
-        }
-        webView?.apply {
-            webViewClient = KlarnaWebViewClient(klarnaHybridSDK)
-            klarnaHybridSDK.addWebView(this)
-            result?.success(null)
-            return
-        }
-        notInitialized(result)
-        return
-    }
-
     private fun addToActivityIfDetached() {
         PluginContext.activity?.let {
             if (webView?.parent == null) {
                 val params: FrameLayout.LayoutParams = FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
                 webView?.visibility = View.GONE

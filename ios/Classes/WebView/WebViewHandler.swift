@@ -24,8 +24,6 @@ class WebViewHandler: BaseMethodHandler<WebViewMethod> {
             loadURL(method: method as! WebViewMethods.LoadURL, result: result)
         case is WebViewMethods.LoadJS:
             loadJS(method: method as! WebViewMethods.LoadJS, result: result)
-        case is WebViewMethods.AddToHybridSDK:
-            addToHybridSdk(method: method as! WebViewMethods.AddToHybridSDK, result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -53,10 +51,6 @@ class WebViewHandler: BaseMethodHandler<WebViewMethod> {
     
     private func loadJS(method: WebViewMethods.LoadJS, result: @escaping FlutterResult) {
         webViewManager.loadJS(js: method.js, result: result)
-    }
-    
-    private func addToHybridSdk(method: WebViewMethods.AddToHybridSDK, result: @escaping FlutterResult) {
-        webViewManager.addToHybridSdk(result: result)
     }
     
 }

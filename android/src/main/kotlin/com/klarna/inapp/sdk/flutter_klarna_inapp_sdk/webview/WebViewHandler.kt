@@ -16,7 +16,6 @@ internal object WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.
             is WebViewMethod.Hide -> hide(method, result)
             is WebViewMethod.LoadURL -> loadURL(method, result)
             is WebViewMethod.LoadJS -> loadJS(method, result)
-            is WebViewMethod.AddToHybridSDK -> addToHybridSdk(method, result)
         }
     }
 
@@ -42,10 +41,6 @@ internal object WebViewHandler : BaseMethodHandler<WebViewMethod>(WebViewMethod.
 
     private fun loadJS(method: WebViewMethod.LoadJS, result: MethodChannel.Result) {
         webViewManager.loadJS(method.js, result)
-    }
-
-    private fun addToHybridSdk(method: WebViewMethod.AddToHybridSDK, result: MethodChannel.Result) {
-        webViewManager.addToHybridSdk(result)
     }
 
 }
