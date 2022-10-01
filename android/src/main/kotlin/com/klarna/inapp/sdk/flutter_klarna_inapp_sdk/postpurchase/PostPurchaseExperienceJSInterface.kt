@@ -13,28 +13,32 @@ internal class PostPurchaseExperienceJSInterface(private val resultCallback: Res
     @JavascriptInterface
     fun postMessage(jsonMessage: String?) {
         mainHandler.post {
-            val callbackMessage: PPECallbackMessage
-            try {
-                callbackMessage = ParserUtil.fromJson(jsonMessage)!!
-            } catch (t: Throwable) {
-                resultCallback?.onError("Can not parse web message", t)
-                return@post
+            receivedMessage(jsonMessage)
+        }
+    }
+
+    internal fun receivedMessage(jsonMessage: String?) {
+        val callbackMessage: PPECallbackMessage
+        try {
+            callbackMessage = ParserUtil.fromJson(jsonMessage)!!
+        } catch (t: Throwable) {
+            resultCallback?.onError("Can not parse web message", t)
+            return
+        }
+        val message = callbackMessage.message.jsValue()
+        val error = callbackMessage.error.jsValue()
+        val success = error == null
+        when (callbackMessage.action) {
+            "onInitialize" -> {
+                resultCallback?.onInitialize(success, message, error)
             }
-            val message = callbackMessage.message.jsValue()
-            val error = callbackMessage.error.jsValue()
-            val success = error == null
-            when (callbackMessage.action) {
-                "onInitialize" -> {
-                    resultCallback?.onInitialize(success, message, error)
-                }
-                "onRenderOperation" -> {
-                    resultCallback?.onRenderOperation(success, message, error)
-                }
-                "onAuthorizationRequest" -> {
-                    resultCallback?.onAuthorizationRequest(success, message, error)
-                }
-                else -> resultCallback?.onError("No handler for callback message: $jsonMessage", null)
+            "onRenderOperation" -> {
+                resultCallback?.onRenderOperation(success, message, error)
             }
+            "onAuthorizationRequest" -> {
+                resultCallback?.onAuthorizationRequest(success, message, error)
+            }
+            else -> resultCallback?.onError("No handler for callback message: $jsonMessage", null)
         }
     }
 

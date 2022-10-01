@@ -61,10 +61,4 @@ class WebViewMethodTest {
                 "js" to null
         )))
     }
-
-    @Test
-    fun testAddToHybridSDK() {
-        val method = WebViewMethod.Parser.parse(MethodCall("addToHybridSdk", null)) as? WebViewMethod.AddToHybridSDK
-        Assert.assertNotNull(method)
-    }
 }

@@ -56,7 +56,6 @@ class PostPurchaseExperienceManagerTest {
     fun testInitialize() {
         ppeManager.initialize(mockk(relaxed = true), result)
         verify { webViewManager.initialize(null) }
-        verify { webViewManager.addToHybridSdk(null) }
         verify { webView.webViewClient = any() }
         verify { webView.webChromeClient = any() }
         verify { webView.addJavascriptInterface(any(), "PPECallback") }

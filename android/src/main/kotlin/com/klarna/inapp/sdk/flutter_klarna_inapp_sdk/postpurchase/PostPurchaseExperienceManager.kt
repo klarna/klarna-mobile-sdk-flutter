@@ -64,7 +64,12 @@ internal class PostPurchaseExperienceManager {
 
         val webView = webViewManager.requireWebView()
         webView.webChromeClient = WebChromeClient()
-        webView.webViewClient = webViewClient
+        webViewClient?.let {
+            webView.webViewClient = it
+        } ?: run {
+            result?.error(ResultError.POST_PURCHASE_ERROR.errorCode, "Failed to initialize.", null)
+            return
+        }
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.visibility = View.INVISIBLE
@@ -80,7 +85,13 @@ internal class PostPurchaseExperienceManager {
         } else {
             AssetManager.readAsset("ppe.html")?.let { html ->
                 html.replace(defaultLibrarySource, method.sdkSource).let {
-                    webView.loadDataWithBaseURL("https://app.klarna.com", it, "text/html", "UTF-8", null)
+                    webView.loadDataWithBaseURL(
+                        "https://app.klarna.com",
+                        it,
+                        "text/html",
+                        "UTF-8",
+                        null
+                    )
                 }
             } ?: webView.loadUrl("file:///android_asset/ppe.html")
         }

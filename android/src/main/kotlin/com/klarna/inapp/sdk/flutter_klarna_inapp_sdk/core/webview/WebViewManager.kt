@@ -32,10 +32,12 @@ internal class WebViewManager {
 
     fun initialize(result: MethodChannel.Result?) {
         if (webView == null) {
-            webView = WebView(PluginContext.activity)
-            addToActivityIfDetached()
-            result?.success(null)
-            return
+            PluginContext.activity?.let { activity ->
+                webView = WebView(activity)
+                addToActivityIfDetached()
+                result?.success(null)
+                return
+            }
         }
         result?.error(ResultError.WEB_VIEW_ERROR.errorCode, "WebView is already initialized.", null)
     }

@@ -62,10 +62,4 @@ class WebViewHandlerTest {
         handler.onMethod(WebViewMethod.LoadJS("js"), result)
         verify { webViewManager.loadJS("js", result) }
     }
-
-    @Test
-    fun testAddToHybridSDK() {
-        handler.onMethod(WebViewMethod.AddToHybridSDK, result)
-        verify { webViewManager.addToHybridSdk(result) }
-    }
 }

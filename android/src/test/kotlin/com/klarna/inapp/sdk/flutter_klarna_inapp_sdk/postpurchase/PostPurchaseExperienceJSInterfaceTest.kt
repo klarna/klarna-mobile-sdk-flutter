@@ -14,7 +14,8 @@ import org.robolectric.RobolectricTestRunner
 class PostPurchaseExperienceJSInterfaceTest {
 
     private val callback: PostPurchaseExperienceJSInterface.ResultCallback = mockk(relaxed = true)
-    private val jsInterface: PostPurchaseExperienceJSInterface = PostPurchaseExperienceJSInterface(callback)
+    private val jsInterface: PostPurchaseExperienceJSInterface =
+        PostPurchaseExperienceJSInterface(callback)
 
     @Before
     fun setup() {
@@ -28,61 +29,121 @@ class PostPurchaseExperienceJSInterfaceTest {
 
     @Test
     fun testInitialize() {
-        jsInterface.postMessage(createMessage("onInitialize", null, null))
+        jsInterface.receivedMessage(createMessage("onInitialize", null, null))
         verify { callback.onInitialize(true, null, null) }
 
-        jsInterface.postMessage(createMessage("onInitialize", createResult(null, null), null))
+        jsInterface.receivedMessage(createMessage("onInitialize", createResult(null, null), null))
         verify { callback.onInitialize(true, createResult(null, null), null) }
 
-        jsInterface.postMessage(createMessage("onInitialize", createResult("\"data\"", null), null))
+        jsInterface.receivedMessage(createMessage("onInitialize", createResult("\"data\"", null), null))
         verify { callback.onInitialize(true, createResult("\"data\"", null), null) }
 
-        jsInterface.postMessage(createMessage("onInitialize", createResult("\"data\"", "\"null\""), null))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onInitialize",
+                createResult("\"data\"", "\"null\""),
+                null
+            )
+        )
         verify { callback.onInitialize(true, createResult("\"data\"", "\"null\""), null) }
 
-        jsInterface.postMessage(createMessage("onInitialize", createResult("\"data\"", "\"null\""), "error"))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onInitialize",
+                createResult("\"data\"", "\"null\""),
+                "error"
+            )
+        )
         verify { callback.onInitialize(false, createResult("\"data\"", "\"null\""), "error") }
     }
 
     @Test
     fun testRenderOperation() {
-        jsInterface.postMessage(createMessage("onRenderOperation", null, null))
+        jsInterface.receivedMessage(createMessage("onRenderOperation", null, null))
         verify { callback.onRenderOperation(true, null, null) }
 
-        jsInterface.postMessage(createMessage("onRenderOperation", createResult(null, null), null))
+        jsInterface.receivedMessage(createMessage("onRenderOperation", createResult(null, null), null))
         verify { callback.onRenderOperation(true, createResult(null, null), null) }
 
-        jsInterface.postMessage(createMessage("onRenderOperation", createResult("\"data\"", null), null))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onRenderOperation",
+                createResult("\"data\"", null),
+                null
+            )
+        )
         verify { callback.onRenderOperation(true, createResult("\"data\"", null), null) }
 
-        jsInterface.postMessage(createMessage("onRenderOperation", createResult("\"data\"", "\"null\""), null))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onRenderOperation",
+                createResult("\"data\"", "\"null\""),
+                null
+            )
+        )
         verify { callback.onRenderOperation(true, createResult("\"data\"", "\"null\""), null) }
 
-        jsInterface.postMessage(createMessage("onRenderOperation", createResult("\"data\"", "\"null\""), "error"))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onRenderOperation",
+                createResult("\"data\"", "\"null\""),
+                "error"
+            )
+        )
         verify { callback.onRenderOperation(false, createResult("\"data\"", "\"null\""), "error") }
     }
 
     @Test
     fun testAuthorizationRequest() {
-        jsInterface.postMessage(createMessage("onAuthorizationRequest", null, null))
+        jsInterface.receivedMessage(createMessage("onAuthorizationRequest", null, null))
         verify { callback.onAuthorizationRequest(true, null, null) }
 
-        jsInterface.postMessage(createMessage("onAuthorizationRequest", createResult(null, null), null))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onAuthorizationRequest",
+                createResult(null, null),
+                null
+            )
+        )
         verify { callback.onAuthorizationRequest(true, createResult(null, null), null) }
 
-        jsInterface.postMessage(createMessage("onAuthorizationRequest", createResult("\"data\"", null), null))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onAuthorizationRequest",
+                createResult("\"data\"", null),
+                null
+            )
+        )
         verify { callback.onAuthorizationRequest(true, createResult("\"data\"", null), null) }
 
-        jsInterface.postMessage(createMessage("onAuthorizationRequest", createResult("\"data\"", "\"null\""), null))
+        jsInterface.receivedMessage(
+            createMessage(
+                "onAuthorizationRequest",
+                createResult("\"data\"", "\"null\""),
+                null
+            )
+        )
         verify { callback.onAuthorizationRequest(true, createResult("\"data\"", "\"null\""), null) }
 
-        jsInterface.postMessage(createMessage("onAuthorizationRequest", createResult("\"data\"", "\"null\""), "error"))
-        verify { callback.onAuthorizationRequest(false, createResult("\"data\"", "\"null\""), "error") }
+        jsInterface.receivedMessage(
+            createMessage(
+                "onAuthorizationRequest",
+                createResult("\"data\"", "\"null\""),
+                "error"
+            )
+        )
+        verify {
+            callback.onAuthorizationRequest(
+                false,
+                createResult("\"data\"", "\"null\""),
+                "error"
+            )
+        }
     }
 
     @Test
     fun testError() {
-        jsInterface.postMessage(createMessage("errorAction", "errorMessage", "error"))
+        jsInterface.receivedMessage(createMessage("errorAction", "errorMessage", "error"))
         verify { callback.onError(any(), any()) }
     }
 
@@ -95,7 +156,13 @@ class PostPurchaseExperienceJSInterfaceTest {
     }
 
     private fun createMessage(action: String, message: String?, error: String?): String {
-        return createMessage(PostPurchaseExperienceJSInterface.PPECallbackMessage(action, message, error))
+        return createMessage(
+            PostPurchaseExperienceJSInterface.PPECallbackMessage(
+                action,
+                message,
+                error
+            )
+        )
     }
 
 }

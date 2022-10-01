@@ -1,5 +1,6 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.webview
 
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
 import com.klarna.mobile.sdk.api.hybrid.KlarnaHybridSDK
 import io.flutter.plugin.common.MethodChannel
@@ -25,6 +26,9 @@ class WebViewManagerTest {
 
         every { hybridSDK.addWebView(any()) } just runs
 
+        mockkObject(PluginContext)
+        every { PluginContext.activity } returns mockk(relaxed = true)
+
         webViewManager.initialize(null)
     }
 
@@ -42,8 +46,7 @@ class WebViewManagerTest {
         webViewManager.show(result)
         webViewManager.loadURL("", result)
         webViewManager.loadJS("", result)
-        webViewManager.addToHybridSdk(result)
-        verify(exactly = 6) { WebViewManager.notInitialized(result) }
+        verify(exactly = 5) { WebViewManager.notInitialized(result) }
     }
 
     @Test
@@ -82,16 +85,6 @@ class WebViewManagerTest {
     @Test
     fun testLoadJS() {
         webViewManager.loadJS("", result)
-        verify { result.success(any()) }
-    }
-
-    @Test
-    fun testAddToHybridSDK() {
-        webViewManager.addToHybridSdk(result)
-        verify { KlarnaHybridSDKHandler.notInitialized(result) }
-
-        every { KlarnaHybridSDKHandler.hybridSDK } returns hybridSDK
-        webViewManager.addToHybridSdk(result)
         verify { result.success(any()) }
     }
 }
