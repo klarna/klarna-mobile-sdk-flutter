@@ -83,7 +83,7 @@ class _PostPurchaseExperienceScreenState
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: AppBar(
-          title: const Text('PostPurchaseExperience'),
+          title: const Text('KlarnaPostPurchaseExperience'),
         ),
         body: new Builder(builder: (BuildContext context) {
           return new SingleChildScrollView(
