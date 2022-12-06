@@ -5,4 +5,4 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.stream.BaseStreamHandl
 // Usage:
 //ErrorCallbackHandler.sendValue("web view initialize failed")
 
-internal object ErrorCallbackHandler: BaseStreamHandler()
+internal object ErrorCallbackHandler: BaseStreamHandler<String?>()

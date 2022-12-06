@@ -1,7 +1,7 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.PostPurchaseExperienceHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchaseexperience.PostPurchaseExperienceHandler
 import org.junit.Assert
 import org.junit.Test
 

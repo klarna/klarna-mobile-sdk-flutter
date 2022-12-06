@@ -2,7 +2,7 @@ package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.stream
 
 import io.flutter.plugin.common.EventChannel
 
-internal open class BaseStreamHandler : EventChannel.StreamHandler {
+internal open class BaseStreamHandler<T> : EventChannel.StreamHandler {
 
     private var sink: EventChannel.EventSink? = null
 
@@ -14,10 +14,8 @@ internal open class BaseStreamHandler : EventChannel.StreamHandler {
         sink = null
     }
 
-    fun sendValue(value: String?){
-        value?.let {
-            sink?.success(it)
-        }
+    fun sendValue(value: T) {
+        sink?.success(value)
     }
 
 }

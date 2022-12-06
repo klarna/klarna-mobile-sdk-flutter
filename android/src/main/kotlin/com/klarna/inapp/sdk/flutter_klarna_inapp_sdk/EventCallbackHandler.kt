@@ -5,4 +5,4 @@ import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.stream.BaseStreamHandl
 // Usage:
 //EventCallbackHandler.sendValue("web view initialized")
 
-internal object EventCallbackHandler: BaseStreamHandler()
+internal object EventCallbackHandler: BaseStreamHandler<String>()

@@ -1,4 +1,4 @@
-package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase
+package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchaseexperience
 
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.method.MethodParser
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.requireArgument

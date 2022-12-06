@@ -1,7 +1,7 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKEventHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.PostPurchaseExperienceEventHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchaseexperience.PostPurchaseExperienceEventHandler
 import io.flutter.plugin.common.EventChannel
 
 internal object StreamCallHandlerManager {
