@@ -1,15 +1,15 @@
 import WebKit
 
-internal protocol PostPurchaseScriptCallbackDelegate: class {
+internal protocol PostPurchaseExperienceScriptCallbackDelegate: class {
     func onInitialize(success: Bool, message: String?, error: String?)
     func onRenderOperation(success: Bool, message: String?, error: String?)
     func onAuthorizationRequest(success: Bool, message: String?, error: String?)
     func onError(message: String?, error: Error?)
 }
 
-internal class PostPurchaseScriptMessageHandler: NSObject, WKScriptMessageHandler {
+internal class PostPurchaseExperienceScriptMessageHandler: NSObject, WKScriptMessageHandler {
     
-    weak var delegate: PostPurchaseScriptCallbackDelegate?
+    weak var delegate: PostPurchaseExperienceScriptCallbackDelegate?
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard

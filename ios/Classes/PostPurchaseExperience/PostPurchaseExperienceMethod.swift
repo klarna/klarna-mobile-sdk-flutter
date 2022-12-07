@@ -1,12 +1,12 @@
 import Flutter
 
-protocol PostPurchaseMethod {
+protocol PostPurchaseExperienceMethod {
     var id: Int { get }
 }
 
-class PostPurchaseMethods {
+class PostPurchaseExperienceMethods {
 
-    struct Initialize: PostPurchaseMethod, Decodable {
+    struct Initialize: PostPurchaseExperienceMethod, Decodable {
         let id: Int
         let returnUrl: String
         let locale: String
@@ -15,17 +15,17 @@ class PostPurchaseMethods {
         let sdkSource: String?
     }
     
-    struct Destroy: PostPurchaseMethod {
+    struct Destroy: PostPurchaseExperienceMethod {
         let id: Int
     }
     
-    struct RenderOperation: PostPurchaseMethod, Decodable {
+    struct RenderOperation: PostPurchaseExperienceMethod, Decodable {
         let id: Int
         let locale: String?
         let operationToken: String?
     }
     
-    struct AuthorizationRequest: PostPurchaseMethod, Decodable {
+    struct AuthorizationRequest: PostPurchaseExperienceMethod, Decodable {
         let id: Int
         let locale: String?
         let clientId: String
@@ -36,8 +36,8 @@ class PostPurchaseMethods {
         let responseType: String?
     }
 
-    class Parser: MethodParser<PostPurchaseMethod> {
-        override func parse(call: FlutterMethodCall) throws -> PostPurchaseMethod? {
+    class Parser: MethodParser<PostPurchaseExperienceMethod> {
+        override func parse(call: FlutterMethodCall) throws -> PostPurchaseExperienceMethod? {
             switch call.method {
             case "initialize":
                 return call.decode(Initialize.self)

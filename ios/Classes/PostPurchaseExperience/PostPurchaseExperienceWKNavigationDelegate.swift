@@ -1,7 +1,7 @@
 import UIKit
 import WebKit
 
-class PostPurchaseWKNavigationDelegate: KlarnaWKNavigationDelegate {
+class PostPurchaseExperienceWKNavigationDelegate: KlarnaWKNavigationDelegate {
     
     private var loaded = false
 

@@ -23,7 +23,7 @@ public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
     static func getMethodHandlerMap() -> [String: FlutterPlugin] {
         return [
             "klarna_hybrid_sdk": KlarnaHybridSDKHandler(),
-            "klarna_post_purchase_experience": PostPurchaseHandler()
+            "klarna_post_purchase_experience": PostPurchaseExperienceHandler()
         ]
     }
     

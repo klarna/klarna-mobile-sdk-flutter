@@ -14,10 +14,10 @@ class PostPurchaseExperienceManager {
     
     var webViewManager = WebViewManager()
     
-    var navigationDelegate: PostPurchaseWKNavigationDelegate?
+    var navigationDelegate: PostPurchaseExperienceWKNavigationDelegate?
     
-    lazy var scriptMessageHandler: PostPurchaseScriptMessageHandler = {
-        let handler = PostPurchaseScriptMessageHandler()
+    lazy var scriptMessageHandler: PostPurchaseExperienceScriptMessageHandler = {
+        let handler = PostPurchaseExperienceScriptMessageHandler()
         handler.delegate = self
         return handler
     }()
@@ -30,7 +30,7 @@ class PostPurchaseExperienceManager {
     
     private let hybridSDKEventListener: KlarnaHybridEventListener = PluginKlarnaHybridEventListener()
     
-    func initialize(method: PostPurchaseMethods.Initialize, result: @escaping FlutterResult) {
+    func initialize(method: PostPurchaseExperienceMethods.Initialize, result: @escaping FlutterResult) {
         if (webViewManager.webView != nil) {
             result(FlutterError.init(code: ResultError.postPurchaseError.rawValue, message: "Already initialized.", details: nil))
             return
@@ -39,7 +39,7 @@ class PostPurchaseExperienceManager {
         if let returnUrl = URL.init(string: method.returnUrl) {
             let klarnaHybridSDK = KlarnaHybridSDK.init(returnUrl: returnUrl, eventListener: hybridSDKEventListener)
             hybridSDK = klarnaHybridSDK
-            navigationDelegate = PostPurchaseWKNavigationDelegate(hybridSDK: klarnaHybridSDK)
+            navigationDelegate = PostPurchaseExperienceWKNavigationDelegate(hybridSDK: klarnaHybridSDK)
             klarnaHybridSDK.registerEventListener(withCallback: { response in
                 PostPurchaseExperienceEventHandler.instance.sendValue(value: response.bodyString)
             })
@@ -58,7 +58,7 @@ class PostPurchaseExperienceManager {
         let webView = webViewManager.requireWebview()
         webView.navigationDelegate = navigationDelegate
 
-        let url = Bundle(for: PostPurchaseHandler.self).url(forResource: "ppe", withExtension: "html")!
+        let url = Bundle(for: PostPurchaseExperienceHandler.self).url(forResource: "ppe", withExtension: "html")!
         if let sdkSource = method.sdkSource, !sdkSource.isEmpty {
             let html = AssetManager.readAsset(fileName: "ppe", fileExtension: "html")
             if let replaced = html?.replacingOccurrences(of: "https://x.klarnacdn.net/postpurchaseexperience/lib/v1/sdk.js", with: sdkSource) {
@@ -76,7 +76,7 @@ class PostPurchaseExperienceManager {
         _ = navigationDelegate?.queueJS(webViewManager: webViewManager, script: initScript)
     }
     
-    func destroy(method: PostPurchaseMethods.Destroy, result: @escaping FlutterResult) {
+    func destroy(method: PostPurchaseExperienceMethods.Destroy, result: @escaping FlutterResult) {
         webViewManager.destroy(result: nil)
         webViewManager = WebViewManager()
         navigationDelegate = nil
@@ -87,7 +87,7 @@ class PostPurchaseExperienceManager {
         result(nil)
     }
     
-    func renderOperation(method: PostPurchaseMethods.RenderOperation, result: @escaping FlutterResult) {
+    func renderOperation(method: PostPurchaseExperienceMethods.RenderOperation, result: @escaping FlutterResult) {
         if (!initialized) {
             PostPurchaseExperienceManager.notInitialized(result: result)
             return
@@ -97,7 +97,7 @@ class PostPurchaseExperienceManager {
         showWebView()
     }
     
-    func authorizationRequest(method: PostPurchaseMethods.AuthorizationRequest, result: @escaping FlutterResult) {
+    func authorizationRequest(method: PostPurchaseExperienceMethods.AuthorizationRequest, result: @escaping FlutterResult) {
         if (!initialized) {
             PostPurchaseExperienceManager.notInitialized(result: result)
             return
@@ -119,7 +119,7 @@ class PostPurchaseExperienceManager {
     }
 }
 
-extension PostPurchaseExperienceManager: PostPurchaseScriptCallbackDelegate {
+extension PostPurchaseExperienceManager: PostPurchaseExperienceScriptCallbackDelegate {
     func onInitialize(success: Bool, message: String?, error: String?) {
         if (success) {
             initResult?(message)
