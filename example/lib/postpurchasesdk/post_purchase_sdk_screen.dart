@@ -48,13 +48,17 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
   void _sdkCreate(BuildContext context) async {
     postPurchaseSDK = await KlarnaPostPurchaseSDK.createInstance(
         klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
+    KlarnaPostPurchaseSDK.registerEventListenerString((p0) =>
+        _showToast(context, p0)
+    );
+    _showToast(context, postPurchaseSDK.toString());
   }
 
   void _sdkInitialize(BuildContext context) async {
     final KlarnaResult? result = await postPurchaseSDK?.initialize(
         initializeLocaleController.text,
         initializePurchaseCountryController.text,
-        design: initializeDesignController.text);
+        design: (initializeDesignController.text.isEmpty ? null : initializeDesignController.text));
     _showToast(context, result.toString());
   }
 
@@ -63,18 +67,18 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
         authorizationRequestClientIdController.text,
         authorizationRequestScopeController.text,
         authorizationRequestRedirectUriController.text,
-        locale: authorizationRequestLocaleController.text,
-        state: authorizationRequestStateController.text,
-        loginHint: authorizationRequestLoginHintController.text,
-        responseType: authorizationRequestResponseTypeController.text);
+        locale: (authorizationRequestLocaleController.text.isEmpty ? null : authorizationRequestLocaleController.text),
+        state: (authorizationRequestStateController.text.isEmpty ? null : authorizationRequestStateController.text),
+        loginHint: (authorizationRequestLoginHintController.text.isEmpty ? null : authorizationRequestLoginHintController.text),
+        responseType: (authorizationRequestResponseTypeController.text.isEmpty ? null : authorizationRequestResponseTypeController.text));
     _showToast(context, result.toString());
   }
 
   void _sdkRenderOperation(BuildContext context) async {
     final KlarnaResult? result = await postPurchaseSDK?.renderOperation(
         renderOperationOperationTokenController.text,
-        locale: renderOperationLocaleController.text,
-        redirectUri: renderOperationRedirectUriController.text);
+        locale: (renderOperationLocaleController.text.isEmpty ? null : renderOperationLocaleController.text),
+        redirectUri: (renderOperationRedirectUriController.text.isEmpty ? null : renderOperationRedirectUriController.text));
     _showToast(context, result.toString());
   }
 

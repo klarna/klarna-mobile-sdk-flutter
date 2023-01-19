@@ -1,1 +1,1 @@
-enum KlarnaEnvironment { PLAYGROUND, PRODUCTION }
+enum KlarnaEnvironment { STAGING, PLAYGROUND, PRODUCTION }

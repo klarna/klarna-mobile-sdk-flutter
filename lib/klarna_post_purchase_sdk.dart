@@ -8,10 +8,13 @@ import 'package:flutter_klarna_inapp_sdk/klarna_environment.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_region.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_resource_endpoint.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
+import 'package:flutter_klarna_inapp_sdk/src/api/postpurchase/klarna_post_purchase_event_listener.dart';
 
 class KlarnaPostPurchaseSDK {
   static const MethodChannel _channel =
       const MethodChannel('klarna_post_purchase_sdk');
+  static const EventChannel _eventChannel =
+      const EventChannel('klarna_post_purchase_sdk_events');
 
   static final _idRandom = Random.secure();
 
@@ -53,14 +56,14 @@ class KlarnaPostPurchaseSDK {
 
   Future<KlarnaResult> initialize(String locale, String purchaseCountry,
       {String? design}) async {
-    final String result =
+    final String? result =
         await _channel.invokeMethod('initialize', <String, dynamic>{
       'id': _id,
       'locale': locale,
       'purchaseCountry': purchaseCountry,
       'design': design,
     });
-    return KlarnaResult.fromJson(json.decode(result));
+    return KlarnaResult.fromJsonString(result);
   }
 
   Future<KlarnaResult> authorizationRequest(
@@ -69,7 +72,7 @@ class KlarnaPostPurchaseSDK {
       String? state,
       String? loginHint,
       String? responseType}) async {
-    final String result =
+    final String? result =
         await _channel.invokeMethod('authorizationRequest', <String, dynamic>{
       'id': _id,
       'clientId': clientId,
@@ -80,22 +83,38 @@ class KlarnaPostPurchaseSDK {
       'loginHint': loginHint,
       'responseType': responseType
     });
-    return KlarnaResult.fromJson(json.decode(result));
+    return KlarnaResult.fromJsonString(result);
   }
 
   Future<KlarnaResult> renderOperation(String operationToken,
       {String? locale, String? redirectUri}) async {
-    final String result =
+    final String? result =
         await _channel.invokeMethod('renderOperation', <String, dynamic>{
       'id': _id,
       'operationToken': operationToken,
       'locale': locale,
       'redirectUri': redirectUri
     });
-    return KlarnaResult.fromJson(json.decode(result));
+    return KlarnaResult.fromJsonString(result);
   }
 
   Future<Null> destroy() async {
     return await _channel.invokeMethod('destroy', <String, dynamic>{'id': _id});
   }
+
+  static Future<Null> registerEventListenerString(Function(String) listener) async {
+    _eventChannel
+        .receiveBroadcastStream()
+        .map<String>((event) => event)
+        .listen(listener);
+    return null;
+  }
+
+  // Future<Null> registerEventListener(KlarnaPostPurchaseEventListener eventListener) async {
+  //   _eventChannel
+  //       .receiveBroadcastStream()
+  //       .map<String>((event) => event)
+  //       .listen(listener);
+  //   return null;
+  // }
 }
