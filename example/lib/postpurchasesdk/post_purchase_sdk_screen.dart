@@ -46,22 +46,19 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
       TextEditingController(text: null);
 
   KlarnaPostPurchaseSDK? postPurchaseSDK;
-  KlarnaPostPurchaseSDK? postPurchaseSDKS;
   KlarnaPostPurchaseEventListener? postPurchaseEventListener;
 
   void _sdkCreate(BuildContext context) async {
-    postPurchaseEventListener = new KlarnaPostPurchaseEventListener(
+    final listener = new KlarnaPostPurchaseEventListener(
         _onInitialized, _onAuthorizeRequested, _onRenderedOperation, _onError);
-    postPurchaseSDK = new KlarnaPostPurchaseSDK(postPurchaseEventListener, null,
-        klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
-    postPurchaseSDKS = new KlarnaPostPurchaseSDK(postPurchaseEventListener, null,
+    postPurchaseEventListener = listener;
+    postPurchaseSDK = new KlarnaPostPurchaseSDK(listener, null,
         klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
     _showToast(context, postPurchaseSDK.toString());
   }
 
   void _sdkInitialize(BuildContext context) async {
-    postPurchaseSDK?.initialize(
-        initializeLocaleController.text,
+    postPurchaseSDK?.initialize(initializeLocaleController.text,
         initializePurchaseCountryController.text,
         design: (initializeDesignController.text.isEmpty
             ? null
