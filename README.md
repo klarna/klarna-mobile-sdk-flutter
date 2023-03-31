@@ -1,16 +1,16 @@
-# Klarna In-App Flutter Plugin
+# Klarna Mobile SDK Flutter Plugin
 
 ![](./assets/logo-wide.png)
 
-> Klarna's Flutter wrapper for the In-App SDK
+> Klarna's Flutter wrapper for the Klarna Mobile SDK
 
 [![Build Status][ci-image]][ci-url]
 [![License][license-image]][license-url]
 [![Developed at Klarna][klarna-image]][klarna-url]
 
-**Looking for the pure native Klarna In-App SDK?** Check out the [Klarna In-App SDK](https://github.com/klarna/klarna-inapp-sdk) repo instead.
+**Looking for the native Klarna Mobile SDK?** Check out the [Klarna Mobile SDK](https://github.com/klarna/klarna-mobile-sdk) repo instead.
 
-**Looking for the React Native Klarna In-App SDK?** Check out the [React Native Klarna In-App SDK](https://github.com/klarna/react-native-klarna-inapp-sdk) repo instead.
+**Looking for the React-Native Klarna Mobile SDK?** Check out the [React Native Klarna Mobile SDK](https://github.com/klarna/react-native-klarna-inapp-sdk) repo instead.
 
 ## Integration
 
@@ -20,16 +20,16 @@
 
 ### Supported Products
 
-- :white_check_mark: Klarna Post Purchase Experience
+- :white_check_mark: Klarna Post Purchase
 - :x: Klarna Payments
 - :x: Klarna Checkout
 
-#### Post Purchase Experience
+#### Post Purchase
 
-As of now, credentials needed for Post Purchase Experience is only available through Klarna Delivery Managers. If you want to test this integration, please contact your Delivery Manager to get required information regarding Post Purchase Experience.
+As of now, credentials needed for Post Purchase is only available through Klarna Delivery Managers. If you want to test this integration, please contact your Delivery Manager to get required information regarding Post Purchase.
 
-### Klarna In-App SDK Documentation
-[Overview of the SDK](https://developers.klarna.com/documentation/in-app/)
+### Klarna Mobile SDK Documentation
+[Overview of the SDK](https://docs.klarna.com/in-app/)
 
 ### Flutter Dependency
 
@@ -37,7 +37,18 @@ Add `flutter_klarna_inapp_sdk` as a dependency in your `pubspec.yaml` file accor
 
 ### Usage
 
-#### KlarnaPostPurchaseExperience
+#### KlarnaPostPurchaseSDK
+
+##### Construct
+
+###### Parameters
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| eventListener | `KlarnaPostPurchaseEventListener` | An interface implementation for PostPurchaseSDK event and error callbacks. |
+| returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. |
+| environment | `named optional` `KlarnaEnvironment?` | Environment for Post Purchase SDK. | 
+| region | `named optional` `KlarnaRegion?` | Region for Post Purchase SDK. | 
+| resourceEndpoint | `named optional` `KlarnaResourceEndpoint?` | Resource cloud endpoint for Post Purchase SDK. | 
 
 ##### initialize()
 
@@ -46,25 +57,9 @@ Initializes new `WebView` and javascript Klarna Post Purchase Experience library
 ###### Parameters
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. | 
 | locale | `String` | A string representing the user locale. For example: `se-SE` | 
 | purchaseCountry | `String` | A string representing the purchase country. For example: `SE` | 
 | design | `named optional` `String?` | A string representing the design ID. | 
-| environment | `named optional` `KlarnaPostPurchaseEnvironment?` | Region or playground environment for Post Purchase SDK. | 
-
-##### destroy()
-
-Destroys any object, including `WebView` attached to the client.
-
-##### renderOperation()
-
-Load the Klarna widget for the operation.
-
-###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| locale | `named optional` `String?` | A string representing the user locale. | 
-| operationToken | `String` | The operation token for the related order returned from the post purchase api. |
 
 ##### authorizationRequest()
 
@@ -73,21 +68,28 @@ Called to kick off the oauth flow.
 ###### Parameters
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| locale | `named optional` `String?` | A string representing the user locale. | 
 | clientId | `String` | The client_id for your application. | 
 | scope | `String` | A space-delimited list of scopes that identify the resources that your application could access on the user's behalf. These values define the consent screen that Klarna displays to the user. | 
 | redirectUri | `String` | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance. | 
+| locale | `named optional` `String?` | A string representing the user locale. | 
 | state | `named optional` `String?` | A string value that your application uses to maintain state between your authorization request and the authorization server's response. The Authorization server returns the exact value that you send to the redirect_url as a URL parameter. | 
 | loginHint | `named optional` `String?` | If your application knows which user is trying to authenticate, it can use this parameter to provide a hint to the Klarna’s Authorization Server. The server uses the hint to simplify the login flow by prefilling the email field in the sign-in form. It’s recommended to use this as it will improve the customer experience. | 
 | responseType | `named optional` `String?` | The desired grant type. The value MUST be one of "code" for requesting an authorization code or "token" for requesting an access token (implicit grant). The default is "code" | 
 
-##### registerEventListener()
-Registers a listener, receiving merchant events from Klarna web components.
+##### renderOperation()
+
+Load the Klarna widget for the operation.
 
 ###### Parameters
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| listener | `Function(String)` | A listener function receiving the event body string as a parameter. |
+| operationToken | `String` | The operation token for the related order returned from the post purchase api. |
+| locale | `named optional` `String?` | A string representing the user locale. | 
+| redirectUri | `named optional` `String` | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance. |
+
+##### destroy()
+
+Destroys any object, including `WebView` attached to the client.
 
 ## Development
 
@@ -119,10 +121,10 @@ If you are having any issues using the SDK in your project or if you think that 
 
 ### How can I contribute?
 
-Thank you for reading this and taking the time to contribute to Klarna In-App SDK! Below is a set of guidelines to help you contribute whether you want to report a bug, come with suggestions or modify code.
+Thank you for reading this and taking the time to contribute to Klarna Mobile SDK! Below is a set of guidelines to help you contribute whether you want to report a bug, come with suggestions or modify code.
 
 #### Reporting Bugs
-This section will guide you through submitting a bug report for Klarna In-App SDK.
+This section will guide you through submitting a bug report for Klarna Mobile SDK.
 
 Before submitting a bug report, please check that the issue hasn't been reported before. If you find a *Closed* issue that seems to describe an issue that is similar to what you want to report, open a new issue and link to the original issue in the new one. When you have checked that the issue hasn't been reported before, please **fill out [the required template](https://github.com/klarna/flutter-klarna-inapp-sdk/blob/master/.github/ISSUE_TEMPLATE/bug_report.md)** which will help us resolve the issue faster. 
 
@@ -147,7 +149,7 @@ Include details about the device/emulator/simulator you are experiencing the iss
 
 ## Contribution
 
-Before contributing, please read through the [Klarna In-App SDK documentation](https://developers.klarna.com/documentation/in-app/).
+Before contributing, please read through the [Klarna Mobile SDK documentation](https://docs.klarna.com/in-app/).
 
 ##### Branching
 Prefix the branch you are going to work on depending on what you are working on (bug fix or feature). Use the following prefixes when creating a new branch:

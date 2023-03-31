@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_environment.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_sdk.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_region.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_resource_endpoint.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_error.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_event_listener.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_render_result.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_sdk.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_region.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_resource_endpoint.dart';
 
 class PostPurchaseSDKScreen extends StatefulWidget {
   @override
@@ -47,27 +46,27 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
       TextEditingController(text: null);
 
   KlarnaPostPurchaseSDK? postPurchaseSDK;
+  KlarnaPostPurchaseSDK? postPurchaseSDKS;
   KlarnaPostPurchaseEventListener? postPurchaseEventListener;
 
   void _sdkCreate(BuildContext context) async {
     postPurchaseEventListener = new KlarnaPostPurchaseEventListener(
         _onInitialized, _onAuthorizeRequested, _onRenderedOperation, _onError);
-    postPurchaseSDK = await KlarnaPostPurchaseSDK.createInstance(
-        postPurchaseEventListener,
-        klarnaEnvironment,
-        klarnaRegion,
-        klarnaResourceEndpoint);
+    postPurchaseSDK = new KlarnaPostPurchaseSDK(postPurchaseEventListener, null,
+        klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
+    postPurchaseSDKS = new KlarnaPostPurchaseSDK(postPurchaseEventListener, null,
+        klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
     _showToast(context, postPurchaseSDK.toString());
   }
 
   void _sdkInitialize(BuildContext context) async {
-    final KlarnaResult? result = await postPurchaseSDK?.initialize(
+    postPurchaseSDK?.initialize(
         initializeLocaleController.text,
         initializePurchaseCountryController.text,
         design: (initializeDesignController.text.isEmpty
             ? null
             : initializeDesignController.text));
-    _showToast(context, result.toString());
+    _showToast(context, "Initialize Called");
   }
 
   void _onInitialized(KlarnaPostPurchaseSDK sdk) {
@@ -75,7 +74,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
   }
 
   void _sdkAuthorizationRequest(BuildContext context) async {
-    final KlarnaResult? result = await postPurchaseSDK?.authorizationRequest(
+    postPurchaseSDK?.authorizationRequest(
         authorizationRequestClientIdController.text,
         authorizationRequestScopeController.text,
         authorizationRequestRedirectUriController.text,
@@ -91,7 +90,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
         responseType: (authorizationRequestResponseTypeController.text.isEmpty
             ? null
             : authorizationRequestResponseTypeController.text));
-    _showToast(context, result.toString());
+    _showToast(context, "Authorization Request Called");
   }
 
   void _onAuthorizeRequested(KlarnaPostPurchaseSDK sdk) {
@@ -99,7 +98,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
   }
 
   void _sdkRenderOperation(BuildContext context) async {
-    final KlarnaResult? result = await postPurchaseSDK?.renderOperation(
+    postPurchaseSDK?.renderOperation(
         renderOperationOperationTokenController.text,
         locale: (renderOperationLocaleController.text.isEmpty
             ? null
@@ -107,7 +106,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
         redirectUri: (renderOperationRedirectUriController.text.isEmpty
             ? null
             : renderOperationRedirectUriController.text));
-    _showToast(context, result.toString());
+    _showToast(context, "Render Operation Called");
   }
 
   void _onRenderedOperation(
@@ -121,8 +120,8 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
   }
 
   void _sdkDestroy(BuildContext context) async {
-    await postPurchaseSDK?.destroy();
-    _showToast(context, "KlarnaPostPurchaseSDK destroyed.");
+    postPurchaseSDK?.destroy();
+    _showToast(context, "KlarnaPostPurchaseSDK Destroyed");
   }
 
   void _showToast(BuildContext context, String text) {
