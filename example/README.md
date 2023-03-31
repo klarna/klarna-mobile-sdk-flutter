@@ -1,6 +1,6 @@
-# flutter_klarna_inapp_sdk_example
+# klarna_mobile_sdk_flutter_example
 
-Demonstrates how to use the flutter_klarna_inapp_sdk plugin.
+Demonstrates how to use the klarna_mobile_sdk_flutter plugin.
 
 ## Getting Started
 

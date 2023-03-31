@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_klarna_inapp_sdk_example/postpurchasesdk/post_purchase_sdk_screen.dart';
+import 'package:klarna_mobile_sdk_flutter_example/postpurchasesdk/post_purchase_sdk_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);

@@ -1,7 +1,6 @@
-import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_error.dart';
-
-import 'klarna_post_purchase_sdk.dart';
+import 'klarna_post_purchase_error.dart';
 import 'klarna_post_purchase_render_result.dart';
+import 'klarna_post_purchase_sdk.dart';
 
 class KlarnaPostPurchaseEventListener {
   final Function(KlarnaPostPurchaseSDK) onInitialized;

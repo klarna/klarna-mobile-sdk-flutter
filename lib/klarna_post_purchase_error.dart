@@ -1,4 +1,4 @@
-import 'package:flutter_klarna_inapp_sdk/klarna_mobile_sdk_error.dart';
+import 'klarna_mobile_sdk_error.dart';
 
 class KlarnaPostPurchaseError extends KlarnaMobileSDKError {
   KlarnaPostPurchaseError(

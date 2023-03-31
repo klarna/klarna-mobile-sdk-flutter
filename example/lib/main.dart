@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_klarna_inapp_sdk_example/home_screen.dart';
+import 'package:klarna_mobile_sdk_flutter_example/home_screen.dart';
 
 void main() => runApp(MyApp());
 

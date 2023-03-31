@@ -4,12 +4,12 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_environment.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_error.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_event_listener.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_render_result.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_region.dart';
-import 'package:flutter_klarna_inapp_sdk/klarna_resource_endpoint.dart';
+import 'package:klarna_mobile_sdk_flutter/klarna_environment.dart';
+import 'package:klarna_mobile_sdk_flutter/klarna_post_purchase_error.dart';
+import 'package:klarna_mobile_sdk_flutter/klarna_post_purchase_event_listener.dart';
+import 'package:klarna_mobile_sdk_flutter/klarna_post_purchase_render_result.dart';
+import 'package:klarna_mobile_sdk_flutter/klarna_region.dart';
+import 'package:klarna_mobile_sdk_flutter/klarna_resource_endpoint.dart';
 
 class KlarnaPostPurchaseSDK {
   static const MethodChannel _channel =

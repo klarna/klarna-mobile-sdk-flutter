@@ -16,7 +16,7 @@ class BaseMethodHandler<T>: NSObject, FlutterPlugin, MethodHandler {
     }
     
     @objc static func register(with registrar: FlutterPluginRegistrar) {
-        // Refer to `SwiftFlutterKlarnaInappSdk`
+        // Refer to `SwiftKlarnaMobileSdkFlutter`
     }
         
     final func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

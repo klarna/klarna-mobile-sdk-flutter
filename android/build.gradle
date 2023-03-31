@@ -1,4 +1,4 @@
-group 'com.klarna.inapp.sdk.flutter_klarna_inapp_sdk'
+group 'com.klarna.mobile.sdk.flutter_klarna_mobile_sdk'
 version '1.0-SNAPSHOT'
 
 buildscript {

@@ -55,18 +55,18 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_klarna_inapp_sdk:
+  flutter_test:
+    dependency: "direct dev"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
+  klarna_mobile_sdk_flutter:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
     version: "0.0.1"
-  flutter_test:
-    dependency: "direct dev"
-    description: flutter
-    source: sdk
-    version: "0.0.0"
   matcher:
     dependency: transitive
     description:

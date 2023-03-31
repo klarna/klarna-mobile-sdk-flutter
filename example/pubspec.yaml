@@ -1,5 +1,5 @@
-name: flutter_klarna_inapp_sdk_example
-description: Demonstrates how to use the flutter_klarna_inapp_sdk plugin.
+name: klarna_mobile_sdk_flutter_example
+description: Demonstrates how to use the klarna_mobile_sdk_flutter plugin.
 publish_to: 'none'
 version: 0.0.1
 
@@ -18,7 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_klarna_inapp_sdk:
+  klarna_mobile_sdk_flutter:
     path: ../
 
 # For information on the generic Dart part of this file, see the
