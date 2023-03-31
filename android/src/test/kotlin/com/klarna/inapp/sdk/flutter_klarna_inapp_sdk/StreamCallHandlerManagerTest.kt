@@ -10,7 +10,7 @@ class StreamCallHandlerManagerTest {
     @Test
     fun testMap() {
         val map = StreamCallHandlerManager.streamHandlerMap
-        Assert.assertEquals(4, map.size)
+        Assert.assertEquals(5, map.size)
         Assert.assertEquals(EventCallbackHandler, map["klarna_events"])
         Assert.assertEquals(ErrorCallbackHandler, map["klarna_errors"])
         Assert.assertEquals(KlarnaHybridSDKEventHandler, map["klarna_hybrid_sdk_events"])

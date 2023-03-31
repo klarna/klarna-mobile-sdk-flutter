@@ -26,6 +26,6 @@ class KlarnaHybridSDKEventListenerTest {
     fun testEventStreamIsSent() {
         val event = KlarnaEvent("someEventString")
         eventListener.onEvent(event)
-        verify { KlarnaHybridSDKEventHandler.sendValue(event.bodyString) }
+        verify { KlarnaHybridSDKEventHandler.sendValue(event.bodyString!!) }
     }
 }
