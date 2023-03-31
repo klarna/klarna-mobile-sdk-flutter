@@ -38,8 +38,7 @@ class KlarnaPostPurchaseSDKManager {
     
     func authorizationRequest(method: KlarnaPostPurchaseSDKMethods.AuthorizationRequest, result: @escaping FlutterResult) {
         if let postPurchaseSDK = postPurchaseSDK {
-            let authRequest = PostPurchaseAuthRequest(clientId: method.clientId, scope: method.scope, redirectUri: method.redirectUri, locale: method.locale, state: method.state, loginHint: method.loginHint, responseType: method.responseType)
-            postPurchaseSDK.authorizationRequest(authRequest)
+            postPurchaseSDK.authorizationRequest(clientId: method.clientId, scope: method.scope, redirectUri: method.redirectUri, locale: method.locale, state: method.state, loginHint: method.loginHint, responseType: method.responseType)
             result(nil)
         } else {
             KlarnaPostPurchaseSDKManager.notInitialized(result: result)

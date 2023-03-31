@@ -8,7 +8,9 @@ import 'package:flutter_klarna_inapp_sdk/klarna_environment.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_region.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_resource_endpoint.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
-import 'package:flutter_klarna_inapp_sdk/src/api/postpurchase/klarna_post_purchase_event_listener.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_error.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_event_listener.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_render_result.dart';
 
 class KlarnaPostPurchaseSDK {
   static const MethodChannel _channel =
@@ -20,13 +22,19 @@ class KlarnaPostPurchaseSDK {
 
   var _id = _idRandom.nextInt(999999999);
 
-  KlarnaPostPurchaseSDK._();
+  KlarnaPostPurchaseEventListener? eventListener;
+
+  KlarnaPostPurchaseSDK._(KlarnaPostPurchaseEventListener? eventListener) {
+    this.eventListener = eventListener;
+    _setupEventListener();
+  }
 
   static Future<KlarnaPostPurchaseSDK> createInstance(
+      KlarnaPostPurchaseEventListener? eventListener,
       KlarnaEnvironment? environment,
       KlarnaRegion? region,
       KlarnaResourceEndpoint? resourceEndpoint) async {
-    var instance = KlarnaPostPurchaseSDK._();
+    var instance = KlarnaPostPurchaseSDK._(eventListener);
     await instance._construct(environment, region, resourceEndpoint);
     return instance;
   }
@@ -102,19 +110,71 @@ class KlarnaPostPurchaseSDK {
     return await _channel.invokeMethod('destroy', <String, dynamic>{'id': _id});
   }
 
-  static Future<Null> registerEventListenerString(Function(String) listener) async {
+  void _setupEventListener() {
     _eventChannel
         .receiveBroadcastStream()
         .map<String>((event) => event)
-        .listen(listener);
-    return null;
+        .listen((p0) {
+      final Map<String, dynamic> map = json.decode(p0);
+      sendEventToListener(map);
+    });
   }
 
-  // Future<Null> registerEventListener(KlarnaPostPurchaseEventListener eventListener) async {
-  //   _eventChannel
-  //       .receiveBroadcastStream()
-  //       .map<String>((event) => event)
-  //       .listen(listener);
-  //   return null;
-  // }
+  void sendEventToListener(Map<String, dynamic> eventMap) {
+    final id = eventMap["id"];
+    if (id == this._id) {
+      final name = eventMap["name"];
+      switch (name) {
+        case "onInitialized":
+          {
+            eventListener?.onInitialized(this);
+          }
+          break;
+
+        case "onAuthorizeRequested":
+          {
+            eventListener?.onAuthorizeRequested(this);
+          }
+          break;
+
+        case "onRenderedOperation":
+          {
+            final renderResult = eventMap["renderResult"];
+            switch (renderResult) {
+              case "STATE_CHANGE":
+                {
+                  eventListener?.onRenderedOperation(
+                      this, KlarnaPostPurchaseRenderResult.stateChange);
+                }
+                break;
+              case "NO_STATE_CHANGE":
+                {
+                  eventListener?.onRenderedOperation(
+                      this, KlarnaPostPurchaseRenderResult.noStateChange);
+                }
+                break;
+            }
+          }
+          break;
+
+        case "onError":
+          {
+            final errorMap = eventMap["error"] as Map<String, dynamic>;
+            final KlarnaPostPurchaseError error = KlarnaPostPurchaseError(
+                errorMap['name'],
+                errorMap['message'],
+                errorMap['status'],
+                errorMap['isFatal']);
+            eventListener?.onError(this, error);
+          }
+          break;
+
+        default:
+          {
+            //statements;
+          }
+          break;
+      }
+    }
+  }
 }

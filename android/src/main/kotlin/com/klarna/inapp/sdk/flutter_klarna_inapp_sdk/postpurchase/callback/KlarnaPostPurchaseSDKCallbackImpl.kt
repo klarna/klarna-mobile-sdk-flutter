@@ -1,5 +1,7 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.callback
 
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.core.util.ParserUtil
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.error.KlarnaPostPurchaseErrorWrapper
 import com.klarna.mobile.sdk.api.postpurchase.KlarnaPostPurchaseError
 import com.klarna.mobile.sdk.api.postpurchase.KlarnaPostPurchaseRenderResult
 import com.klarna.mobile.sdk.api.postpurchase.KlarnaPostPurchaseSDK
@@ -10,12 +12,12 @@ internal class KlarnaPostPurchaseSDKCallbackImpl(private val id: Int) :
 
     override fun onInitialized(klarnaPostPurchaseSDK: KlarnaPostPurchaseSDK) {
         val event = KlarnaPostPurchaseSDKCallbackEvent.OnInitialized(id)
-        KlarnaPostPurchaseSDKCallbackHandler.sendValue(event)
+        KlarnaPostPurchaseSDKCallbackHandler.sendValue(ParserUtil.toJsonSafe(event))
     }
 
     override fun onAuthorizeRequested(klarnaPostPurchaseSDK: KlarnaPostPurchaseSDK) {
         val event = KlarnaPostPurchaseSDKCallbackEvent.OnAuthorizeRequested(id)
-        KlarnaPostPurchaseSDKCallbackHandler.sendValue(event)
+        KlarnaPostPurchaseSDKCallbackHandler.sendValue(ParserUtil.toJsonSafe(event))
     }
 
     override fun onRenderedOperation(
@@ -23,14 +25,17 @@ internal class KlarnaPostPurchaseSDKCallbackImpl(private val id: Int) :
         result: KlarnaPostPurchaseRenderResult
     ) {
         val event = KlarnaPostPurchaseSDKCallbackEvent.OnRenderedOperation(id, result)
-        KlarnaPostPurchaseSDKCallbackHandler.sendValue(event)
+        KlarnaPostPurchaseSDKCallbackHandler.sendValue(ParserUtil.toJsonSafe(event))
     }
 
     override fun onError(
         klarnaPostPurchaseSDK: KlarnaPostPurchaseSDK,
         error: KlarnaPostPurchaseError
     ) {
-        val event = KlarnaPostPurchaseSDKCallbackEvent.OnError(id, error)
-        KlarnaPostPurchaseSDKCallbackHandler.sendValue(event)
+        val errorWrapper = KlarnaPostPurchaseErrorWrapper(
+            error.name, error.message, error.status, error.isFatal
+        )
+        val event = KlarnaPostPurchaseSDKCallbackEvent.OnError(id, errorWrapper)
+        KlarnaPostPurchaseSDKCallbackHandler.sendValue(ParserUtil.toJsonSafe(event))
     }
 }

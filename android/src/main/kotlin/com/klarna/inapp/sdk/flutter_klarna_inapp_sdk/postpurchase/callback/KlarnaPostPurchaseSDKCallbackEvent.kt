@@ -1,6 +1,6 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.callback
 
-import com.klarna.mobile.sdk.api.postpurchase.KlarnaPostPurchaseError
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.error.KlarnaPostPurchaseErrorWrapper
 import com.klarna.mobile.sdk.api.postpurchase.KlarnaPostPurchaseRenderResult
 
 internal sealed class KlarnaPostPurchaseSDKCallbackEvent(
@@ -16,6 +16,6 @@ internal sealed class KlarnaPostPurchaseSDKCallbackEvent(
         val renderResult: KlarnaPostPurchaseRenderResult
     ) : KlarnaPostPurchaseSDKCallbackEvent(id, "onRenderedOperation")
 
-    class OnError(id: Int, val error: KlarnaPostPurchaseError) :
+    class OnError(id: Int, val error: KlarnaPostPurchaseErrorWrapper) :
         KlarnaPostPurchaseSDKCallbackEvent(id, "onError")
 }

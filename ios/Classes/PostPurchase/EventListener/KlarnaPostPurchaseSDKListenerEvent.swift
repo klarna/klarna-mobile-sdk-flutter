@@ -21,12 +21,13 @@ class KlarnaPostPurchaseSDKListenerEvents {
     struct OnRenderedOperation: KlarnaPostPurchaseSDKListenerEvent, Encodable {
         let id: Int
         var name: String = "onRenderedOperation"
-        let renderResult: KlarnaPostPurchaseRenderResult
+        let renderResult: String
     }
     
-//    struct OnError: KlarnaPostPurchaseSDKListenerEvent, Decodable {
-//        let id: Int
-//        var name: String = "onError"
-//        let error: KlarnaPostPurchaseError
-//    }
+    struct OnError: KlarnaPostPurchaseSDKListenerEvent, Encodable {
+        let id: Int
+        var name: String = "onError"
+        let error: KlarnaPostPurchaseErrorWrapper
+    }
+
 }

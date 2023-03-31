@@ -4,6 +4,9 @@ import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_sdk.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_region.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_resource_endpoint.dart';
 import 'package:flutter_klarna_inapp_sdk/klarna_result.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_error.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_event_listener.dart';
+import 'package:flutter_klarna_inapp_sdk/klarna_post_purchase_render_result.dart';
 
 class PostPurchaseSDKScreen extends StatefulWidget {
   @override
@@ -44,13 +47,16 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
       TextEditingController(text: null);
 
   KlarnaPostPurchaseSDK? postPurchaseSDK;
+  KlarnaPostPurchaseEventListener? postPurchaseEventListener;
 
   void _sdkCreate(BuildContext context) async {
+    postPurchaseEventListener = new KlarnaPostPurchaseEventListener(
+        _onInitialized, _onAuthorizeRequested, _onRenderedOperation, _onError);
     postPurchaseSDK = await KlarnaPostPurchaseSDK.createInstance(
-        klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
-    KlarnaPostPurchaseSDK.registerEventListenerString((p0) =>
-        _showToast(context, p0)
-    );
+        postPurchaseEventListener,
+        klarnaEnvironment,
+        klarnaRegion,
+        klarnaResourceEndpoint);
     _showToast(context, postPurchaseSDK.toString());
   }
 
@@ -58,8 +64,14 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
     final KlarnaResult? result = await postPurchaseSDK?.initialize(
         initializeLocaleController.text,
         initializePurchaseCountryController.text,
-        design: (initializeDesignController.text.isEmpty ? null : initializeDesignController.text));
+        design: (initializeDesignController.text.isEmpty
+            ? null
+            : initializeDesignController.text));
     _showToast(context, result.toString());
+  }
+
+  void _onInitialized(KlarnaPostPurchaseSDK sdk) {
+    _showToast(context, "Initialized");
   }
 
   void _sdkAuthorizationRequest(BuildContext context) async {
@@ -67,19 +79,45 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
         authorizationRequestClientIdController.text,
         authorizationRequestScopeController.text,
         authorizationRequestRedirectUriController.text,
-        locale: (authorizationRequestLocaleController.text.isEmpty ? null : authorizationRequestLocaleController.text),
-        state: (authorizationRequestStateController.text.isEmpty ? null : authorizationRequestStateController.text),
-        loginHint: (authorizationRequestLoginHintController.text.isEmpty ? null : authorizationRequestLoginHintController.text),
-        responseType: (authorizationRequestResponseTypeController.text.isEmpty ? null : authorizationRequestResponseTypeController.text));
+        locale: (authorizationRequestLocaleController.text.isEmpty
+            ? null
+            : authorizationRequestLocaleController.text),
+        state: (authorizationRequestStateController.text.isEmpty
+            ? null
+            : authorizationRequestStateController.text),
+        loginHint: (authorizationRequestLoginHintController.text.isEmpty
+            ? null
+            : authorizationRequestLoginHintController.text),
+        responseType: (authorizationRequestResponseTypeController.text.isEmpty
+            ? null
+            : authorizationRequestResponseTypeController.text));
     _showToast(context, result.toString());
+  }
+
+  void _onAuthorizeRequested(KlarnaPostPurchaseSDK sdk) {
+    _showToast(context, "Authorize Requested");
   }
 
   void _sdkRenderOperation(BuildContext context) async {
     final KlarnaResult? result = await postPurchaseSDK?.renderOperation(
         renderOperationOperationTokenController.text,
-        locale: (renderOperationLocaleController.text.isEmpty ? null : renderOperationLocaleController.text),
-        redirectUri: (renderOperationRedirectUriController.text.isEmpty ? null : renderOperationRedirectUriController.text));
+        locale: (renderOperationLocaleController.text.isEmpty
+            ? null
+            : renderOperationLocaleController.text),
+        redirectUri: (renderOperationRedirectUriController.text.isEmpty
+            ? null
+            : renderOperationRedirectUriController.text));
     _showToast(context, result.toString());
+  }
+
+  void _onRenderedOperation(
+      KlarnaPostPurchaseSDK sdk, KlarnaPostPurchaseRenderResult renderResult) {
+    _showToast(context, "Rendered Operation: $renderResult");
+  }
+
+  void _onError(KlarnaPostPurchaseSDK sdk, KlarnaPostPurchaseError error) {
+    _showToast(context,
+        "Error:\nname: ${error.name}\nmessage: ${error.message}\nisFatal: ${error.isFatal}\nstatus ${error.status}");
   }
 
   void _sdkDestroy(BuildContext context) async {

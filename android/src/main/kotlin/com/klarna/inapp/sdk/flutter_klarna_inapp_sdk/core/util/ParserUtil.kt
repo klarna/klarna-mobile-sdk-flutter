@@ -14,7 +14,19 @@ internal object ParserUtil {
         return gson.fromJson(json, T::class.java)
     }
 
+    inline fun <reified T> fromJsonSafe(json: String?): T? {
+        return tryOptional {
+            gson.fromJson(json, T::class.java)
+        }
+    }
+
     inline fun <reified T> toJson(obj: T?): String? {
         return gson.toJson(obj, T::class.java)
+    }
+
+    inline fun <reified T> toJsonSafe(src: T?): String? {
+        return tryOptional {
+            gson.toJson(src, T::class.java)
+        }
     }
 }
