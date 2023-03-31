@@ -22,18 +22,12 @@ public class SwiftFlutterKlarnaInappSdk: NSObject, FlutterPlugin {
     
     static func getMethodHandlerMap() -> [String: FlutterPlugin] {
         return [
-            "klarna_hybrid_sdk": KlarnaHybridSDKHandler(),
-            "klarna_post_purchase_experience": PostPurchaseExperienceHandler(),
             "klarna_post_purchase_sdk": KlarnaPostPurchaseSDKHandler()
         ]
     }
     
     static func getStreamHandlerMap() -> [String: FlutterStreamHandler & NSObjectProtocol] {
         return [
-            "klarna_events": EventCallbackHandler.instance,
-            "klarna_errors": ErrorCallbackHandler.instance,
-            "klarna_hybrid_sdk_events": KlarnaHybridSDKEventHandler.instance,
-            "klarna_post_purchase_experience_events": PostPurchaseExperienceEventHandler.instance,
             "klarna_post_purchase_sdk_events": KlarnaPostPurchaseSDKEventHandler.instance
         ]
     }
