@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_klarna_inapp_sdk_example/postpurchaseexperience/post_purchase_experience_screen.dart';
 import 'package:flutter_klarna_inapp_sdk_example/postpurchasesdk/post_purchase_sdk_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,17 +16,6 @@ class HomeScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (_) => PostPurchaseSDKScreen()));
-            },
-          ),
-          TextButton(
-            child: const Text('KlarnaPostPurchaseExperience (deprecated)'),
-
-            // Navigate to the Setting screen
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => PostPurchaseExperienceScreen()));
             },
           )
         ]);
