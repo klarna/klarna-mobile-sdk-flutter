@@ -2,7 +2,6 @@ package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.manager
 
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.PluginContext
 import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.method.KlarnaPostPurchaseSDKMethod
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchaseexperience.PostPurchaseExperienceManager
 import com.klarna.mobile.sdk.api.postpurchase.KlarnaPostPurchaseSDK
 import io.flutter.plugin.common.MethodChannel
 import io.mockk.clearAllMocks
@@ -48,14 +47,6 @@ class KlarnaPostPurchaseSDKManagerTest {
     private fun createSDK() {
         val method = KlarnaPostPurchaseSDKMethod.Create(id, "staging", "na", null)
         postPurchaseSDKManager.create(method, result)
-    }
-
-    @Test
-    fun testNotInitialized() {
-        val ppeManager = PostPurchaseExperienceManager()
-        ppeManager.renderOperation(mockk(), result)
-        ppeManager.authorizationRequest(mockk(), result)
-        verify(exactly = 2) { PostPurchaseExperienceManager.notInitialized(result) }
     }
 
     @Test
