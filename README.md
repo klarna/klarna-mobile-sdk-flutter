@@ -33,7 +33,7 @@ As of now, credentials needed for Post Purchase is only available through Klarna
 
 ### Flutter Dependency
 
-Add `flutter_klarna_inapp_sdk` as a dependency in your `pubspec.yaml` file according to the [official documentation](https://flutter.dev/docs/development/packages-and-plugins/using-packages#adding-a-package-dependency-to-an-app).
+Add `klarna_mobile_sdk_flutter` as a dependency in your `pubspec.yaml` file according to the [official documentation](https://flutter.dev/docs/development/packages-and-plugins/using-packages#adding-a-package-dependency-to-an-app).
 
 ### Usage
 
@@ -105,14 +105,14 @@ flutter packages get
 1. Execute `cd example; flutter build apk`
 2. Import the `example/android/build.gradle` file or open `example/android` folder from Android Studio.
 
-Plugin implementation will be located at `flutter_klarna_inapp_sdk/java/com.klarna.inapp.sdk.flutter_klarna_inapp_sdk/`.
+Plugin implementation will be located at `klarna_mobile_sdk_flutter/java/com.klarna.mobile.sdk.flutter/`.
 
 #### XCode
 
 1. Execute `cd example; flutter build ios --no-codesign`
 2. Import the `example/ios/Runner.xcworkspace` file from XCode.
 
-Plugin implementation will be located at `Pods/Development Pods/flutter_klarna_inapp_sdk/../../example/ios/.symlinks/plugins/flutter_klarna_inapp_sdk/ios/Classes`.
+Plugin implementation will be located at `Pods/Development Pods/klarna_mobile_sdk_flutter/../../example/ios/.symlinks/plugins/klarna_mobile_sdk_flutter/ios/Classes` inside XCode.
 
 
 ## Support
