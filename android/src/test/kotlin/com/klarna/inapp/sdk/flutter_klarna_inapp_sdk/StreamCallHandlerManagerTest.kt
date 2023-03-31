@@ -1,7 +1,6 @@
 package com.klarna.inapp.sdk.flutter_klarna_inapp_sdk
 
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.hybrid.KlarnaHybridSDKEventHandler
-import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchaseexperience.PostPurchaseExperienceEventHandler
+import com.klarna.inapp.sdk.flutter_klarna_inapp_sdk.postpurchase.callback.KlarnaPostPurchaseSDKCallbackHandler
 import org.junit.Assert
 import org.junit.Test
 
@@ -10,13 +9,10 @@ class StreamCallHandlerManagerTest {
     @Test
     fun testMap() {
         val map = StreamCallHandlerManager.streamHandlerMap
-        Assert.assertEquals(5, map.size)
-        Assert.assertEquals(EventCallbackHandler, map["klarna_events"])
-        Assert.assertEquals(ErrorCallbackHandler, map["klarna_errors"])
-        Assert.assertEquals(KlarnaHybridSDKEventHandler, map["klarna_hybrid_sdk_events"])
+        Assert.assertEquals(1, map.size)
         Assert.assertEquals(
-            PostPurchaseExperienceEventHandler,
-            map["klarna_post_purchase_experience_events"]
+            KlarnaPostPurchaseSDKCallbackHandler,
+            map["klarna_post_purchase_sdk_events"]
         )
     }
 }
