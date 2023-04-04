@@ -102,15 +102,17 @@ flutter packages get
 
 #### Android Studio
 
-1. Execute `cd example; flutter build apk`
-2. Import the `example/android/build.gradle` file or open `example/android` folder from Android Studio.
+1. Open `example/android` folder from Android Studio.
+2. Execute `cd example; flutter build apk` to build example app.
 
 Plugin implementation will be located at `klarna_mobile_sdk_flutter/java/com.klarna.mobile.sdk.flutter/`.
 
 #### XCode
 
-1. Execute `cd example; flutter build ios --no-codesign`
-2. Import the `example/ios/Runner.xcworkspace` file from XCode.
+##### Build App
+1. Execute `pod install` in `example/ios` directory.
+2. Open the `example/ios/Runner.xcworkspace` file from XCode.
+3. Execute `cd example; flutter build ios --no-codesign` to build example app.
 
 Plugin implementation will be located at `Pods/Development Pods/klarna_mobile_sdk_flutter/../../example/ios/.symlinks/plugins/klarna_mobile_sdk_flutter/ios/Classes` inside XCode.
 

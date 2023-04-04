@@ -23,7 +23,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  klarna_mobile_sdk_flutter: 3cdf6d3d055d0b03157fb4169f4fd1fd7c2ff486
+  klarna_mobile_sdk_flutter: 08c7b47dfbe3d5b60faf992f8e095fb1aa93e092
   KlarnaMobileSDK: a1f90390b13af56d09dbb817a3c2e67a2a43d946
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
