@@ -117,7 +117,7 @@ Plugin implementation will be located at `Pods/Development Pods/klarna_mobile_sd
 
 ## Support
 
-If you are having any issues using the SDK in your project or if you think that something is wrong with the SDK itself, please create an issue on [Github](https://github.com/klarna/flutter-klarna-inapp-sdk/issues) or report a bug by following the guidelines in the next section. 
+If you are having any issues using the SDK in your project or if you think that something is wrong with the SDK itself, please create an issue on [Github](https://github.com/klarna/klarna-mobile-sdk-flutter/issues) or report a bug by following the guidelines in the next section. 
 
 ### How can I contribute?
 
@@ -126,10 +126,10 @@ Thank you for reading this and taking the time to contribute to Klarna Mobile SD
 #### Reporting Bugs
 This section will guide you through submitting a bug report for Klarna Mobile SDK.
 
-Before submitting a bug report, please check that the issue hasn't been reported before. If you find a *Closed* issue that seems to describe an issue that is similar to what you want to report, open a new issue and link to the original issue in the new one. When you have checked that the issue hasn't been reported before, please **fill out [the required template](https://github.com/klarna/flutter-klarna-inapp-sdk/blob/master/.github/ISSUE_TEMPLATE/bug_report.md)** which will help us resolve the issue faster. 
+Before submitting a bug report, please check that the issue hasn't been reported before. If you find a *Closed* issue that seems to describe an issue that is similar to what you want to report, open a new issue and link to the original issue in the new one. When you have checked that the issue hasn't been reported before, please **fill out [the required template](https://github.com/klarna/klarna-mobile-sdk-flutter/blob/master/.github/ISSUE_TEMPLATE/bug_report.md)** which will help us resolve the issue faster. 
 
 ##### Submitting a Bug Report
-Submitted bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). To report a bug, create an issue and use [the template](https://github.com/klarna/flutter-klarna-inapp-sdk/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) to provide information about the bug. Explain the problem thoroughly and include any additional information that you think might help the maintainers reproduce the issue. When creating the GitHub issue please make sure that you:
+Submitted bugs are tracked as [GitHub issues](https://guides.github.com/features/issues/). To report a bug, create an issue and use [the template](https://github.com/klarna/klarna-mobile-sdk-flutter/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) to provide information about the bug. Explain the problem thoroughly and include any additional information that you think might help the maintainers reproduce the issue. When creating the GitHub issue please make sure that you:
 
 * **Use a clear and descriptive title** for the issue.
 * **Describe the exact steps which reproduce the problem** with as many details as possible. It's generally better to provide too much than too little information.
@@ -158,7 +158,7 @@ Prefix the branch you are going to work on depending on what you are working on 
 * **bugfix/**  if the branch contains a bug fix, for example: `bugfix/my-bug-fix`.
 
 ##### Pull Requests
-When creating a PR, please include as much information as possible about the type of enhancement, whether if it's a bugfix, new functionality, or any other change. There's [a template](https://github.com/klarna/flutter-klarna-inapp-sdk/blob/master/.github/ISSUE_TEMPLATE/pull-request.md) for you to fill out, which will make the review process for the maintainers faster. When creating a PR do it against the `master` branch. The PR should include:
+When creating a PR, please include as much information as possible about the type of enhancement, whether if it's a bugfix, new functionality, or any other change. There's [a template](https://github.com/klarna/klarna-mobile-sdk-flutter/blob/master/.github/ISSUE_TEMPLATE/pull-request.md) for you to fill out, which will make the review process for the maintainers faster. When creating a PR do it against the `master` branch. The PR should include:
 
 * **A clear and descriptive title**.
 * **Description of the issue** if you are fixing a bug together with a link to the relevant issue or **background for introducing a new feature**.
