@@ -14,7 +14,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       // hide the debug banner
       debugShowCheckedModeBanner: false,
-      title: "Flutter Klarna In-App SDK - Example",
+      title: "Klarna Mobile SDK Flutter - Example",
       home: HomeScreen(),
     );
   }
