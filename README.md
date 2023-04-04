@@ -100,21 +100,29 @@ After cloning the repository run the command below to setup the project.
 flutter packages get
 ```
 
-#### Android Studio
+#### Flutter
 
-1. Open `example/android` folder from Android Studio.
-2. Execute `cd example; flutter build apk` to build example app.
+1. Open root directory from Android Studio or your preferred Dart supported IDE.
+
+Plugin implementation will be located at `lib` and example app implementation will be located at `example/lib` directories.
+
+#### Android
+
+1. Open `example/android` directory from Android Studio.
 
 Plugin implementation will be located at `klarna_mobile_sdk_flutter/java/com.klarna.mobile.sdk.flutter/`.
 
-#### XCode
+#### iOS
 
-##### Build App
-1. Execute `pod install` in `example/ios` directory.
+1. Execute `pod install` in `example/ios`
 2. Open the `example/ios/Runner.xcworkspace` file from XCode.
-3. Execute `cd example; flutter build ios --no-codesign` to build example app.
 
 Plugin implementation will be located at `Pods/Development Pods/klarna_mobile_sdk_flutter/../../example/ios/.symlinks/plugins/klarna_mobile_sdk_flutter/ios/Classes` inside XCode.
+
+### Build Example App
+
+- Execute `flutter build apk` in `example` directory to build Android example app.
+- Execute `flutter build ios --no-codesign` in `example` directory to build iOS example app.
 
 
 ## Support
