@@ -29,7 +29,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
   final authorizationRequestScopeController =
       TextEditingController(text: "read:consumer_order");
   final authorizationRequestRedirectUriController =
-      TextEditingController(text: "");
+      TextEditingController(text: "klarna-mobile-sdk-flutter://example");
   final authorizationRequestLocaleController =
       TextEditingController(text: null);
   final authorizationRequestStateController = TextEditingController(text: null);
@@ -43,7 +43,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
       TextEditingController(text: "");
   final renderOperationLocaleController = TextEditingController(text: null);
   final renderOperationRedirectUriController =
-      TextEditingController(text: null);
+      TextEditingController(text: "klarna-mobile-sdk-flutter://example");
 
   KlarnaPostPurchaseSDK? postPurchaseSDK;
   KlarnaPostPurchaseEventListener? postPurchaseEventListener;
@@ -52,7 +52,7 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
     final listener = new KlarnaPostPurchaseEventListener(
         _onInitialized, _onAuthorizeRequested, _onRenderedOperation, _onError);
     postPurchaseEventListener = listener;
-    postPurchaseSDK = new KlarnaPostPurchaseSDK(listener, null,
+    postPurchaseSDK = new KlarnaPostPurchaseSDK(listener, "klarna-mobile-sdk-flutter://example",
         klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
     _showToast(context, postPurchaseSDK.toString());
   }

@@ -8,6 +8,7 @@ class KlarnaPostPurchaseSDKMethods {
     
     struct Create: KlarnaPostPurchaseSDKMethod, Decodable {
         let id: Int
+        let returnURL: String?
         let environment: String?
         let region: String?
         let resourceEndpoint: String?

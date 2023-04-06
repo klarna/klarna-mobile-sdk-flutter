@@ -42,6 +42,7 @@ class KlarnaPostPurchaseSDK {
     }
     _channel.invokeMethod('create', <String, dynamic>{
       'id': _id,
+      'returnURL': returnUrl,
       'environment': environmentName,
       'region': regionName,
       'resourceEndpoint': resourceEndpointName

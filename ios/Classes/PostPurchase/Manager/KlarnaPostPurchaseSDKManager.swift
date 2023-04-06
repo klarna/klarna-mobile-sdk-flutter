@@ -24,6 +24,9 @@ class KlarnaPostPurchaseSDKManager {
         let region = KlarnaParamMapper.getRegionOrDefault(param: method.region)
         let resourceEndpoint = KlarnaParamMapper.getResourceEndpointOrDefault(param: method.resourceEndpoint)
         postPurchaseSDK = KlarnaPostPurchaseSDK(environment: environment, region: region, resourceEndpoint: resourceEndpoint, listener: postPurchaseSDKEventListener)
+        if let returnURLString = method.returnURL {
+            postPurchaseSDK?.returnURL = URL(string: returnURLString)
+        }
         result(nil)
     }
     

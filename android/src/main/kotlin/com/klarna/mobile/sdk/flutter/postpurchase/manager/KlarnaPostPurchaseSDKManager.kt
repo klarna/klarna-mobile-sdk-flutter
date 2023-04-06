@@ -38,6 +38,7 @@ internal class KlarnaPostPurchaseSDKManager(private val id: Int) {
                 postPurchaseSDKCallback,
                 resourceEndpoint
             )
+            postPurchaseSDK?.returnURL = method.returnURL
         } ?: run {
             result?.error(
                 ResultError.KLARNA_POST_PURCHASE_SDK_ERROR.errorCode,

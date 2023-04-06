@@ -7,6 +7,7 @@ import io.flutter.plugin.common.MethodCall
 internal sealed class KlarnaPostPurchaseSDKMethod(val id: Int) {
     class Create(
         id: Int,
+        val returnURL: String?,
         val environment: String?,
         val region: String?,
         val resourceEndpoint: String?
@@ -45,6 +46,7 @@ internal sealed class KlarnaPostPurchaseSDKMethod(val id: Int) {
             return when (call.method) {
                 "create" -> Create(
                     call.requireArgument("id"),
+                    call.argument("returnURL"),
                     call.argument("environment"),
                     call.argument("region"),
                     call.argument("resourceEndpoint")
