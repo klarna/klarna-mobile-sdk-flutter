@@ -6,13 +6,14 @@ import 'package:klarna_mobile_sdk_flutter/klarna_post_purchase_render_result.dar
 import 'package:klarna_mobile_sdk_flutter/klarna_post_purchase_sdk.dart';
 import 'package:klarna_mobile_sdk_flutter/klarna_region.dart';
 import 'package:klarna_mobile_sdk_flutter/klarna_resource_endpoint.dart';
+import 'package:klarna_mobile_sdk_flutter_example/common/uri_links_state.dart';
 
 class PostPurchaseSDKScreen extends StatefulWidget {
   @override
   _PostPurchaseSDKScreenState createState() => _PostPurchaseSDKScreenState();
 }
 
-class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
+class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
   // create
   KlarnaEnvironment? klarnaEnvironment;
   KlarnaRegion? klarnaRegion;
@@ -119,6 +120,17 @@ class _PostPurchaseSDKScreenState extends State<PostPurchaseSDKScreen> {
   void _sdkDestroy(BuildContext context) async {
     postPurchaseSDK?.destroy();
     _showToast(context, "KlarnaPostPurchaseSDK Destroyed");
+  }
+
+  @override
+  void onNewLinkUri(Uri? uri) {
+    super.onNewLinkUri(uri);
+    if (uri != null) {
+      String? code = uri.queryParameters["code"];
+      if (code != null && code.isNotEmpty) {
+        _showToast(context, "Authorization Redirect\ncode: $code");
+      }
+    }
   }
 
   void _showToast(BuildContext context, String text) {
