@@ -69,6 +69,55 @@
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
+# Android
+android/*.iml
+android/.gradle
+android/local.properties
+android/.idea/workspace.xml
+android/.idea/libraries
+android/.DS_Store
+android/build
+android/captures
+
+# iOS
+ios/.idea/
+ios/.vagrant/
+ios/.sconsign.dblite
+ios/.svn/
+
+ios/.DS_Store
+ios/*.swp
+ios/profile
+
+ios/DerivedData/
+ios/build/
+ios/GeneratedPluginRegistrant.h
+ios/GeneratedPluginRegistrant.m
+
+ios/.generated/
+
+ios/*.pbxuser
+ios/*.mode1v3
+ios/*.mode2v3
+ios/*.perspectivev3
+
+ios/!default.pbxuser
+ios/!default.mode1v3
+ios/!default.mode2v3
+ios/!default.perspectivev3
+
+ios/xcuserdata
+
+ios/*.moved-aside
+
+ios/*.pyc
+ios/*sync/
+ios/Icon?
+ios/.tags*
+
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
 # Pubignore specifics
 example/
 assets/
