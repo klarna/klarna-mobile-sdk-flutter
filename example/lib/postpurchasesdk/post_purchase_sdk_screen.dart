@@ -13,7 +13,7 @@ class PostPurchaseSDKScreen extends StatefulWidget {
   _PostPurchaseSDKScreenState createState() => _PostPurchaseSDKScreenState();
 }
 
-class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
+class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> implements KlarnaPostPurchaseEventListener {
   // create
   KlarnaEnvironment? klarnaEnvironment;
   KlarnaRegion? klarnaRegion;
@@ -47,13 +47,9 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
       TextEditingController(text: "klarna-mobile-sdk-flutter://example");
 
   KlarnaPostPurchaseSDK? postPurchaseSDK;
-  KlarnaPostPurchaseEventListener? postPurchaseEventListener;
 
   void _sdkCreate(BuildContext context) async {
-    final listener = new KlarnaPostPurchaseEventListener(
-        _onInitialized, _onAuthorizeRequested, _onRenderedOperation, _onError);
-    postPurchaseEventListener = listener;
-    postPurchaseSDK = new KlarnaPostPurchaseSDK(listener, "klarna-mobile-sdk-flutter://example",
+    postPurchaseSDK = new KlarnaPostPurchaseSDK(this, "klarna-mobile-sdk-flutter://example",
         klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
     _showToast(context, postPurchaseSDK.toString());
   }
@@ -65,10 +61,6 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
             ? null
             : initializeDesignController.text));
     _showToast(context, "Initialize Called");
-  }
-
-  void _onInitialized(KlarnaPostPurchaseSDK sdk) {
-    _showToast(context, "Initialized");
   }
 
   void _sdkAuthorizationRequest(BuildContext context) async {
@@ -91,10 +83,6 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
     _showToast(context, "Authorization Request Called");
   }
 
-  void _onAuthorizeRequested(KlarnaPostPurchaseSDK sdk) {
-    _showToast(context, "Authorize Requested");
-  }
-
   void _sdkRenderOperation(BuildContext context) async {
     postPurchaseSDK?.renderOperation(
         renderOperationOperationTokenController.text,
@@ -107,12 +95,23 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
     _showToast(context, "Render Operation Called");
   }
 
-  void _onRenderedOperation(
-      KlarnaPostPurchaseSDK sdk, KlarnaPostPurchaseRenderResult renderResult) {
+  @override
+  void onInitialized(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK) {
+    _showToast(context, "Initialized");
+  }
+
+  @override
+  void onAuthorizeRequested(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK) {
+    _showToast(context, "Authorize Requested");
+  }
+
+  @override
+  void onRenderedOperation(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK, KlarnaPostPurchaseRenderResult renderResult) {
     _showToast(context, "Rendered Operation: $renderResult");
   }
 
-  void _onError(KlarnaPostPurchaseSDK sdk, KlarnaPostPurchaseError error) {
+  @override
+  void onError(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK, KlarnaPostPurchaseError error) {
     _showToast(context,
         "Error:\nname: ${error.name}\nmessage: ${error.message}\nisFatal: ${error.isFatal}\nstatus ${error.status}");
   }
