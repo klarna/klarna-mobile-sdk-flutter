@@ -130,7 +130,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> {
       if (code != null && code.isNotEmpty) {
         _showToast(context, "Authorization Redirect\ncode: $code");
       } else {
-        String? error = uri.queryParameters["code"];
+        String? error = uri.queryParameters["error"];
         if(error != null && error.isNotEmpty) {
           _showToast(context, "Redirect Error\nerror: $error");
         }
