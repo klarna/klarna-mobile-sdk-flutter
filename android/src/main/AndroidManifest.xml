@@ -1,3 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.klarna.inapp.sdk.flutter_klarna_inapp_sdk">
+  package="com.klarna.mobile.sdk.flutter">
+
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

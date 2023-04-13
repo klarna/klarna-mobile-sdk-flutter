@@ -1,5 +1,7 @@
 import Flutter
 
+extension String: Error {}
+
 internal extension FlutterMethodCall {
     
     var argumentDictionary: Dictionary<String, Any>? {

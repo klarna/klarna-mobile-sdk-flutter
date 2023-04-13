@@ -1,0 +1,4 @@
+enum KlarnaPostPurchaseRenderResult {
+  stateChange,
+  noStateChange
+}
