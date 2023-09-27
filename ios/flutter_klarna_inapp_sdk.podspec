@@ -23,5 +23,5 @@ Klarna&#x27;s Flutter wrapper for the In-App SDK
   s.swift_version = '5.0'
 
   # Klarna Mobile SDK
-  s.dependency 'KlarnaMobileSDK', '~> 2.2.2'
+  s.dependency 'KlarnaMobileSDK', '~> 2.5.1'
 end
