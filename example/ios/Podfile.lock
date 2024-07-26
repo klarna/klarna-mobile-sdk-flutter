@@ -2,10 +2,10 @@ PODS:
   - Flutter (1.0.0)
   - klarna_mobile_sdk_flutter (0.0.1):
     - Flutter
-    - KlarnaMobileSDK (~> 2.5.1)
-  - KlarnaMobileSDK (2.5.1):
-    - KlarnaMobileSDK/full (= 2.5.1)
-  - KlarnaMobileSDK/full (2.5.1)
+    - KlarnaMobileSDK (~> 2.6.21)
+  - KlarnaMobileSDK (2.6.21):
+    - KlarnaMobileSDK/basic (= 2.6.21)
+  - KlarnaMobileSDK/basic (2.6.21)
   - uni_links (0.0.1):
     - Flutter
 
@@ -27,9 +27,9 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/uni_links/ios"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  klarna_mobile_sdk_flutter: 08c7b47dfbe3d5b60faf992f8e095fb1aa93e092
-  KlarnaMobileSDK: a1f90390b13af56d09dbb817a3c2e67a2a43d946
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  klarna_mobile_sdk_flutter: e378b77b8567df2c40633fb027d6377eb93c3393
+  KlarnaMobileSDK: caba304732cc1130bac22f29582baebff6731e3f
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
