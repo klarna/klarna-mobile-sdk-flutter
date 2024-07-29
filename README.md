@@ -42,50 +42,50 @@ Add `klarna_mobile_sdk_flutter` as a dependency in your `pubspec.yaml` file acco
 ##### Construct
 
 ###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| eventListener | `KlarnaPostPurchaseEventListener` | An interface implementation for PostPurchaseSDK event and error callbacks. |
-| returnUrl | `String` | An app-defined URL scheme the component uses to return customers to your app. |
-| environment | `named optional` `KlarnaEnvironment?` | Environment for Post Purchase SDK. | 
-| region | `named optional` `KlarnaRegion?` | Region for Post Purchase SDK. | 
-| resourceEndpoint | `named optional` `KlarnaResourceEndpoint?` | Resource cloud endpoint for Post Purchase SDK. | 
+| Name             | Type                                       | Description                                                                   |
+|------------------|--------------------------------------------|-------------------------------------------------------------------------------|
+| eventListener    | `KlarnaPostPurchaseEventListener`          | An interface implementation for PostPurchaseSDK event and error callbacks.    |
+| returnUrl        | `String`                                   | An app-defined URL scheme the component uses to return customers to your app. |
+| environment      | `named optional` `KlarnaEnvironment?`      | Environment for Post Purchase SDK.                                            | 
+| region           | `named optional` `KlarnaRegion?`           | Region for Post Purchase SDK.                                                 | 
+| resourceEndpoint | `named optional` `KlarnaResourceEndpoint?` | Resource cloud endpoint for Post Purchase SDK.                                | 
 
 ##### initialize()
 
 Initializes new `WebView` and javascript Klarna Post Purchase Experience library.
 
 ###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| locale | `String` | A string representing the user locale. For example: `se-SE` | 
-| purchaseCountry | `String` | A string representing the purchase country. For example: `SE` | 
-| design | `named optional` `String?` | A string representing the design ID. | 
+| Name            | Type                       | Description                                                   |
+|-----------------|----------------------------|---------------------------------------------------------------|
+| locale          | `String`                   | A string representing the user locale. For example: `se-SE`   | 
+| purchaseCountry | `String`                   | A string representing the purchase country. For example: `SE` | 
+| design          | `named optional` `String?` | A string representing the design ID.                          | 
 
 ##### authorizationRequest()
 
 Called to kick off the oauth flow.
 
 ###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| clientId | `String` | The client_id for your application. | 
-| scope | `String` | A space-delimited list of scopes that identify the resources that your application could access on the user's behalf. These values define the consent screen that Klarna displays to the user. | 
-| redirectUri | `String` | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance. | 
-| locale | `named optional` `String?` | A string representing the user locale. | 
-| state | `named optional` `String?` | A string value that your application uses to maintain state between your authorization request and the authorization server's response. The Authorization server returns the exact value that you send to the redirect_url as a URL parameter. | 
-| loginHint | `named optional` `String?` | If your application knows which user is trying to authenticate, it can use this parameter to provide a hint to the Klarna’s Authorization Server. The server uses the hint to simplify the login flow by prefilling the email field in the sign-in form. It’s recommended to use this as it will improve the customer experience. | 
-| responseType | `named optional` `String?` | The desired grant type. The value MUST be one of "code" for requesting an authorization code or "token" for requesting an access token (implicit grant). The default is "code" | 
+| Name         | Type                       | Description                                                                                                                                                                                                                                                                                                                       |
+|--------------|----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| clientId     | `String`                   | The client_id for your application.                                                                                                                                                                                                                                                                                               | 
+| scope        | `String`                   | A space-delimited list of scopes that identify the resources that your application could access on the user's behalf. These values define the consent screen that Klarna displays to the user.                                                                                                                                    | 
+| redirectUri  | `String`                   | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance.                                                                                                                              | 
+| locale       | `named optional` `String?` | A string representing the user locale.                                                                                                                                                                                                                                                                                            | 
+| state        | `named optional` `String?` | A string value that your application uses to maintain state between your authorization request and the authorization server's response. The Authorization server returns the exact value that you send to the redirect_url as a URL parameter.                                                                                    | 
+| loginHint    | `named optional` `String?` | If your application knows which user is trying to authenticate, it can use this parameter to provide a hint to the Klarna’s Authorization Server. The server uses the hint to simplify the login flow by prefilling the email field in the sign-in form. It’s recommended to use this as it will improve the customer experience. | 
+| responseType | `named optional` `String?` | The desired grant type. The value MUST be one of "code" for requesting an authorization code or "token" for requesting an access token (implicit grant). The default is "code"                                                                                                                                                    | 
 
 ##### renderOperation()
 
 Load the Klarna widget for the operation.
 
 ###### Parameters
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| operationToken | `String` | The operation token for the related order returned from the post purchase api. |
-| locale | `named optional` `String?` | A string representing the user locale. | 
-| redirectUri | `named optional` `String` | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance. |
+| Name           | Type                       | Description                                                                                                                                                                                          |
+|----------------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| operationToken | `String`                   | The operation token for the related order returned from the post purchase api.                                                                                                                       |
+| locale         | `named optional` `String?` | A string representing the user locale.                                                                                                                                                               | 
+| redirectUri    | `named optional` `String`  | The “location” where the OAuth server redirects the user after the user completes the authorization flow. The value must exactly match one of the redirect_url values provided to Klarna in advance. |
 
 ##### destroy()
 

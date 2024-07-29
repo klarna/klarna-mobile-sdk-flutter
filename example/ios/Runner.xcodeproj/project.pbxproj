@@ -265,7 +265,7 @@
 				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/klarna_mobile_sdk_flutter/klarna_mobile_sdk_flutter.framework",
 				"${BUILT_PRODUCTS_DIR}/uni_links/uni_links.framework",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/full/KlarnaMobileSDK.framework/KlarnaMobileSDK",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/KlarnaMobileSDK/basic/KlarnaMobileSDK.framework/KlarnaMobileSDK",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
