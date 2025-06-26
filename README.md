@@ -29,7 +29,7 @@
 As of now, credentials needed for Post Purchase is only available through Klarna Delivery Managers. If you want to test this integration, please contact your Delivery Manager to get required information regarding Post Purchase.
 
 ### Klarna Mobile SDK Documentation
-[Overview of the SDK](https://docs.klarna.com/in-app/)
+[Overview of the SDK](https://docs.klarna.com/payments/mobile-payments/before-you-start/introduction-mobile-integrations/)
 
 ### Flutter Dependency
 
@@ -159,7 +159,7 @@ Include details about the device/emulator/simulator you are experiencing the iss
 
 ## Contribution
 
-Before contributing, please read through the [Klarna Mobile SDK documentation](https://docs.klarna.com/in-app/).
+Before contributing, please read through the [Klarna Mobile SDK documentation](https://docs.klarna.com/payments/mobile-payments/before-you-start/introduction-mobile-integrations/).
 
 ##### Branching
 Prefix the branch you are going to work on depending on what you are working on (bug fix or feature). Use the following prefixes when creating a new branch:
