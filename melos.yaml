@@ -1,0 +1,26 @@
+name: klarna_mobile_sdk_flutter_workspace
+
+packages:
+  - packages/**
+  - example
+
+scripts:
+  analyze:
+    description: Analyze all packages.
+    exec: flutter analyze
+    concurrency: 1
+
+  test:
+    description: Run tests in packages that have a test/ directory.
+    exec: flutter test
+    concurrency: 1
+    packageFilters:
+      dirExists: test
+
+  format:
+    description: Check formatting across all packages.
+    exec: dart format --set-exit-if-changed .
+
+  format:fix:
+    description: Apply formatting across all packages.
+    exec: dart format .

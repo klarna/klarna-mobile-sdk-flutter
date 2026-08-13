@@ -1,0 +1,76 @@
+group 'com.klarna.mobile.sdk.flutter_klarna_mobile_sdk'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.9.22'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        // The Android Gradle Plugin is supplied by the consuming app (declared in
+        // its settings.gradle plugins DSL), so it is intentionally NOT declared here.
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url 'https://x.klarnacdn.net/mobile-sdk/'
+        }
+    }
+}
+
+configurations.configureEach {
+    resolutionStrategy.force 'junit:junit:4.13.1'
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.klarna.mobile.sdk.flutter'
+    compileSdkVersion 34
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+    defaultConfig {
+        minSdkVersion 19
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation 'com.klarna.mobile:sdk:2.11.5'
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'androidx.test:core:1.4.0'
+    testImplementation "org.robolectric:robolectric:4.8.2"
+    testImplementation "io.mockk:mockk:1.9.3"
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}

@@ -1,0 +1,36 @@
+name: klarna_network_core
+description: "Flutter plugin for initializing and managing Klarna Network SDK sessions shared by Klarna Network packages."
+version: 0.1.0
+homepage: https://github.com/klarna/klarna-mobile-sdk-flutter
+repository: https://github.com/klarna/klarna-mobile-sdk-flutter
+issue_tracker: https://github.com/klarna/klarna-mobile-sdk-flutter/issues
+topics:
+  - klarna
+  - payments
+  - flutter
+  - mobile-sdk
+
+resolution: workspace
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Regenerate with: dart run pigeon --input pigeons/kn_core.dart
+  pigeon: ^25.5.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.klarna.mobile.sdk.klarna_network_core
+        pluginClass: KlarnaNetworkCorePlugin
+      ios:
+        pluginClass: KlarnaNetworkCorePlugin

@@ -30,6 +30,13 @@
 .pub/
 /build/
 
+# Flutter generated/ephemeral (iOS & Android)
+**/Flutter/ephemeral/
+**/Flutter/Generated.xcconfig
+**/Flutter/flutter_export_environment.sh
+**/ServiceDefinitions.json
+**/.last_build_id
+
 # Web related
 lib/generated_plugin_registrant.dart
 
