@@ -1,0 +1,79 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "packages/klarna_network_core/pubspec.yaml"
+      - "packages/klarna_mobile_sdk_flutter/pubspec.yaml"
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      network_core: ${{ steps.diff.outputs.network_core }}
+      mobile_sdk: ${{ steps.diff.outputs.mobile_sdk }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect version bumps
+        id: diff
+        run: |
+          check_version() {
+            pkg="$1"
+            key="$2"
+            file="packages/$pkg/pubspec.yaml"
+            old_version=$(git show HEAD^:"$file" 2>/dev/null | grep -m1 '^version:' | awk '{print $2}' || echo "")
+            new_version=$(grep -m1 '^version:' "$file" | awk '{print $2}')
+            if [ -n "$new_version" ] && [ "$old_version" != "$new_version" ]; then
+              echo "$pkg version changed: $old_version -> $new_version"
+              echo "$key=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$key=false" >> "$GITHUB_OUTPUT"
+            fi
+          }
+          check_version klarna_network_core network_core
+          check_version klarna_mobile_sdk_flutter mobile_sdk
+
+  publish-network-core:
+    needs: detect
+    if: needs.detect.outputs.network_core == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Publish klarna_network_core
+        working-directory: packages/klarna_network_core
+        run: |
+          flutter pub get
+          dart pub publish --force
+
+  publish-mobile-sdk:
+    needs: detect
+    if: needs.detect.outputs.mobile_sdk == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Publish klarna_mobile_sdk_flutter
+        working-directory: packages/klarna_mobile_sdk_flutter
+        run: |
+          flutter pub get
+          dart pub publish --force
