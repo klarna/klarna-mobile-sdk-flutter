@@ -7,13 +7,19 @@ on:
     paths:
       - "packages/klarna_network_core/pubspec.yaml"
       - "packages/klarna_mobile_sdk_flutter/pubspec.yaml"
+    tags:
+      - "network_core-v[0-9]+.[0-9]+.[0-9]+*"
+      - "mobile_sdk-v[0-9]+.[0-9]+.[0-9]+*"
 
 jobs:
   detect:
+    if: github.ref_type != 'tag'
     runs-on: ubuntu-latest
     outputs:
       network_core: ${{ steps.diff.outputs.network_core }}
+      network_core_version: ${{ steps.diff.outputs.network_core_version }}
       mobile_sdk: ${{ steps.diff.outputs.mobile_sdk }}
+      mobile_sdk_version: ${{ steps.diff.outputs.mobile_sdk_version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,6 +37,7 @@ jobs:
             if [ -n "$new_version" ] && [ "$old_version" != "$new_version" ]; then
               echo "$pkg version changed: $old_version -> $new_version"
               echo "$key=true" >> "$GITHUB_OUTPUT"
+              echo "${key}_version=$new_version" >> "$GITHUB_OUTPUT"
             else
               echo "$key=false" >> "$GITHUB_OUTPUT"
             fi
@@ -38,9 +45,36 @@ jobs:
           check_version klarna_network_core network_core
           check_version klarna_mobile_sdk_flutter mobile_sdk
 
-  publish-network-core:
+  tag-network-core:
     needs: detect
     if: needs.detect.outputs.network_core == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag klarna_network_core release
+        run: |
+          tag="network_core-v${{ needs.detect.outputs.network_core_version }}"
+          git tag "$tag"
+          git push origin "$tag"
+
+  tag-mobile-sdk:
+    needs: detect
+    if: needs.detect.outputs.mobile_sdk == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag klarna_mobile_sdk_flutter release
+        run: |
+          tag="mobile_sdk-v${{ needs.detect.outputs.mobile_sdk_version }}"
+          git tag "$tag"
+          git push origin "$tag"
+
+  publish-network-core:
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'network_core-v')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -60,8 +94,7 @@ jobs:
           dart pub publish --force
 
   publish-mobile-sdk:
-    needs: detect
-    if: needs.detect.outputs.mobile_sdk == 'true'
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'mobile_sdk-v')
     runs-on: ubuntu-latest
     permissions:
       id-token: write
