@@ -49,10 +49,10 @@ jobs:
     needs: detect
     if: needs.detect.outputs.network_core == 'true'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_TAG_PAT }}
       - name: Tag klarna_network_core release
         run: |
           tag="network_core-v${{ needs.detect.outputs.network_core_version }}"
@@ -63,10 +63,10 @@ jobs:
     needs: detect
     if: needs.detect.outputs.mobile_sdk == 'true'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_TAG_PAT }}
       - name: Tag klarna_mobile_sdk_flutter release
         run: |
           tag="mobile_sdk-v${{ needs.detect.outputs.mobile_sdk_version }}"
