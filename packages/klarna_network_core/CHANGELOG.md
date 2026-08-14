@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.0.0
+
+- Major version aligned with Klarna Network API v2.
+
 ## 0.1.0
 
 - Initial release.

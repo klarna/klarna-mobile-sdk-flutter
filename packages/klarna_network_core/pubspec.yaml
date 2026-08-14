@@ -1,6 +1,6 @@
 name: klarna_network_core
 description: "Flutter plugin for initializing and managing Klarna Network SDK sessions shared by Klarna Network packages."
-version: 0.1.0
+version: 2.0.0
 homepage: https://github.com/klarna/klarna-mobile-sdk-flutter
 repository: https://github.com/klarna/klarna-mobile-sdk-flutter
 issue_tracker: https://github.com/klarna/klarna-mobile-sdk-flutter/issues
