@@ -1,0 +1,31 @@
+name: klarna_mobile_sdk_flutter
+description: Klarna&#x27;s Flutter wrapper library for the native Klarna Mobile SDK
+version: 1.0.2
+homepage: https://github.com/klarna/klarna-mobile-sdk-flutter
+
+resolution: workspace
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  # Flutter versions prior to 1.12 did not support the
+  # flutter.plugin.platforms map.
+  flutter: ">=1.12.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  mockito: ^5.2.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.klarna.mobile.sdk.flutter
+        pluginClass: KlarnaMobileSDKFlutter
+      ios:
+        pluginClass: KlarnaMobileSDKFlutter
+

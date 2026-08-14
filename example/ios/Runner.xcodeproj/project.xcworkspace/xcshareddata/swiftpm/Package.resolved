@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "klarna-mobile-sdk-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/klarna/klarna-mobile-sdk-ios",
+      "state" : {
+        "revision" : "f1d51478f2734fcea19cdc741bacc020a928b849",
+        "version" : "2.12.0"
+      }
+    }
+  ],
+  "version" : 2
+}

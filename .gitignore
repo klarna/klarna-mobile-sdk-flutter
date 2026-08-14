@@ -26,6 +26,9 @@
 .pub-cache/
 .pub/
 /build/
+# Build output in any workspace package (monorepo)
+packages/*/build/
+packages/*/.dart_tool/
 
 # Android related
 **/android/**/gradle-wrapper.jar

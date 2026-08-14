@@ -1,29 +1,18 @@
-name: klarna_mobile_sdk_flutter
-description: Klarna&#x27;s Flutter wrapper library for the native Klarna Mobile SDK
-version: 1.0.2
-homepage: https://github.com/klarna/klarna-mobile-sdk-flutter
+name: klarna_mobile_sdk_flutter_workspace
+description: Workspace root for the Klarna Mobile SDK Flutter packages.
+publish_to: none
 
+# Pub Workspaces (Dart >=3.6) — links all member packages so they resolve each
+# other from disk without publishing. Add new packages under packages/ and list
+# them here.
 environment:
-  sdk: ">=2.12.0 <3.0.0"
-  # Flutter versions prior to 1.12 did not support the
-  # flutter.plugin.platforms map.
-  flutter: ">=1.12.0"
+  sdk: ">=3.6.0 <4.0.0"
 
-dependencies:
-  flutter:
-    sdk: flutter
+workspace:
+  - packages/klarna_mobile_sdk_flutter
+  - packages/klarna_network_core
+  - example
 
+# Melos orchestrates scripts (analyze, test, format) across every workspace package.
 dev_dependencies:
-  mockito: ^5.2.0
-  flutter_test:
-    sdk: flutter
-
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: com.klarna.mobile.sdk.flutter
-        pluginClass: KlarnaMobileSDKFlutter
-      ios:
-        pluginClass: KlarnaMobileSDKFlutter
-
+  melos: ^6.3.0

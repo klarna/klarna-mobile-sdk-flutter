@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:klarna_mobile_sdk_flutter_example/network/initialization_screen.dart';
 import 'package:klarna_mobile_sdk_flutter_example/postpurchasesdk/post_purchase_sdk_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,6 +17,16 @@ class HomeScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (_) => PostPurchaseSDKScreen()));
+            },
+          ),
+          TextButton(
+            child: const Text('Klarna Network Integrations'),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          const KlarnaNetworkInitializationScreen()));
             },
           )
         ]);

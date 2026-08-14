@@ -3,8 +3,10 @@ description: Demonstrates how to use the klarna_mobile_sdk_flutter plugin.
 publish_to: 'none'
 version: 0.0.1
 
+resolution: workspace
+
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -12,17 +14,20 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.9
 
-  # For handling deeplinks and redirects
-  uni_links: ^0.5.1
+  # For handling deeplinks and redirects (app_links replaces the discontinued uni_links)
+  app_links: ^6.3.0
+
+  klarna_network_core:
+    path: ../packages/klarna_network_core
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   klarna_mobile_sdk_flutter:
-    path: ../
+    path: ../packages/klarna_mobile_sdk_flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
