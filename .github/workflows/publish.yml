@@ -86,10 +86,15 @@ jobs:
         with:
           channel: stable
 
+      - name: Install dependencies
+        working-directory: packages/klarna_network_core
+        run: flutter pub get
+
+      - uses: dart-lang/setup-dart@v1
+
       - name: Publish klarna_network_core
         working-directory: packages/klarna_network_core
         run: |
-          flutter pub get
           dart pub publish --dry-run
           dart pub publish --force
 
@@ -106,9 +111,14 @@ jobs:
         with:
           channel: stable
 
+      - name: Install dependencies
+        working-directory: packages/klarna_mobile_sdk_flutter
+        run: flutter pub get
+
+      - uses: dart-lang/setup-dart@v1
+
       - name: Publish klarna_mobile_sdk_flutter
         working-directory: packages/klarna_mobile_sdk_flutter
         run: |
-          flutter pub get
           dart pub publish --dry-run
           dart pub publish --force
