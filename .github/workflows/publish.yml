@@ -1,0 +1,144 @@
+name: Publish to pub.dev
+
+# Release flow for klarna_network_core:
+#
+#   1. A version bump lands on master (via a sync PR from the private repo,
+#      which is the source of truth for package versions).
+#   2. `tag` reads the new version and pushes tag klarna_network_core-v<version>.
+#   3. That tag push triggers `publish`, which authenticates to pub.dev over
+#      OIDC and publishes.
+#
+# Why two jobs instead of publishing directly on the master push: pub.dev's
+# trusted-publisher config only authorizes runs triggered by a push of a tag
+# matching its configured pattern. A run triggered by a branch push is rejected
+# at the OIDC step, even with id-token: write. So the tag push has to be the
+# thing that triggers the publishing run.
+#
+# Why the tag is pushed with a PAT rather than GITHUB_TOKEN: pushes authored by
+# GITHUB_TOKEN deliberately do not start new workflow runs (GitHub's recursion
+# guard), so a GITHUB_TOKEN-pushed tag would create the tag and publish nothing.
+#
+# klarna_mobile_sdk_flutter is intentionally not handled here. It is already
+# published, and its release tags use a bare version ("1.0.2") that can't be
+# attributed to a single package in a shared repo. Release it deliberately
+# rather than on a version-file diff.
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "packages/klarna_network_core/pubspec.yaml"
+    tags:
+      - "klarna_network_core-v[0-9]+.[0-9]+.[0-9]+*"
+
+jobs:
+  tag:
+    # Only for the master-push half of the trigger; the tag push skips it.
+    if: github.ref_type != 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      # Full history so the pre-push commit (github.event.before) is reachable.
+      # A shallow clone can't diff against it.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TAG_PAT }}
+
+      - name: Resolve the version to release
+        id: resolve
+        env:
+          # Passed as env vars, never interpolated into the script body: a
+          # version string reaching the shell as source could otherwise run
+          # as code, in a job holding a push credential.
+          BEFORE: ${{ github.event.before }}
+          PKG: packages/klarna_network_core
+        run: |
+          set -euo pipefail
+          file="$PKG/pubspec.yaml"
+
+          read_version() { grep -m1 '^version:' | sed -E 's/^version:[[:space:]]*//' | tr -d '[:space:]'; }
+
+          new_version=$(read_version < "$file")
+          # Compare against the ref's pre-push state, not HEAD^: a squash or
+          # multi-commit push moves master by more than one commit, and HEAD^
+          # can already contain the bump.
+          old_version=$(git show "$BEFORE:$file" 2>/dev/null | read_version || true)
+
+          if [ -z "$new_version" ]; then
+            echo "no version field in $file" >&2
+            exit 1
+          fi
+          if [ "$old_version" = "$new_version" ]; then
+            echo "version unchanged ($new_version); nothing to release"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Reject anything that isn't a plain semver release, so a malformed
+          # or prerelease version can't reach `git tag` or pub.dev.
+          if ! printf '%s' "$new_version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "refusing to tag non-release version: $new_version" >&2
+            exit 1
+          fi
+
+          echo "$old_version -> $new_version"
+          echo "release=true" >> "$GITHUB_OUTPUT"
+          echo "version=$new_version" >> "$GITHUB_OUTPUT"
+
+      - name: Push the release tag
+        if: steps.resolve.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.resolve.outputs.version }}
+        run: |
+          set -euo pipefail
+          # Tag name must match the pub.dev trusted-publisher tag pattern
+          # (klarna_network_core-v{{version}}) and the private repo's release
+          # pipeline, which uses the same "<name>-v<version>" convention.
+          tag="klarna_network_core-v${VERSION}"
+          git check-ref-format "refs/tags/$tag"
+
+          # Idempotent: a re-run must not fail, and must never move a tag that
+          # already points somewhere else.
+          existing=$(git ls-remote --tags origin "refs/tags/$tag" | awk '{print $1}')
+          if [ -n "$existing" ]; then
+            if [ "$existing" = "$GITHUB_SHA" ]; then
+              echo "$tag already points at $GITHUB_SHA; nothing to do"
+              exit 0
+            fi
+            echo "$tag already exists at $existing (expected $GITHUB_SHA); refusing to move it" >&2
+            exit 1
+          fi
+
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "refs/tags/$tag"
+
+  publish:
+    # The tag-push half. pub.dev validates that this run was triggered by a tag
+    # matching its configured pattern, so this must be a separate run.
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'klarna_network_core-v')
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # request the pub.dev OIDC token
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        working-directory: packages/klarna_network_core
+        run: flutter pub get
+
+      # Provisions the pub.dev OIDC token and registers it via
+      # `dart pub token add`. flutter-action only installs the SDK, so without
+      # this step `dart pub publish` has no credential even with id-token: write.
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1
+
+      - name: Publish klarna_network_core
+        working-directory: packages/klarna_network_core
+        run: |
+          dart pub publish --dry-run
+          dart pub publish --force

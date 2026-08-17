@@ -1,20 +1,10 @@
-buildscript {
-    ext.kotlin_version = '1.7.10'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 allprojects {
     repositories {
         google()
         mavenCentral()
+        // Klarna Network SDK artifacts are hosted on Klarna's Maven repo,
+        // not Maven Central. Required to resolve com.klarna.mobile.sdk:*.
+        maven { url = uri("https://x.klarnacdn.net/mobile-sdk/") }
     }
 }
 
@@ -26,6 +16,29 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+// Some older transitive Flutter plugins (e.g. the discontinued uni_links) declare
+// their package only via the AndroidManifest `package` attribute, which AGP 8
+// rejects — it requires a `namespace` in the module build file. Inject a namespace
+// for any such library module from its manifest package so the build succeeds
+// without forking the plugin. Done via plugins.withId so it runs during the
+// module's own configuration (the existing evaluationDependsOn above makes an
+// afterEvaluate hook illegal here).
+subprojects {
+    plugins.withId('com.android.library') {
+        def androidExtension = project.extensions.findByName('android')
+        if (androidExtension != null && androidExtension.namespace == null) {
+            def manifestFile = project.file('src/main/AndroidManifest.xml')
+            if (manifestFile.exists()) {
+                def manifest = new XmlSlurper().parse(manifestFile)
+                def pkg = manifest.@package.text()
+                if (pkg) {
+                    androidExtension.namespace = pkg
+                }
+            }
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.layout.buildDirectory
 }

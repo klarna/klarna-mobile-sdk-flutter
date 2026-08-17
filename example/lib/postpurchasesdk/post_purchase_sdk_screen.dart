@@ -13,7 +13,8 @@ class PostPurchaseSDKScreen extends StatefulWidget {
   _PostPurchaseSDKScreenState createState() => _PostPurchaseSDKScreenState();
 }
 
-class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> implements KlarnaPostPurchaseEventListener {
+class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
+    implements KlarnaPostPurchaseEventListener {
   // create
   KlarnaEnvironment? klarnaEnvironment;
   KlarnaRegion? klarnaRegion;
@@ -49,8 +50,12 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
   KlarnaPostPurchaseSDK? postPurchaseSDK;
 
   void _sdkCreate(BuildContext context) async {
-    postPurchaseSDK = new KlarnaPostPurchaseSDK(this, "klarna-mobile-sdk-flutter://example",
-        klarnaEnvironment, klarnaRegion, klarnaResourceEndpoint);
+    postPurchaseSDK = new KlarnaPostPurchaseSDK(
+        this,
+        "klarna-mobile-sdk-flutter://example",
+        klarnaEnvironment,
+        klarnaRegion,
+        klarnaResourceEndpoint);
     _showToast(context, postPurchaseSDK.toString());
   }
 
@@ -106,12 +111,14 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
   }
 
   @override
-  void onRenderedOperation(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK, KlarnaPostPurchaseRenderResult renderResult) {
+  void onRenderedOperation(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK,
+      KlarnaPostPurchaseRenderResult renderResult) {
     _showToast(context, "Rendered Operation: $renderResult");
   }
 
   @override
-  void onError(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK, KlarnaPostPurchaseError error) {
+  void onError(KlarnaPostPurchaseSDK klarnaPostPurchaseSDK,
+      KlarnaPostPurchaseError error) {
     _showToast(context,
         "Error:\nname: ${error.name}\nmessage: ${error.message}\nisFatal: ${error.isFatal}\nstatus ${error.status}");
   }
@@ -130,7 +137,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
         _showToast(context, "Authorization Redirect\ncode: $code");
       } else {
         String? error = uri.queryParameters["error"];
-        if(error != null && error.isNotEmpty) {
+        if (error != null && error.isNotEmpty) {
           _showToast(context, "Redirect Error\nerror: $error");
         }
       }
@@ -154,7 +161,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
         children: <Widget>[
           Text(
             "KlarnaPostPurchaseSDK.createInstance",
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           DropdownButton<KlarnaEnvironment>(
             value: klarnaEnvironment,
@@ -231,7 +238,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
         children: <Widget>[
           Text(
             "KlarnaPostPurchaseSDK.initialize",
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           TextFormField(
             controller: initializeLocaleController,
@@ -264,7 +271,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
         children: <Widget>[
           Text(
             "KlarnaPostPurchaseSDK.authorizationRequest",
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           TextFormField(
             controller: authorizationRequestClientIdController,
@@ -317,7 +324,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
         children: <Widget>[
           Text(
             "KlarnaPostPurchaseSDK.renderOperation",
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           TextFormField(
             controller: renderOperationOperationTokenController,
@@ -350,7 +357,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen> i
         children: <Widget>[
           Text(
             "KlarnaPostPurchaseSDK.destroy",
-            style: Theme.of(context).textTheme.subtitle1,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
           MaterialButton(
             color: Theme.of(context).colorScheme.secondary,

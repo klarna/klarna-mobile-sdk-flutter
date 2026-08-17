@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: format staged Dart files with `dart format` and re-stage
+# them, so nothing (including Pigeon-generated *.g.dart) reaches CI unformatted.
+#
+# Enable once per clone from the repo root:
+#   git config core.hooksPath .githooks
+#
+# Skip a single commit with:  git commit --no-verify
+set -euo pipefail
+
+# Only consider staged files that still exist and end in .dart.
+mapfile -t staged < <(git diff --cached --name-only --diff-filter=ACM -z \
+  | tr '\0' '\n' | grep -E '\.dart$' || true)
+
+[ ${#staged[@]} -eq 0 ] && exit 0
+
+# Locate a Dart executable: PATH first, then common local/CI install paths.
+dart_bin=""
+if command -v dart >/dev/null 2>&1; then
+  dart_bin="dart"
+else
+  for candidate in \
+    "$HOME/flutter-sdk/bin/dart" \
+    "$HOME/flutter-sdk/bin/cache/dart-sdk/bin/dart" \
+    "/usr/local/bin/dart" \
+    "/opt/homebrew/bin/dart"; do
+    if [ -x "$candidate" ]; then
+      dart_bin="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -z "$dart_bin" ]; then
+  echo "pre-commit: dart not found on PATH or in known locations; skipping format." >&2
+  echo "            install Flutter/Dart or run 'melos run format:fix' manually." >&2
+  exit 0
+fi
+
+# Files that are only partially staged (staged hunks + unstaged hunks in the
+# same file). Re-staging these would pull the unstaged hunks into the commit,
+# so we skip auto-fixing them and warn instead.
+partial=()
+for f in "${staged[@]}"; do
+  [ -f "$f" ] || continue
+  # Non-empty unstaged diff means the working tree differs from the index.
+  if ! git diff --quiet -- "$f"; then
+    partial+=("$f")
+  fi
+done
+
+# Format in place, then re-stage the files that were staged whole.
+"$dart_bin" format "${staged[@]}" >/dev/null
+
+is_partial() {
+  local needle="$1" p
+  for p in "${partial[@]:-}"; do
+    [ "$p" = "$needle" ] && return 0
+  done
+  return 1
+}
+
+changed=0
+for f in "${staged[@]}"; do
+  [ -f "$f" ] || continue
+  is_partial "$f" && continue
+  if ! git diff --quiet -- "$f"; then
+    git add -- "$f"
+    changed=1
+  fi
+done
+
+if [ "$changed" -eq 1 ]; then
+  echo "pre-commit: reformatted staged Dart files with dart format and re-staged them."
+fi
+
+if [ "${#partial[@]}" -gt 0 ]; then
+  echo "pre-commit: these files are partially staged and were NOT auto-formatted" >&2
+  echo "            (to avoid committing unstaged changes):" >&2
+  printf '            - %s\n' "${partial[@]}" >&2
+  echo "            run 'dart format' on them and stage the result yourself." >&2
+fi
+
+exit 0
