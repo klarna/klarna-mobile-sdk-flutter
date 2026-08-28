@@ -5,7 +5,7 @@ plugins {
 }
 
 configurations.configureEach {
-    resolutionStrategy.force 'junit:junit:4.13.1'
+    resolutionStrategy.force 'junit:junit:4.13.2'
 }
 
 def localProperties = new Properties()
@@ -71,7 +71,7 @@ flutter {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

@@ -2,7 +2,7 @@ group = "com.klarna.mobile.sdk.klarna_network_core"
 version = "1.0-SNAPSHOT"
 
 buildscript {
-    val kotlinVersion = "2.3.20"
+    val kotlinVersion = "2.4.10"
     repositories {
         google()
         mavenCentral()
@@ -79,11 +79,11 @@ configurations.all {
         // CVE-2024-29371: force patched jose4j version
         force("org.bitbucket.b_c:jose4j:0.9.6")
         // CVE-2025-48924: force patched commons-lang3 version
-        force("org.apache.commons:commons-lang3:3.18.0")
+        force("org.apache.commons:commons-lang3:3.20.0")
         // CVE-2026-5588: force patched bcpkix-jdk18on version
-        force("org.bouncycastle:bcpkix-jdk18on:1.84")
+        force("org.bouncycastle:bcpkix-jdk18on:1.85")
         // CVE-2026-0636: force patched bcprov-jdk18on version
-        force("org.bouncycastle:bcprov-jdk18on:1.84")
+        force("org.bouncycastle:bcprov-jdk18on:1.85.2")
     }
 }
 
@@ -99,5 +99,5 @@ dependencies {
     compileOnly("androidx.annotation:annotation")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("org.mockito:mockito-core:5.23.0")
 }
