@@ -1,27 +1,46 @@
 name: Publish to pub.dev
 
-# Release flow for klarna_network_core:
+# Release flow, per package below:
 #
 #   1. A version bump lands on master (via a sync PR from the private repo,
 #      which is the source of truth for package versions).
-#   2. `tag` reads the new version and pushes tag klarna_network_core-v<version>.
-#   3. That tag push triggers `publish`, which authenticates to pub.dev over
-#      OIDC and publishes.
+#   2. `tag` reads the new version (for each package whose pubspec.yaml
+#      changed), pushes tag <package>-v<version>, then dispatches `publish`
+#      against that tag.
+#   3. `publish` runs against the dispatched tag ref, authenticates to
+#      pub.dev over OIDC, and publishes the package named in the tag.
 #
 # Why two jobs instead of publishing directly on the master push: pub.dev's
-# trusted-publisher config only authorizes runs triggered by a push of a tag
-# matching its configured pattern. A run triggered by a branch push is rejected
-# at the OIDC step, even with id-token: write. So the tag push has to be the
-# thing that triggers the publishing run.
+# trusted-publisher check (see dart-lang/pub-dev's
+# `_checkGitHubActionAllowed`) requires the OIDC token's `ref_type` claim to
+# be "tag" — a run triggered by a branch push is rejected outright, even with
+# id-token: write. So the publishing run has to be a distinct run against a
+# tag ref.
 #
-# Why the tag is pushed with a PAT rather than GITHUB_TOKEN: pushes authored by
-# GITHUB_TOKEN deliberately do not start new workflow runs (GitHub's recursion
-# guard), so a GITHUB_TOKEN-pushed tag would create the tag and publish nothing.
+# Why `publish` is triggered via workflow_dispatch instead of the tag push
+# itself: pushes authored by GITHUB_TOKEN deliberately do not start new
+# `on: push` workflow runs (GitHub's recursion guard), so a GITHUB_TOKEN-
+# pushed tag would create the tag and trigger nothing. workflow_dispatch is
+# explicitly exempt from that guard ("workflow_dispatch and
+# repository_dispatch events always create workflow runs" — GitHub docs), and
+# pub.dev's check accepts eventName "push" OR "workflow_dispatch" (again per
+# `_checkGitHubActionAllowed`) as long as ref_type is still "tag". Dispatching
+# with `ref: <tag>` satisfies both: eventName=workflow_dispatch,
+# ref_type=tag. This means the whole flow runs on the default GITHUB_TOKEN —
+# no PAT or other long-lived credential needed.
+#
+# pub.dev-side requirement: each package's trusted-publisher config must have
+# "Require workflow_dispatch" (or equivalent "allow workflow_dispatch")
+# enabled, not just "push", or its OIDC check will reject this flow.
 #
 # klarna_mobile_sdk_flutter is intentionally not handled here. It is already
 # published, and its release tags use a bare version ("1.0.2") that can't be
 # attributed to a single package in a shared repo. Release it deliberately
 # rather than on a version-file diff.
+#
+# Adding a package: append its pubspec.yaml to `paths` below and its name to
+# the `tag` job's matrix. Everything else (tag pattern, publish working
+# directory) is derived from the package name, not hardcoded per package.
 
 on:
   push:
@@ -29,21 +48,38 @@ on:
       - master
     paths:
       - "packages/klarna_network_core/pubspec.yaml"
-    tags:
-      - "klarna_network_core-v[0-9]+.[0-9]+.[0-9]+*"
+      - "packages/klarna_network_payment/pubspec.yaml"
+      - "packages/klarna_network_messaging/pubspec.yaml"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish, e.g. klarna_network_core-v0.1.0"
+        required: true
+        type: string
 
 jobs:
   tag:
-    # Only for the master-push half of the trigger; the tag push skips it.
-    if: github.ref_type != 'tag'
+    # Only for the master-push half of the trigger; a manual dispatch (e.g. a
+    # re-run of `publish` alone) skips straight to the publish job below.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the release tag
+      actions: write # dispatch the publish job below
+    strategy:
+      # One package's version-bump failure must not block another's tag push.
+      fail-fast: false
+      matrix:
+        package:
+          - klarna_network_core
+          - klarna_network_payment
+          - klarna_network_messaging
     steps:
       # Full history so the pre-push commit (github.event.before) is reachable.
       # A shallow clone can't diff against it.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_TAG_PAT }}
 
       - name: Resolve the version to release
         id: resolve
@@ -52,7 +88,7 @@ jobs:
           # version string reaching the shell as source could otherwise run
           # as code, in a job holding a push credential.
           BEFORE: ${{ github.event.before }}
-          PKG: packages/klarna_network_core
+          PKG: packages/${{ matrix.package }}
         run: |
           set -euo pipefail
           file="$PKG/pubspec.yaml"
@@ -88,14 +124,16 @@ jobs:
 
       - name: Push the release tag
         if: steps.resolve.outputs.release == 'true'
+        id: push_tag
         env:
           VERSION: ${{ steps.resolve.outputs.version }}
+          PACKAGE: ${{ matrix.package }}
         run: |
           set -euo pipefail
           # Tag name must match the pub.dev trusted-publisher tag pattern
-          # (klarna_network_core-v{{version}}) and the private repo's release
-          # pipeline, which uses the same "<name>-v<version>" convention.
-          tag="klarna_network_core-v${VERSION}"
+          # (<package>-v{{version}}) and the private repo's release pipeline,
+          # which uses the same "<name>-v<version>" convention.
+          tag="${PACKAGE}-v${VERSION}"
           git check-ref-format "refs/tags/$tag"
 
           # Idempotent: a re-run must not fail, and must never move a tag that
@@ -104,19 +142,31 @@ jobs:
           if [ -n "$existing" ]; then
             if [ "$existing" = "$GITHUB_SHA" ]; then
               echo "$tag already points at $GITHUB_SHA; nothing to do"
-              exit 0
+            else
+              echo "$tag already exists at $existing (expected $GITHUB_SHA); refusing to move it" >&2
+              exit 1
             fi
-            echo "$tag already exists at $existing (expected $GITHUB_SHA); refusing to move it" >&2
-            exit 1
+          else
+            git tag "$tag" "$GITHUB_SHA"
+            git push origin "refs/tags/$tag"
           fi
 
-          git tag "$tag" "$GITHUB_SHA"
-          git push origin "refs/tags/$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch publish for this tag
+        if: steps.resolve.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.push_tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          # workflow_dispatch is exempt from the GITHUB_TOKEN recursion guard
+          # (see the flow comment above), so this starts a fresh run even
+          # though it's triggered by the same token that pushed the tag.
+          gh workflow run publish.yml --ref "$TAG" --field "tag=$TAG"
 
   publish:
-    # The tag-push half. pub.dev validates that this run was triggered by a tag
-    # matching its configured pattern, so this must be a separate run.
-    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'klarna_network_core-v')
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       id-token: write # request the pub.dev OIDC token
@@ -124,12 +174,34 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
+      - name: Resolve package from tag
+        id: resolve
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          # Sanity check: this run must actually be executing against the
+          # dispatched tag ref, not some other ref the dispatch input claims.
+          if [ "${GITHUB_REF_TYPE:-}" != "tag" ] || [ "${GITHUB_REF_NAME:-}" != "$TAG" ]; then
+            echo "expected to run against tag ref $TAG, got ${GITHUB_REF_TYPE:-unknown} $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+
+          # The tag is "<package>-v<version>"; package names in this repo
+          # never contain "-v", so splitting on the first occurrence is safe.
+          package="${TAG%-v*}"
+          if [ ! -f "packages/$package/pubspec.yaml" ]; then
+            echo "no such package: packages/$package" >&2
+            exit 1
+          fi
+          echo "package=$package" >> "$GITHUB_OUTPUT"
+
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           channel: stable
 
       - name: Install dependencies
-        working-directory: packages/klarna_network_core
+        working-directory: packages/${{ steps.resolve.outputs.package }}
         run: flutter pub get
 
       # Provisions the pub.dev OIDC token and registers it via
@@ -137,8 +209,8 @@ jobs:
       # this step `dart pub publish` has no credential even with id-token: write.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1
 
-      - name: Publish klarna_network_core
-        working-directory: packages/klarna_network_core
+      - name: Publish ${{ steps.resolve.outputs.package }}
+        working-directory: packages/${{ steps.resolve.outputs.package }}
         run: |
           dart pub publish --dry-run
           dart pub publish --force
