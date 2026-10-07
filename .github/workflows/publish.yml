@@ -7,8 +7,10 @@ name: Publish to pub.dev
 #   2. `tag` reads the new version (for each package whose pubspec.yaml
 #      changed), pushes tag <package>-v<version>, then dispatches `publish`
 #      against that tag.
-#   3. `publish` runs against the dispatched tag ref, authenticates to
-#      pub.dev over OIDC, and publishes the package named in the tag.
+#   3. `publish` runs against the dispatched tag ref, waits until any sibling
+#      package it depends on (e.g. klarna_network_core) is live on pub.dev at
+#      the required version, authenticates to pub.dev over OIDC, and
+#      publishes the package named in the tag.
 #
 # Why two jobs instead of publishing directly on the master push: pub.dev's
 # trusted-publisher check (see dart-lang/pub-dev's
@@ -195,6 +197,33 @@ jobs:
             exit 1
           fi
           echo "package=$package" >> "$GITHUB_OUTPUT"
+
+      # Packages released together are dispatched together, so e.g. payment's
+      # run can start while core's is still publishing. Publishing payment
+      # before the core version it requires is live would leave it
+      # unresolvable for users, so wait for every sibling dependency's
+      # minimum version to appear on pub.dev first.
+      - name: Wait for sibling dependencies on pub.dev
+        timeout-minutes: 30
+        env:
+          PACKAGE: ${{ steps.resolve.outputs.package }}
+        run: |
+          set -euo pipefail
+          # Dependency lines look like "  klarna_network_core: ^2.1.0"; only
+          # names that are sibling packages in this repo are considered.
+          deps=$(grep -E '^  [a-z0-9_]+:[[:space:]]*\^?[0-9]+\.[0-9]+\.[0-9]+[[:space:]]*$' "packages/$PACKAGE/pubspec.yaml" \
+            | sed -E 's/^  ([a-z0-9_]+):[[:space:]]*\^?([0-9]+\.[0-9]+\.[0-9]+).*/\1 \2/' || true)
+
+          while read -r name version; do
+            [ -n "$name" ] || continue
+            [ "$name" != "$PACKAGE" ] && [ -d "packages/$name" ] || continue
+            url="https://pub.dev/api/packages/$name/versions/$version"
+            until [ "$(curl -s -o /dev/null -w '%{http_code}' "$url")" = "200" ]; do
+              echo "waiting for $name $version on pub.dev..."
+              sleep 30
+            done
+            echo "$name $version is on pub.dev"
+          done <<< "$deps"
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
