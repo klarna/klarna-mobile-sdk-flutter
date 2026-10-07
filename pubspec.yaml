@@ -11,6 +11,8 @@ environment:
 workspace:
   - packages/klarna_mobile_sdk_flutter
   - packages/klarna_network_core
+  - packages/klarna_network_payment
+  - packages/klarna_network_messaging
   - example
 
 # Melos orchestrates scripts (analyze, test, format) across every workspace package.

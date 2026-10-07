@@ -1,6 +1,4 @@
 // swift-tools-version: 5.9
-// The swift-tools-version declares the minimum version of Swift required to build this package.
-
 import PackageDescription
 
 let package = Package(
@@ -13,19 +11,17 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
-        // Pin exactly so CI resolves deterministically (a floating `from:` now
-        // drifts to 2.12.0, which restructured the SDK). Bump deliberately.
-        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.12.0")
+        // Pinned exactly for deterministic CI resolution and to match
+        // klarna_network_payment (a floating `from:` can drift). Bump deliberately.
+        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.15.0")
     ],
     targets: [
         .target(
             name: "klarna_network_core",
             dependencies: [
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
-                // The native SDK ships KlarnaNetworkCore only as a binary target,
-                // not as a standalone SPM product — every product that exposes the
-                // KlarnaNetworkCore module bundles a feature module alongside it.
-                // We pull KlarnaNetworkPayment, the feature this SDK targets.
+                // The SDK ships KlarnaNetworkCore only as a binary target, so pull
+                // the KlarnaNetworkPayment feature product that bundles it.
                 .product(name: "KlarnaNetworkPayment", package: "klarna-mobile-sdk-ios")
             ]
         )

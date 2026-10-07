@@ -21,6 +21,8 @@ This repository is a [Pub Workspaces](https://dart.dev/tools/pub/workspaces) + [
 | --- | --- | --- |
 | `klarna_mobile_sdk_flutter` | [`packages/klarna_mobile_sdk_flutter`](./packages/klarna_mobile_sdk_flutter/README.md) | Klarna's Flutter wrapper for the native Klarna Mobile SDK (Post Purchase). |
 | `klarna_network_core` | [`packages/klarna_network_core`](./packages/klarna_network_core/README.md) | Initializes and manages Klarna Network SDK sessions shared by Klarna Network packages. |
+| `klarna_network_payment` | [`packages/klarna_network_payment`](./packages/klarna_network_payment/README.md) | Initiates, fetches, and presents Klarna Network payments, including the native payment button. |
+| `klarna_network_messaging` | [`packages/klarna_network_messaging`](./packages/klarna_network_messaging/README.md) | Renders Klarna Network messaging placements, such as credit-promotion banners and badges. |
 
 ## Klarna Mobile SDK Documentation
 

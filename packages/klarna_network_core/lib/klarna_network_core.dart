@@ -1,93 +1,116 @@
-/// Klarna Network core for Flutter.
-///
-/// Creates and holds the native `Klarna` instance (keyed by [Klarna.instanceId])
-/// that the Klarna Network feature packages bind to. Wraps the Pigeon-generated
-/// host API with a top-level [Klarna] and a nested [KlarnaNetwork] /
-/// [KlarnaNetworkSession].
+/// Klarna Network core for Flutter. Creates and holds the native `Klarna`
+/// instance (keyed by [Klarna.instanceId]) that feature packages bind to.
 library;
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart' show internal, visibleForTesting;
+import 'package:flutter/services.dart';
 
+import 'src/klarna_sdk_error.dart';
 import 'src/messages.g.dart';
 
-// The public data types follow the native Klarna API spec naming (`Klarna*`).
-// They alias the Pigeon-generated transport types, which keep an internal `Kn`
-// prefix so they don't collide with the native SDK's own `Klarna*` types in the
-// Swift/Kotlin plugin code.
+export 'src/klarna_button_types.dart'
+    show KlarnaButtonShape, KlarnaButtonState, KlarnaButtonStyle;
+export 'src/klarna_sdk_error.dart' show KlarnaSDKError;
+export 'src/klarna_theme.dart' show KlarnaTheme;
+
+// Public `Klarna*` types alias the Pigeon `Kn*` transport types (the `Kn`
+// prefix avoids colliding with the native SDK's `Klarna*` types).
+
+/// Acquiring Partner configuration for a Klarna session.
 typedef KlarnaAcquiringConfig = KnAcquiringConfig;
+
+/// Configuration used to initialize a [Klarna] instance.
 typedef KlarnaConfiguration = KnConfiguration;
+
+/// Metadata describing the integration using the SDK.
 typedef KlarnaIntegrationMetadata = KnIntegrationMetadata;
+
+/// Metadata describing the integrator of the SDK.
 typedef KlarnaIntegratorMetadata = KnIntegratorMetadata;
+
+/// Metadata describing the originator of a session.
 typedef KlarnaOriginatorMetadata = KnOriginatorMetadata;
 
-/// A configured Klarna instance — the entry point to Klarna Network features.
-///
-/// Call [Klarna.initialize] to create one, then pass its [instanceId] to a
-/// Klarna Network feature package to bind it to this Klarna session, or use
-/// [network] to reach the session APIs.
+Future<T> _mapSDKError<T>(Future<T> future) async {
+  try {
+    return await future;
+  } on PlatformException catch (error) {
+    throw KlarnaSDKError(
+      name: error.code,
+      message: error.message ?? error.code,
+      cause: error.details,
+    );
+  }
+}
+
+/// A configured Klarna instance — entry point to Klarna Network features.
+/// Create with [Klarna.initialize], then pass it to feature packages or use
+/// [network].
 class Klarna {
-  Klarna._(this._api, this.instanceId)
+  Klarna._(this._api, this.instanceId, this._cacheKeyUsed)
       : network = KlarnaNetwork._(_api, instanceId);
 
   final KnCoreHostApi _api;
   KlarnaIntegrationMetadata? _integrationMetadata;
 
-  /// Instances keyed by their configuration, so repeated [initialize] calls
-  /// with the same [KlarnaConfiguration] reuse a single native session instead
-  /// of spinning up a duplicate.
-  static final Map<String, Klarna> _cache = <String, Klarna>{};
+  /// Cache key this instance was created under, or `null` when created via
+  /// [initializeWithInstanceId]. Used by [dispose] to evict the right entry.
+  final String? _cacheKeyUsed;
 
-  /// Identifies this Klarna instance to the native layer and sibling packages.
-  ///
-  /// Marked [internal] so it stays readable by sibling Klarna Network feature
-  /// packages (e.g. `klarna_network_payment`) that bind to the same native
-  /// instance, while the analyzer flags any use from outside these packages —
-  /// merchants don't need to read it directly. (Dart equivalent of the native
-  /// `@_spi` / `@RestrictTo` gating on the instance store.)
+  /// Instances keyed by config so repeated [initialize] calls reuse one native
+  /// session; caches the in-flight [Future] so concurrent same-key calls don't race.
+  static final Map<String, Future<Klarna>> _cache = <String, Future<Klarna>>{};
+
+  /// Identifies this instance to the native layer and sibling packages. [internal]
+  /// so siblings can bind while merchant use is flagged (like native `@_spi`).
   @internal
   final String instanceId;
 
-  /// Klarna Network APIs scoped to this instance (e.g. [KlarnaNetwork.session]).
+  /// Klarna Network APIs scoped to this instance.
   final KlarnaNetwork network;
 
-  /// Create and initialize a Klarna instance.
-  ///
-  /// Calling this twice with an equivalent [configuration] returns the same
-  /// instance, backed by a single native session. [dispose] evicts the
-  /// instance so a later [initialize] re-creates it.
-  static Future<Klarna> initialize(KlarnaConfiguration configuration) async {
+  /// Create and initialize a Klarna instance. Same [configuration] reuses one
+  /// instance until [dispose].
+  static Future<Klarna> initialize(KlarnaConfiguration configuration) {
     final key = _cacheKey(configuration);
-    final cached = _cache[key];
-    if (cached != null) return cached;
-    final klarna = await _create(configuration, _newInstanceId());
-    _cache[key] = klarna;
-    return klarna;
+    return _cache.putIfAbsent(key, () {
+      final future = _create(configuration, _newInstanceId(), key);
+      unawaited(
+        future.then(
+          (_) {},
+          onError: (_) {
+            // On failure, evict so the next initialize() retries. Identity-check
+            // avoids clobbering an entry a dispose()/re-initialize() replaced.
+            if (identical(_cache[key], future)) _cache.remove(key);
+          },
+        ),
+      );
+      return future;
+    });
   }
 
-  /// Test-only seam: initialize with an explicit [instanceId], bypassing the
-  /// configuration cache. Not part of the public contract — the merchant-facing
-  /// [initialize] takes only a [KlarnaConfiguration] (matching the spec and the
-  /// native SDK).
+  /// Test-only: initialize with an explicit [instanceId], bypassing the cache.
   @visibleForTesting
   static Future<Klarna> initializeWithInstanceId(
     KlarnaConfiguration configuration,
     String instanceId,
   ) =>
-      _create(configuration, instanceId);
+      _create(configuration, instanceId, null);
 
   static Future<Klarna> _create(
     KlarnaConfiguration configuration,
     String id,
+    String? cacheKeyUsed,
   ) async {
     final api = KnCoreHostApi();
-    await api.initialize(id, configuration);
-    return Klarna._(api, id);
+    await _mapSDKError(api.initialize(id, configuration));
+    return Klarna._(api, id, cacheKeyUsed);
   }
 
-  /// Clears the configuration cache. For tests that reuse configurations across
-  /// cases and need each [initialize] to hit the native layer afresh.
+  /// Test-only: clear the configuration cache.
   @visibleForTesting
   static void clearInstanceCache() => _cache.clear();
 
@@ -102,27 +125,31 @@ class Klarna {
         c.acquiringConfig?.paymentAcquiringAccountId ?? '',
       ].join('|');
 
-  /// Last integration metadata set on this instance, if any.
+  /// The integration metadata currently set on this instance, if any.
   KlarnaIntegrationMetadata? get integrationMetadata => _integrationMetadata;
 
-  /// Attach integration metadata to this Klarna instance.
-  void setIntegrationMetadata(KlarnaIntegrationMetadata metadata) {
+  /// Sets the integration [metadata] for this instance.
+  Future<void> setIntegrationMetadata(
+    KlarnaIntegrationMetadata metadata,
+  ) async {
+    await _mapSDKError(_api.setIntegrationMetadata(instanceId, metadata));
     _integrationMetadata = metadata;
-    _api.setIntegrationMetadata(instanceId, metadata);
   }
 
-  /// Release this instance and its native resources. Also evicts it from the
-  /// configuration cache so a later [initialize] with the same configuration
-  /// creates a fresh instance.
-  Future<void> dispose() {
-    _cache.removeWhere((_, klarna) => identical(klarna, this));
-    return _api.dispose(instanceId);
+  /// Release this instance and its native resources, and evict it from the
+  /// cache so a later [initialize] re-creates it.
+  Future<void> dispose() async {
+    final key = _cacheKeyUsed;
+    if (key != null && identical(await _cache[key], this)) {
+      _cache.remove(key);
+    }
+    return _mapSDKError(_api.dispose(instanceId));
   }
 
-  /// Handle a return URL (deep link) routed back into the app. Static because
-  /// the native layer dispatches it to whichever instance owns the flow.
+  /// Handle a return URL (deep link). Static: native routes it to the owning
+  /// instance.
   static Future<bool> handleReturnUrl(String url) =>
-      KnCoreHostApi().handleReturnUrl(url);
+      _mapSDKError(KnCoreHostApi().handleReturnUrl(url));
 
   static final Random _random = Random.secure();
 
@@ -130,25 +157,25 @@ class Klarna {
       'kn_${DateTime.now().microsecondsSinceEpoch}_${_random.nextInt(1 << 32)}';
 }
 
-/// Klarna Network APIs for a single [Klarna] instance.
+/// Groups the Klarna Network features for a [Klarna] instance.
 class KlarnaNetwork {
   KlarnaNetwork._(KnCoreHostApi api, String instanceId)
       : session = KlarnaNetworkSession._(api, instanceId);
 
-  /// Session APIs (token retrieval, clearing).
+  /// The Klarna Network session for this instance.
   final KlarnaNetworkSession session;
 }
 
-/// The Klarna Network session for a single [Klarna] instance.
+/// A Klarna Network session bound to a [Klarna] instance.
 class KlarnaNetworkSession {
   KlarnaNetworkSession._(this._api, this._instanceId);
 
   final KnCoreHostApi _api;
   final String _instanceId;
 
-  /// Fetch a Klarna Network session token.
-  Future<String> token() => _api.getSessionToken(_instanceId);
+  /// Returns the current session token.
+  Future<String> token() => _mapSDKError(_api.getSessionToken(_instanceId));
 
-  /// Clear the current session.
-  Future<void> clear() => _api.clearSession(_instanceId);
+  /// Clears the current session.
+  Future<void> clear() => _mapSDKError(_api.clearSession(_instanceId));
 }

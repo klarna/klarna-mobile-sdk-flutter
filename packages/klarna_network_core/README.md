@@ -63,12 +63,16 @@ final klarna = await Klarna.initialize(
     accountId: 'your-account-id',
     locale: 'en-US',
     klarnaNetworkSessionToken: 'session-token',
+    acquiringConfig: KlarnaAcquiringConfig(
+      paymentAccountReference: 'payment-account-reference',
+      paymentAcquiringAccountId: 'payment-acquiring-account-id',
+    ),
   ),
 );
 
 final token = await klarna.network.session.token();
 
-klarna.setIntegrationMetadata(
+await klarna.setIntegrationMetadata(
   KlarnaIntegrationMetadata(
     integrator: KlarnaIntegratorMetadata(
       name: 'MyFlutterApp',
@@ -104,14 +108,33 @@ On iOS this dispatches to `Klarna.handleReturnUrl`. On Android this currently
 returns `false`; return links should then be offered to the relevant Klarna
 Network feature package.
 
+## Acquiring configuration
+
+Use `acquiringConfig` when the integration needs to identify the Payment
+Account used by the platform SDKs:
+
+```dart
+acquiringConfig: KlarnaAcquiringConfig(
+  paymentAccountReference: 'payment-account-reference',
+  paymentAcquiringAccountId: 'payment-acquiring-account-id',
+),
+```
+
+## Shared UI and error types
+
+Payment Button configuration uses `KlarnaButtonShape`, `KlarnaButtonState`,
+`KlarnaButtonStyle`, and `KlarnaTheme` from core. Messaging configuration uses
+`KlarnaTheme`. SDK failures use `KlarnaSDKError`.
+
 ## Integration Metadata
 
 `setIntegrationMetadata` lets apps identify the top-level integration and any
 originating module. This helps native Klarna SDK telemetry attribute the
-integration correctly.
+integration correctly. It throws a `KlarnaSDKError` if the native instance was
+already disposed or is otherwise not found.
 
 ```dart
-klarna.setIntegrationMetadata(
+await klarna.setIntegrationMetadata(
   KlarnaIntegrationMetadata(
     integrator: KlarnaIntegratorMetadata(
       name: 'MerchantApp',

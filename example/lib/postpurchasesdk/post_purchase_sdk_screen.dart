@@ -15,17 +15,14 @@ class PostPurchaseSDKScreen extends StatefulWidget {
 
 class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
     implements KlarnaPostPurchaseEventListener {
-  // create
   KlarnaEnvironment? klarnaEnvironment;
   KlarnaRegion? klarnaRegion;
   KlarnaResourceEndpoint? klarnaResourceEndpoint;
 
-  // initialize
   final initializeLocaleController = TextEditingController(text: "en-SE");
   final initializePurchaseCountryController = TextEditingController(text: "SE");
   final initializeDesignController = TextEditingController(text: null);
 
-  // authorizationRequest
   final authorizationRequestClientIdController =
       TextEditingController(text: "");
   final authorizationRequestScopeController =
@@ -40,7 +37,6 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
   final authorizationRequestResponseTypeController =
       TextEditingController(text: null);
 
-  // renderOperation
   final renderOperationOperationTokenController =
       TextEditingController(text: "");
   final renderOperationLocaleController = TextEditingController(text: null);
@@ -224,6 +220,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
           ),
           MaterialButton(
             color: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.onSecondary,
             child: new Text("Create"),
             onPressed: () => _sdkCreate(context),
           ),
@@ -257,6 +254,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
           ),
           MaterialButton(
             color: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.onSecondary,
             child: new Text("Initialize"),
             onPressed: () => _sdkInitialize(context),
           ),
@@ -310,6 +308,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
           ),
           MaterialButton(
             color: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.onSecondary,
             child: new Text("Authorization Request"),
             onPressed: () => _sdkAuthorizationRequest(context),
           ),
@@ -343,6 +342,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
           ),
           MaterialButton(
             color: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.onSecondary,
             child: new Text("Render Operation"),
             onPressed: () => _sdkRenderOperation(context),
           ),
@@ -361,6 +361,7 @@ class _PostPurchaseSDKScreenState extends UriLinksState<PostPurchaseSDKScreen>
           ),
           MaterialButton(
             color: Theme.of(context).colorScheme.secondary,
+            textColor: Theme.of(context).colorScheme.onSecondary,
             child: new Text("Destroy"),
             onPressed: () => _sdkDestroy(context),
           ),

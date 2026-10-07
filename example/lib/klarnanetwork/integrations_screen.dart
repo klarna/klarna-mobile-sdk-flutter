@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:klarna_network_core/klarna_network_core.dart';
 
-/// Shown once a Klarna Network instance has been created. It confirms the live
-/// instance and lists the Klarna Network features that can use it.
-///
-/// Today only the core's own session feature is available. The feature modules
-/// (Payment, Messaging) are listed as not-yet-available placeholders so the
-/// structure matches the native SDK's integration menu.
+import '../klarnanetworkmessaging/messaging_placement_screen.dart';
+import '../klarnanetworkpayment/network_payment_screen.dart';
+
+/// Confirms the live instance and lists Klarna Network features scoped to it.
 class KlarnaNetworkIntegrationsScreen extends StatelessWidget {
   const KlarnaNetworkIntegrationsScreen({super.key, required this.klarna});
 
@@ -45,10 +43,27 @@ class KlarnaNetworkIntegrationsScreen extends StatelessWidget {
             subtitle: const Text('Fetch a session token from this instance.'),
             onTap: () => _getSessionToken(context),
           ),
-          const ListTile(
-            title: Text('Klarna Network Payment'),
-            subtitle: Text('Not yet available in this SDK.'),
-            enabled: false,
+          ListTile(
+            title: const Text('Klarna Network Payment'),
+            subtitle: const Text(
+              'Initiate, fetch, cancel, and present payments.',
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => NetworkPaymentScreen(klarna: klarna),
+              ),
+            ),
+          ),
+          ListTile(
+            title: const Text('Klarna Network Messaging'),
+            subtitle: const Text(
+              'Render a messaging placement (banner or badge).',
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => MessagingPlacementScreen(klarna: klarna),
+              ),
+            ),
           ),
         ],
       ),

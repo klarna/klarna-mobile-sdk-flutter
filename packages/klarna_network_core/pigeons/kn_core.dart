@@ -1,10 +1,5 @@
 // Pigeon schema for Klarna Network core.
-//
-// Creates and stores the native `Klarna` instance (keyed by instanceId) that
-// Klarna Network feature packages fetch via the native instance store.
-//
 // Regenerate: dart run pigeon --input pigeons/kn_core.dart
-
 import 'package:pigeon/pigeon.dart';
 
 @ConfigurePigeon(
@@ -20,8 +15,6 @@ import 'package:pigeon/pigeon.dart';
     dartPackageName: 'klarna_network_core',
   ),
 )
-
-/// Acquiring configuration for card-on-file / acquiring flows.
 class KnAcquiringConfig {
   KnAcquiringConfig({
     required this.paymentAccountReference,
@@ -32,7 +25,6 @@ class KnAcquiringConfig {
   String paymentAcquiringAccountId;
 }
 
-/// Configuration for creating a Klarna instance.
 class KnConfiguration {
   KnConfiguration({
     required this.clientId,
@@ -51,18 +43,13 @@ class KnConfiguration {
   KnAcquiringConfig? acquiringConfig;
 }
 
-/// Metadata identifying the Flutter integrator and optional originators.
 class KnIntegrationMetadata {
-  KnIntegrationMetadata({
-    required this.integrator,
-    this.originators,
-  });
+  KnIntegrationMetadata({required this.integrator, this.originators});
 
   KnIntegratorMetadata integrator;
   List<KnOriginatorMetadata>? originators;
 }
 
-/// Metadata for the top-level integration owner.
 class KnIntegratorMetadata {
   KnIntegratorMetadata({
     required this.name,
@@ -77,7 +64,6 @@ class KnIntegratorMetadata {
   String? moduleVersion;
 }
 
-/// Metadata for an upstream module that originated the integration.
 class KnOriginatorMetadata {
   KnOriginatorMetadata({
     required this.name,
@@ -94,26 +80,22 @@ class KnOriginatorMetadata {
 
 @HostApi()
 abstract class KnCoreHostApi {
-  /// Create and store a Klarna instance for [instanceId].
   @async
   void initialize(String instanceId, KnConfiguration configuration);
 
-  /// Fetch a Klarna Network session token.
   @async
   String getSessionToken(String instanceId);
 
-  /// Clear the current session.
   @async
   void clearSession(String instanceId);
 
-  /// Attach integration metadata to an initialized Klarna instance.
   void setIntegrationMetadata(
-      String instanceId, KnIntegrationMetadata metadata);
+    String instanceId,
+    KnIntegrationMetadata metadata,
+  );
 
-  /// Handle a return URL (deep link) routed back into the app.
   @async
   bool handleReturnUrl(String url);
 
-  /// Release the instance.
   void dispose(String instanceId);
 }
