@@ -9,8 +9,9 @@ name: Publish to pub.dev
 #      against that tag.
 #   3. `publish` runs against the dispatched tag ref, waits until any sibling
 #      package it depends on (e.g. klarna_network_core) is live on pub.dev at
-#      the required version, authenticates to pub.dev over OIDC, and
-#      publishes the package named in the tag.
+#      the required version, authenticates to pub.dev over OIDC, publishes
+#      the package named in the tag, and creates a GitHub release for the tag
+#      with that version's CHANGELOG section as notes.
 #
 # Why two jobs instead of publishing directly on the master push: pub.dev's
 # trusted-publisher check (see dart-lang/pub-dev's
@@ -172,7 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write # request the pub.dev OIDC token
-      contents: read
+      contents: write # create the GitHub release for the tag
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -243,3 +244,31 @@ jobs:
         run: |
           dart pub publish --dry-run
           dart pub publish --force
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          PACKAGE: ${{ steps.resolve.outputs.package }}
+        run: |
+          set -euo pipefail
+          version="${TAG##*-v}"
+
+          # Idempotent: a re-run after a successful publish must not fail here.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "release $TAG already exists; nothing to do"
+            exit 0
+          fi
+
+          # Notes are this version's CHANGELOG section: the lines between
+          # "## <version>" and the next "## " heading, leading blanks dropped.
+          notes=$(awk -v h="## $version" '$0 == h {f=1; next} /^## / {f=0} f' "packages/$PACKAGE/CHANGELOG.md" | sed '/./,$!d')
+          if [ -z "$notes" ]; then
+            echo "no CHANGELOG section for $version in packages/$PACKAGE" >&2
+            exit 1
+          fi
+
+          # --latest=false: several packages release from this repo, so none
+          # of them should take over the repo's "Latest" badge automatically.
+          gh release create "$TAG" --verify-tag --latest=false \
+            --title "$PACKAGE $version" --notes "$notes"
