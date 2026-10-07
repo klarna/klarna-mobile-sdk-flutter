@@ -2,8 +2,9 @@
 
 All notable changes to this package will be documented in this file.
 
-## 2.0.0
+## 2.1.0
 
+- Initial release.
 - Added the `KlarnaMessagingPlacementView` platform view for rendering Klarna
   Network messaging placements (credit-promotion auto-size and badge) on iOS and
   Android.

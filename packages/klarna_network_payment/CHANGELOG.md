@@ -2,8 +2,9 @@
 
 All notable changes to this package will be documented in this file.
 
-## 2.0.0
+## 2.1.0
 
+- Initial release.
 - Added Klarna Network Payment APIs for initiating, fetching, and canceling
   payment requests.
 - Added payment presentation APIs for fetching content and handling return links.
