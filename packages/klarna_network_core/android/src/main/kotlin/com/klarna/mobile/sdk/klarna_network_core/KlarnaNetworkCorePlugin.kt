@@ -12,11 +12,7 @@ import com.klarna.mobile.sdk.klarna.network.core.api.metadata.KlarnaOriginatorMe
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * Holds the real native [Klarna] instances keyed by instanceId, so sibling
- * feature packages can resolve the same instance this plugin created.
- * Restricted to the library group to keep it out of the module's public API.
- */
+/** Holds native [Klarna] instances by instanceId for sibling feature packages. */
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP_PREFIX)
 object KnInstanceStore {
     private val storage = ConcurrentHashMap<String, Klarna>()
@@ -60,10 +56,10 @@ private class KnCoreHostApiImpl(
         configuration: KnConfiguration,
         callback: (Result<Unit>) -> Unit,
     ) {
-        // appReturnUrl from KnConfiguration is not needed on Android.
         val acquiringConfig = configuration.acquiringConfig?.let {
             KlarnaAcquiringConfig(it.paymentAccountReference, it.paymentAcquiringAccountId)
         }
+        // appReturnUrl from KnConfiguration is not needed on Android.
         val config = KlarnaConfiguration(
             clientId = configuration.clientId,
             accountId = configuration.accountId,
@@ -114,7 +110,8 @@ private class KnCoreHostApiImpl(
     }
 
     override fun setIntegrationMetadata(instanceId: String, metadata: KnIntegrationMetadata) {
-        val klarna = KnInstanceStore.getInstance(instanceId) ?: return
+        val klarna = KnInstanceStore.getInstance(instanceId)
+            ?: throw FlutterError(NAME, ERROR_INSTANCE_NOT_FOUND)
         val integrator = KlarnaIntegratorMetadata(
             name = metadata.integrator.name,
             sessionReference = metadata.integrator.sessionReference,

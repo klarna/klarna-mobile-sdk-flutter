@@ -1,0 +1,42 @@
+name: klarna_network_messaging
+description: "Flutter plugin for Klarna Network messaging placements (e.g. credit-promotion banners and badges) rendered by a native platform view."
+version: 2.1.0
+homepage: https://github.com/klarna/klarna-mobile-sdk-flutter
+repository: https://github.com/klarna/klarna-mobile-sdk-flutter
+issue_tracker: https://github.com/klarna/klarna-mobile-sdk-flutter/issues
+topics:
+  - klarna
+  - messaging
+  - flutter
+  - mobile-sdk
+
+resolution: workspace
+
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Provides the Klarna instance this package binds to (by instanceId). A
+  # version constraint (not `path:`) keeps this publishable to pub.dev; the
+  # pub workspace still resolves it to the local sibling package for dev.
+  klarna_network_core: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Pigeon generates the type-safe Dart/Swift/Kotlin channel API from
+  # pigeons/kn_messaging.dart. Regenerate with:
+  #   dart run pigeon --input pigeons/kn_messaging.dart
+  pigeon: ^25.5.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.klarna.mobile.sdk.klarna_network_messaging
+        pluginClass: KlarnaNetworkMessagingPlugin
+      ios:
+        pluginClass: KlarnaNetworkMessagingPlugin

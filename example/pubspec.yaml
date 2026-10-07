@@ -1,7 +1,7 @@
 name: klarna_mobile_sdk_flutter_example
 description: Demonstrates how to use the klarna_mobile_sdk_flutter plugin.
-publish_to: 'none'
-version: 0.0.1
+publish_to: "none"
+version: 2.1.0
 
 resolution: workspace
 
@@ -19,8 +19,18 @@ dependencies:
   # For handling deeplinks and redirects (app_links replaces the discontinued uni_links)
   app_links: ^6.3.0
 
+  # Renders the presentation payment-option icons, which Klarna serves as SVG.
+  # Example-only.
+  flutter_svg: ^2.0.10+1
+
   klarna_network_core:
     path: ../packages/klarna_network_core
+
+  klarna_network_payment:
+    path: ../packages/klarna_network_payment
+
+  klarna_network_messaging:
+    path: ../packages/klarna_network_messaging
 
 dev_dependencies:
   flutter_test:
@@ -34,7 +44,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

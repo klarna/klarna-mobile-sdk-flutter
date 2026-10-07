@@ -5,6 +5,7 @@ import com.klarna.mobile.sdk.klarna.network.core.api.klarna.Klarna
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -50,10 +51,10 @@ class KnInstanceStoreTest {
 class KnCoreHostApiImplTest {
 
     private fun newApi(): KnCoreHostApi {
-        // The impl is package-private; reach it via reflection on its constructor.
         val cls = Class.forName(
             "com.klarna.mobile.sdk.klarna_network_core.KnCoreHostApiImpl",
         )
+        // The impl is package-private; reach it via reflection on its constructor.
         val ctor = cls.getDeclaredConstructor(Context::class.java)
         ctor.isAccessible = true
         return ctor.newInstance(mock(Context::class.java)) as KnCoreHostApi
@@ -73,6 +74,23 @@ class KnCoreHostApiImplTest {
         newApi().clearSession("no-such-instance") { result = it }
 
         assertTrue(result!!.isFailure)
+    }
+
+    @Test
+    fun setIntegrationMetadataFailsWhenInstanceNotFound() {
+        val metadata = KnIntegrationMetadata(
+            integrator = KnIntegratorMetadata(
+                name = "FlutterExample",
+                sessionReference = "session-1",
+            ),
+            originators = null,
+        )
+
+        val error = assertFailsWith<FlutterError> {
+            newApi().setIntegrationMetadata("no-such-instance", metadata)
+        }
+
+        assertEquals("KlarnaNetworkCore", error.code)
     }
 
     @Test

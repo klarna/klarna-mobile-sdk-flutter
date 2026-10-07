@@ -2,6 +2,12 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.1.0
+
+- Added shared `KlarnaButtonShape`, `KlarnaButtonState`,
+  `KlarnaButtonStyle`, and `KlarnaTheme` enums.
+- Added `KlarnaSDKError`.
+
 ## 2.0.0
 
 - Initial release.

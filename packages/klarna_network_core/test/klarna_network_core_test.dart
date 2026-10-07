@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:klarna_network_core/klarna_network_core.dart';
 import 'package:klarna_network_core/src/messages.g.dart';
@@ -8,11 +7,39 @@ const _prefix = 'dev.flutter.pigeon.klarna_network_core.KnCoreHostApi';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('KlarnaTheme exposes stable wire values', () {
+    expect(KlarnaTheme.light.wireValue, 'light');
+    expect(KlarnaTheme.dark.wireValue, 'dark');
+    expect(KlarnaTheme.automatic.wireValue, 'automatic');
+  });
+
+  test('Klarna button types expose stable wire values', () {
+    expect(KlarnaButtonShape.roundedRect.wireValue, 'roundedRect');
+    expect(KlarnaButtonShape.pill.wireValue, 'pill');
+    expect(KlarnaButtonShape.rectangle.wireValue, 'rectangle');
+    expect(KlarnaButtonStyle.filled.wireValue, 'filled');
+    expect(KlarnaButtonStyle.outlined.wireValue, 'outlined');
+    expect(KlarnaButtonState.default_.wireValue, 'default');
+    expect(KlarnaButtonState.disabled.wireValue, 'disabled');
+    expect(KlarnaButtonState.loading.wireValue, 'loading');
+  });
+
+  test('KlarnaSDKError carries the native error contract', () {
+    const error = KlarnaSDKError(
+      name: 'SDK_ERROR',
+      message: 'Something went wrong',
+      cause: 'details',
+    );
+
+    expect(error.name, 'SDK_ERROR');
+    expect(error.message, 'Something went wrong');
+    expect(error.cause, 'details');
+    expect(error, isA<Exception>());
+  });
+
   final messenger =
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
   final List<String> calls = [];
-  // The decoded argument list of the most recent call to each method, so tests
-  // can assert on the actual objects passed (not just that a call happened).
   final Map<String, List<Object?>> lastArgs = {};
 
   void mockChannel(String method, Object? Function(List<Object?> args) reply) {
@@ -26,8 +53,6 @@ void main() {
     });
   }
 
-  // Makes a method's mock host reply with a Pigeon error, so tests can assert
-  // the public API surfaces native failures.
   void mockChannelError(String method, String code, String msg) {
     messenger.setMockMessageHandler('$_prefix.$method', (message) async {
       return KnCoreHostApi.pigeonChannelCodec
@@ -38,7 +63,6 @@ void main() {
   setUp(() {
     calls.clear();
     lastArgs.clear();
-    // Reset the config cache so each test's initialize hits the native layer.
     Klarna.clearInstanceCache();
     mockChannel('initialize', (args) => null);
     mockChannel('getSessionToken', (args) => 'token-123');
@@ -108,7 +132,7 @@ void main() {
       ],
     );
 
-    network.setIntegrationMetadata(metadata);
+    await network.setIntegrationMetadata(metadata);
 
     expect(network.integrationMetadata, metadata);
     expect(
@@ -174,7 +198,6 @@ void main() {
     );
 
     expect(identical(a, b), isTrue);
-    // The second call is served from cache — no extra native initialize.
     expect(calls.where((c) => c.startsWith('initialize:')), isEmpty);
   });
 
@@ -219,7 +242,7 @@ void main() {
     );
     mockChannelError('getSessionToken', 'KlarnaNetworkCore', 'no session');
 
-    expect(network.network.session.token(), throwsA(isA<PlatformException>()));
+    expect(network.network.session.token(), throwsA(isA<KlarnaSDKError>()));
   });
 
   test('initialize surfaces native errors', () async {
@@ -229,7 +252,188 @@ void main() {
       Klarna.initialize(
         KlarnaConfiguration(clientId: 'bad', appReturnUrl: 'app://r'),
       ),
-      throwsA(isA<PlatformException>()),
+      throwsA(isA<KlarnaSDKError>()),
     );
+  });
+
+  test('a failed initialize does not poison the cache for the next attempt',
+      () async {
+    mockChannelError('initialize', 'KlarnaNetworkCore', 'bad client id');
+    final configuration =
+        KlarnaConfiguration(clientId: 'bad', appReturnUrl: 'app://r');
+
+    await expectLater(
+      Klarna.initialize(configuration),
+      throwsA(isA<KlarnaSDKError>()),
+    );
+    await Future<void>.delayed(Duration.zero);
+
+    mockChannel('initialize', (args) => null);
+    final klarna = await Klarna.initialize(configuration);
+
+    expect(klarna.instanceId, isNotEmpty);
+  });
+
+  test('setIntegrationMetadata surfaces native errors', () async {
+    final network = await Klarna.initializeWithInstanceId(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+      'inst-meta-err',
+    );
+    mockChannelError(
+        'setIntegrationMetadata', 'KlarnaNetworkCore', 'no instance found');
+
+    expect(
+      network.setIntegrationMetadata(
+        KlarnaIntegrationMetadata(
+          integrator: KlarnaIntegratorMetadata(
+            name: 'FlutterExample',
+            sessionReference: 'session-1',
+          ),
+        ),
+      ),
+      throwsA(isA<KlarnaSDKError>()),
+    );
+  });
+
+  test(
+      'concurrent initialize calls with the same config create only one '
+      'native instance', () async {
+    var initializeCalls = 0;
+    mockChannel('initialize', (args) {
+      initializeCalls++;
+      return null;
+    });
+
+    final configuration =
+        KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r');
+    final results = await Future.wait(<Future<Klarna>>[
+      Klarna.initialize(configuration),
+      Klarna.initialize(configuration),
+      Klarna.initialize(configuration),
+    ]);
+
+    expect(initializeCalls, 1);
+    expect(identical(results[0], results[1]), isTrue);
+    expect(identical(results[0], results[2]), isTrue);
+  });
+
+  test('handleReturnUrl surfaces native errors', () async {
+    mockChannelError('handleReturnUrl', 'KlarnaNetworkCore', 'no instance');
+
+    expect(
+      Klarna.handleReturnUrl('app://return'),
+      throwsA(isA<KlarnaSDKError>()
+          .having((error) => error.name, 'name', 'KlarnaNetworkCore')
+          .having((error) => error.message, 'message', 'no instance')),
+    );
+  });
+
+  test('clearSession surfaces native errors', () async {
+    final network = await Klarna.initialize(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+    );
+    mockChannelError('clearSession', 'KlarnaNetworkCore', 'no session');
+
+    expect(
+      network.network.session.clear(),
+      throwsA(isA<KlarnaSDKError>()
+          .having((error) => error.name, 'name', 'KlarnaNetworkCore')),
+    );
+  });
+
+  test('dispose surfaces native errors', () async {
+    final network = await Klarna.initializeWithInstanceId(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+      'inst-dispose-err',
+    );
+    mockChannelError('dispose', 'KlarnaNetworkCore', 'no instance found');
+
+    expect(
+      network.dispose(),
+      throwsA(isA<KlarnaSDKError>()
+          .having((error) => error.message, 'message', 'no instance found')),
+    );
+  });
+
+  test('a native error without a message falls back to the error code',
+      () async {
+    final network = await Klarna.initialize(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+    );
+    messenger.setMockMessageHandler(
+      '$_prefix.getSessionToken',
+      (message) async => KnCoreHostApi.pigeonChannelCodec
+          .encodeMessage(<Object?>['KlarnaNetworkCore', null, null]),
+    );
+
+    expect(
+      network.network.session.token(),
+      throwsA(isA<KlarnaSDKError>()
+          .having((error) => error.message, 'message', 'KlarnaNetworkCore')),
+    );
+  });
+
+  test('distinct acquiring configs create distinct instances', () async {
+    final a = await Klarna.initialize(
+      KlarnaConfiguration(
+        clientId: 'c',
+        appReturnUrl: 'app://r',
+        acquiringConfig: KlarnaAcquiringConfig(
+          paymentAccountReference: 'ref-1',
+          paymentAcquiringAccountId: 'acct-1',
+        ),
+      ),
+    );
+    final b = await Klarna.initialize(
+      KlarnaConfiguration(
+        clientId: 'c',
+        appReturnUrl: 'app://r',
+        acquiringConfig: KlarnaAcquiringConfig(
+          paymentAccountReference: 'ref-2',
+          paymentAcquiringAccountId: 'acct-1',
+        ),
+      ),
+    );
+
+    expect(identical(a, b), isFalse);
+  });
+
+  test('an identical acquiring config returns the cached instance', () async {
+    KlarnaConfiguration config() => KlarnaConfiguration(
+          clientId: 'c',
+          appReturnUrl: 'app://r',
+          acquiringConfig: KlarnaAcquiringConfig(
+            paymentAccountReference: 'ref-1',
+            paymentAcquiringAccountId: 'acct-1',
+          ),
+        );
+
+    final a = await Klarna.initialize(config());
+    calls.clear();
+    final b = await Klarna.initialize(config());
+
+    expect(identical(a, b), isTrue);
+    expect(calls.where((c) => c.startsWith('initialize:')), isEmpty);
+  });
+
+  test('disposing an explicit-id instance leaves the cache untouched',
+      () async {
+    final cached = await Klarna.initialize(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+    );
+    final seamed = await Klarna.initializeWithInstanceId(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+      'inst-explicit',
+    );
+
+    await seamed.dispose();
+    calls.clear();
+
+    final again = await Klarna.initialize(
+      KlarnaConfiguration(clientId: 'c', appReturnUrl: 'app://r'),
+    );
+
+    expect(identical(cached, again), isTrue);
+    expect(calls.where((c) => c.startsWith('initialize:')), isEmpty);
   });
 }

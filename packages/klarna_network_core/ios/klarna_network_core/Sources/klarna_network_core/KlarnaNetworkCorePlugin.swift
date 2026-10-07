@@ -2,9 +2,7 @@ import Flutter
 import KlarnaNetworkCore
 import UIKit
 
-/// Holds the real native `Klarna` instances keyed by instanceId, so sibling
-/// feature packages can resolve the same instance the core plugin created.
-/// Gated behind `@_spi` to keep it out of the module's public surface.
+/// Holds native `Klarna` instances by instanceId for sibling feature packages.
 @_spi(FlutterKlarnaNetworkCore)
 public final class KnInstanceStore {
   @_spi(FlutterKlarnaNetworkCore)
@@ -49,8 +47,6 @@ final class KnCoreHostApiImpl: KnCoreHostApi {
       klarnaNetworkSessionToken: configuration.klarnaNetworkSessionToken,
       acquiringConfig: acquiringConfig
     )
-    // `Klarna.initialize` returns `KlarnaResult<Klarna>` ==
-    // `Result<Klarna, KlarnaSDKError>`.
     switch Klarna.initialize(configuration: klarnaConfiguration) {
     case .success(let klarna):
       KnInstanceStore.shared.put(instanceId, klarna)
@@ -100,7 +96,8 @@ final class KnCoreHostApiImpl: KnCoreHostApi {
     instanceId: String, metadata: KnIntegrationMetadata
   ) throws {
     guard let klarna = KnInstanceStore.shared.getInstance(instanceId) else {
-      return
+      throw PigeonError(
+        code: Self.moduleName, message: Self.errorInstanceNotFound, details: nil)
     }
     let integrator = KlarnaIntegratorMetadata(
       name: metadata.integrator.name,
