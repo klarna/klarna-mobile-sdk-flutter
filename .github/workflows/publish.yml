@@ -1,26 +1,37 @@
 name: Publish to pub.dev
 
-# Release flow, per package below:
+# Release flow for the klarna_network_* packages:
 #
 #   1. A version bump lands on master (via a sync PR from the private repo,
 #      which is the source of truth for package versions).
-#   2. `tag` reads the new version (for each package whose pubspec.yaml
-#      changed), pushes tag <package>-v<version>, then dispatches `publish`
-#      against that tag.
-#   3. `publish` runs against the dispatched tag ref, waits until any sibling
-#      package it depends on (e.g. klarna_network_core) is live on pub.dev at
-#      the required version, authenticates to pub.dev over OIDC, publishes
-#      the package named in the tag, and creates a GitHub release for the tag
-#      with that version's CHANGELOG section as notes.
+#   2. `tag` finds the packages whose pubspec.yaml version changed, checks they
+#      all share one version, pushes ONE tag named after that bare version
+#      (e.g. "2.1.1"), then dispatches this workflow against that tag.
+#   3. `plan` (on the dispatched tag) lists the packages whose pubspec version
+#      equals the tag and that aren't on pub.dev yet.
+#   4. `publish` publishes each of them in its own matrix job. A job first waits
+#      until any sibling package it depends on (e.g. klarna_network_core) is
+#      live on pub.dev at the required version.
+#   5. `release` creates one GitHub release for the tag, titled with the bare
+#      version, with each released package's CHANGELOG section as notes.
 #
-# Why two jobs instead of publishing directly on the master push: pub.dev's
+# One tag, independent package versions: pub.dev's tag pattern for each of
+# these packages is "{{version}}". pub.dev only lets a run publish a package if
+# the run's tag matches that pattern with {{version}} equal to the version
+# being published. So tag "2.1.1" can publish every package at 2.1.1, and no
+# other version. Packages that didn't change keep their old version and are
+# skipped; packages released together must share a version (the `tag` job
+# fails otherwise, and the private repo's pipeline already rejects it before
+# sync).
+#
+# Why a separate run instead of publishing directly on the master push: pub.dev's
 # trusted-publisher check (see dart-lang/pub-dev's
 # `_checkGitHubActionAllowed`) requires the OIDC token's `ref_type` claim to
-# be "tag" — a run triggered by a branch push is rejected outright, even with
+# be "tag". A run triggered by a branch push is rejected outright, even with
 # id-token: write. So the publishing run has to be a distinct run against a
 # tag ref.
 #
-# Why `publish` is triggered via workflow_dispatch instead of the tag push
+# Why that run is started via workflow_dispatch instead of the tag push
 # itself: pushes authored by GITHUB_TOKEN deliberately do not start new
 # `on: push` workflow runs (GitHub's recursion guard), so a GITHUB_TOKEN-
 # pushed tag would create the tag and trigger nothing. workflow_dispatch is
@@ -32,18 +43,17 @@ name: Publish to pub.dev
 # ref_type=tag. This means the whole flow runs on the default GITHUB_TOKEN —
 # no PAT or other long-lived credential needed.
 #
-# pub.dev-side requirement: each package's trusted-publisher config must have
-# "Require workflow_dispatch" (or equivalent "allow workflow_dispatch")
-# enabled, not just "push", or its OIDC check will reject this flow.
+# pub.dev-side requirement: each package's trusted-publisher config must use
+# tag pattern "{{version}}" and have "Require workflow_dispatch" (or
+# equivalent "allow workflow_dispatch") enabled, not just "push", or its OIDC
+# check will reject this flow.
 #
 # klarna_mobile_sdk_flutter is intentionally not handled here. It is already
-# published, and its release tags use a bare version ("1.0.2") that can't be
-# attributed to a single package in a shared repo. Release it deliberately
-# rather than on a version-file diff.
+# published and is released deliberately (bare version tags like "1.0.2"),
+# not on a version-file diff.
 #
 # Adding a package: append its pubspec.yaml to `paths` below and its name to
-# the `tag` job's matrix. Everything else (tag pattern, publish working
-# directory) is derived from the package name, not hardcoded per package.
+# NETWORK_PACKAGES. Everything else is derived from the package name.
 
 on:
   push:
@@ -56,27 +66,23 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag to publish, e.g. klarna_network_core-v0.1.0"
+        description: "Release tag to publish (the bare version), e.g. 2.1.1"
         required: true
         type: string
+
+env:
+  # Space-separated, in release-notes order.
+  NETWORK_PACKAGES: "klarna_network_core klarna_network_payment klarna_network_messaging"
 
 jobs:
   tag:
     # Only for the master-push half of the trigger; a manual dispatch (e.g. a
-    # re-run of `publish` alone) skips straight to the publish job below.
+    # re-run of the publish half alone) skips straight to `plan` below.
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write # push the release tag
-      actions: write # dispatch the publish job below
-    strategy:
-      # One package's version-bump failure must not block another's tag push.
-      fail-fast: false
-      matrix:
-        package:
-          - klarna_network_core
-          - klarna_network_payment
-          - klarna_network_messaging
+      actions: write # dispatch the publish run below
     steps:
       # Full history so the pre-push commit (github.event.before) is reachable.
       # A shallow clone can't diff against it.
@@ -91,56 +97,71 @@ jobs:
           # version string reaching the shell as source could otherwise run
           # as code, in a job holding a push credential.
           BEFORE: ${{ github.event.before }}
-          PKG: packages/${{ matrix.package }}
         run: |
           set -euo pipefail
-          file="$PKG/pubspec.yaml"
-
           read_version() { grep -m1 '^version:' | sed -E 's/^version:[[:space:]]*//' | tr -d '[:space:]'; }
 
-          new_version=$(read_version < "$file")
-          # Compare against the ref's pre-push state, not HEAD^: a squash or
-          # multi-commit push moves master by more than one commit, and HEAD^
-          # can already contain the bump.
-          old_version=$(git show "$BEFORE:$file" 2>/dev/null | read_version || true)
+          release_version=""
+          for package in $NETWORK_PACKAGES; do
+            file="packages/$package/pubspec.yaml"
+            new_version=$(read_version < "$file" || true)
+            # Compare against the ref's pre-push state, not HEAD^: a squash or
+            # multi-commit push moves master by more than one commit, and HEAD^
+            # can already contain the bump.
+            old_version=$(git show "$BEFORE:$file" 2>/dev/null | read_version || true)
 
-          if [ -z "$new_version" ]; then
-            echo "no version field in $file" >&2
-            exit 1
-          fi
-          if [ "$old_version" = "$new_version" ]; then
-            echo "version unchanged ($new_version); nothing to release"
+            if [ -z "$new_version" ]; then
+              echo "no version field in $file" >&2
+              exit 1
+            fi
+            if [ "$old_version" = "$new_version" ]; then
+              echo "$package: version unchanged ($new_version)"
+              continue
+            fi
+            echo "$package: ${old_version:-none} -> $new_version"
+
+            # One tag carries one version, so every bumped package must agree.
+            if [ -z "$release_version" ]; then
+              release_version="$new_version"
+            elif [ "$release_version" != "$new_version" ]; then
+              echo "$package is bumped to $new_version but another package to $release_version;" \
+                "packages released together must share a version" >&2
+              exit 1
+            fi
+          done
+
+          if [ -z "$release_version" ]; then
+            echo "no package version changed; nothing to release"
             echo "release=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           # Reject anything that isn't a plain semver release, so a malformed
           # or prerelease version can't reach `git tag` or pub.dev.
-          if ! printf '%s' "$new_version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "refusing to tag non-release version: $new_version" >&2
+          if ! printf '%s' "$release_version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "refusing to tag non-release version: $release_version" >&2
             exit 1
           fi
 
-          echo "$old_version -> $new_version"
           echo "release=true" >> "$GITHUB_OUTPUT"
-          echo "version=$new_version" >> "$GITHUB_OUTPUT"
+          echo "version=$release_version" >> "$GITHUB_OUTPUT"
 
       - name: Push the release tag
         if: steps.resolve.outputs.release == 'true'
         id: push_tag
         env:
           VERSION: ${{ steps.resolve.outputs.version }}
-          PACKAGE: ${{ matrix.package }}
         run: |
           set -euo pipefail
           # Tag name must match the pub.dev trusted-publisher tag pattern
-          # (<package>-v{{version}}) and the private repo's release pipeline,
-          # which uses the same "<name>-v<version>" convention.
-          tag="${PACKAGE}-v${VERSION}"
+          # ({{version}}) and the private repo's release pipeline, which uses
+          # the same bare-version convention.
+          tag="$VERSION"
           git check-ref-format "refs/tags/$tag"
 
           # Idempotent: a re-run must not fail, and must never move a tag that
-          # already points somewhere else.
+          # already points somewhere else (e.g. a version already used by an
+          # earlier release of other packages).
           existing=$(git ls-remote --tags origin "refs/tags/$tag" | awk '{print $1}')
           if [ -n "$existing" ]; then
             if [ "$existing" = "$GITHUB_SHA" ]; then
@@ -168,17 +189,18 @@ jobs:
           # though it's triggered by the same token that pushed the tag.
           gh workflow run publish.yml --ref "$TAG" --field "tag=$TAG"
 
-  publish:
+  plan:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # request the pub.dev OIDC token
-      contents: write # create the GitHub release for the tag
+      contents: read
+    outputs:
+      packages: ${{ steps.plan.outputs.packages }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Resolve package from tag
-        id: resolve
+      - name: List packages to publish for this tag
+        id: plan
         env:
           TAG: ${{ inputs.tag }}
         run: |
@@ -189,25 +211,54 @@ jobs:
             echo "expected to run against tag ref $TAG, got ${GITHUB_REF_TYPE:-unknown} $GITHUB_REF_NAME" >&2
             exit 1
           fi
-
-          # The tag is "<package>-v<version>"; package names in this repo
-          # never contain "-v", so splitting on the first occurrence is safe.
-          package="${TAG%-v*}"
-          if [ ! -f "packages/$package/pubspec.yaml" ]; then
-            echo "no such package: packages/$package" >&2
+          if ! printf '%s' "$TAG" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "tag $TAG is not a bare x.y.z version" >&2
             exit 1
           fi
-          echo "package=$package" >> "$GITHUB_OUTPUT"
 
-      # Packages released together are dispatched together, so e.g. payment's
-      # run can start while core's is still publishing. Publishing payment
+          # Packages at this version that aren't on pub.dev yet. Skipping the
+          # published ones makes a re-run retry only what failed.
+          packages=""
+          for package in $NETWORK_PACKAGES; do
+            version=$(grep -m1 '^version:' "packages/$package/pubspec.yaml" | sed -E 's/^version:[[:space:]]*//' | tr -d '[:space:]')
+            if [ "$version" != "$TAG" ]; then
+              echo "$package: at $version, not part of $TAG"
+              continue
+            fi
+            status=$(curl -s -o /dev/null -w '%{http_code}' "https://pub.dev/api/packages/$package/versions/$version")
+            if [ "$status" = "200" ]; then
+              echo "$package: $version already on pub.dev"
+              continue
+            fi
+            echo "$package: publish $version"
+            packages="${packages:+$packages,}\"$package\""
+          done
+          echo "packages=[$packages]" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: plan
+    if: needs.plan.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # request the pub.dev OIDC token
+      contents: read
+    strategy:
+      # One package's failure must not cancel its siblings' publishes.
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.plan.outputs.packages) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # Packages in the same release publish in parallel, so e.g. payment's
+      # job can start while core's is still publishing. Publishing payment
       # before the core version it requires is live would leave it
       # unresolvable for users, so wait for every sibling dependency's
       # minimum version to appear on pub.dev first.
       - name: Wait for sibling dependencies on pub.dev
         timeout-minutes: 30
         env:
-          PACKAGE: ${{ steps.resolve.outputs.package }}
+          PACKAGE: ${{ matrix.package }}
         run: |
           set -euo pipefail
           # Dependency lines look like "  klarna_network_core: ^2.1.0"; only
@@ -231,7 +282,7 @@ jobs:
           channel: stable
 
       - name: Install dependencies
-        working-directory: packages/${{ steps.resolve.outputs.package }}
+        working-directory: packages/${{ matrix.package }}
         run: flutter pub get
 
       # Provisions the pub.dev OIDC token and registers it via
@@ -239,36 +290,58 @@ jobs:
       # this step `dart pub publish` has no credential even with id-token: write.
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1
 
-      - name: Publish ${{ steps.resolve.outputs.package }}
-        working-directory: packages/${{ steps.resolve.outputs.package }}
+      - name: Publish ${{ matrix.package }}
+        working-directory: packages/${{ matrix.package }}
         run: |
           dart pub publish --dry-run
           dart pub publish --force
+
+  release:
+    needs: [plan, publish]
+    # Also runs when `publish` was skipped because everything is already on
+    # pub.dev (a re-run after the release step failed), but never after a
+    # failed publish.
+    if: >-
+      always() && needs.plan.result == 'success' &&
+      (needs.publish.result == 'success' || needs.publish.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub release for the tag
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
-          PACKAGE: ${{ steps.resolve.outputs.package }}
         run: |
           set -euo pipefail
-          version="${TAG##*-v}"
-
-          # Idempotent: a re-run after a successful publish must not fail here.
+          # Idempotent: a re-run after a successful release must not fail here.
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "release $TAG already exists; nothing to do"
             exit 0
           fi
 
-          # Notes are this version's CHANGELOG section: the lines between
-          # "## <version>" and the next "## " heading, leading blanks dropped.
-          notes=$(awk -v h="## $version" '$0 == h {f=1; next} /^## / {f=0} f' "packages/$PACKAGE/CHANGELOG.md" | sed '/./,$!d')
-          if [ -z "$notes" ]; then
-            echo "no CHANGELOG section for $version in packages/$PACKAGE" >&2
-            exit 1
-          fi
+          # Notes: one section per package released under this tag, holding
+          # that version's CHANGELOG section (the lines between "## <version>"
+          # and the next "## " heading, leading blanks dropped).
+          notes=""
+          for package in $NETWORK_PACKAGES; do
+            version=$(grep -m1 '^version:' "packages/$package/pubspec.yaml" | sed -E 's/^version:[[:space:]]*//' | tr -d '[:space:]')
+            [ "$version" = "$TAG" ] || continue
+            section=$(awk -v h="## $version" '$0 == h {f=1; next} /^## / {f=0} f' "packages/$package/CHANGELOG.md" | sed '/./,$!d')
+            if [ -z "$section" ]; then
+              echo "no CHANGELOG section for $version in packages/$package" >&2
+              exit 1
+            fi
+            notes="${notes:+$notes
 
-          # --latest=false: several packages release from this repo, so none
-          # of them should take over the repo's "Latest" badge automatically.
+          }### $package
+
+          $section"
+          done
+
+          # --latest=false: klarna_mobile_sdk_flutter also releases from this
+          # repo, so these releases shouldn't take over its "Latest" badge.
           gh release create "$TAG" --verify-tag --latest=false \
-            --title "$PACKAGE $version" --notes "$notes"
+            --title "$TAG" --notes "$notes"
