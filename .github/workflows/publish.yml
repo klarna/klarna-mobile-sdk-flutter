@@ -15,14 +15,15 @@ name: Publish to pub.dev
 #   5. `release` creates one GitHub release for the tag, titled with the bare
 #      version, with each released package's CHANGELOG section as notes.
 #
-# One tag, independent package versions: pub.dev's tag pattern for each of
-# these packages is "{{version}}". pub.dev only lets a run publish a package if
-# the run's tag matches that pattern with {{version}} equal to the version
-# being published. So tag "2.1.1" can publish every package at 2.1.1, and no
-# other version. Packages that didn't change keep their old version and are
-# skipped; packages released together must share a version (the `tag` job
-# fails otherwise, and the private repo's pipeline already rejects it before
-# sync).
+# One tag, one version: the klarna_network_* packages are versioned in
+# lockstep, so every release bumps all of them to the same version (the
+# private repo's pipeline rejects a release where they differ, before sync).
+# pub.dev's tag pattern for each of these packages is "{{version}}". pub.dev
+# only lets a run publish a package if the run's tag matches that pattern with
+# {{version}} equal to the version being published, so tag "2.1.1" publishes
+# every package at 2.1.1. `tag` also fails if the bumped versions differ, and
+# `plan` still selects packages by version, so a re-run only retries the ones
+# not yet on pub.dev.
 #
 # Why a separate run instead of publishing directly on the master push: pub.dev's
 # trusted-publisher check (see dart-lang/pub-dev's
