@@ -342,7 +342,9 @@ jobs:
           $section"
           done
 
-          # --latest=false: klarna_mobile_sdk_flutter also releases from this
-          # repo, so these releases shouldn't take over its "Latest" badge.
-          gh release create "$TAG" --verify-tag --latest=false \
+          # No --latest flag: GitHub picks "Latest" automatically (newest and
+          # highest version), the same as the private repo's internal release,
+          # so both repos show the same latest version. A later manual
+          # klarna_mobile_sdk_flutter 1.0.x release doesn't take it over.
+          gh release create "$TAG" --verify-tag \
             --title "$TAG" --notes "$notes"
