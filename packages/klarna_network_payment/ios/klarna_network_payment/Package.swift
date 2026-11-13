@@ -20,7 +20,7 @@ let package = Package(
         .package(name: "klarna_network_core", path: "../klarna_network_core"),
         // Pin exactly. The native payment button lives in its own product
         // (KlarnaNetworkPaymentButton); bump in lockstep with the code.
-        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.15.0")
+        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.16.1")
     ],
     targets: [
         .target(

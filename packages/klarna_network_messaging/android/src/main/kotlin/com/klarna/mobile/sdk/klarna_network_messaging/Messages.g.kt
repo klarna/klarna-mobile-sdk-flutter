@@ -17,6 +17,56 @@ private object MessagesPigeonUtils {
 
   fun createConnectionError(channelName: String): FlutterError {
     return FlutterError("channel-error",  "Unable to establish connection on channel: '$channelName'.", "")  }
+
+  fun wrapResult(result: Any?): List<Any?> {
+    return listOf(result)
+  }
+
+  fun wrapError(exception: Throwable): List<Any?> {
+    return if (exception is FlutterError) {
+      listOf(
+        exception.code,
+        exception.message,
+        exception.details
+      )
+    } else {
+      listOf(
+        exception.javaClass.simpleName,
+        exception.toString(),
+        "Cause: " + exception.cause + ", Stacktrace: " + Log.getStackTraceString(exception)
+      )
+    }
+  }
+  fun deepEquals(a: Any?, b: Any?): Boolean {
+    if (a is ByteArray && b is ByteArray) {
+        return a.contentEquals(b)
+    }
+    if (a is IntArray && b is IntArray) {
+        return a.contentEquals(b)
+    }
+    if (a is LongArray && b is LongArray) {
+        return a.contentEquals(b)
+    }
+    if (a is DoubleArray && b is DoubleArray) {
+        return a.contentEquals(b)
+    }
+    if (a is Array<*> && b is Array<*>) {
+      return a.size == b.size &&
+          a.indices.all{ deepEquals(a[it], b[it]) }
+    }
+    if (a is List<*> && b is List<*>) {
+      return a.size == b.size &&
+          a.indices.all{ deepEquals(a[it], b[it]) }
+    }
+    if (a is Map<*, *> && b is Map<*, *>) {
+      return a.size == b.size && a.all {
+          (b as Map<Any?, Any?>).containsKey(it.key) &&
+          deepEquals(it.value, b[it.key])
+      }
+    }
+    return a == b
+  }
+      
 }
 
 /**
@@ -30,14 +80,129 @@ class FlutterError (
   override val message: String? = null,
   val details: Any? = null
 ) : Throwable()
-private open class MessagesPigeonCodec : StandardMessageCodec() {
-  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
-    return     super.readValueOfType(type, buffer)
-  }
-  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
-    super.writeValue(stream, value)
+
+enum class KnPrequalificationStatus(val raw: Int) {
+  APPROVED(0),
+  ABORTED(1);
+
+  companion object {
+    fun ofRaw(raw: Int): KnPrequalificationStatus? {
+      return values().firstOrNull { it.raw == raw }
+    }
   }
 }
+
+/**
+ * Input for `klarna.messaging.prequalification.initiate`.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class KnPrequalificationData (
+  val amount: Long,
+  val currency: String
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): KnPrequalificationData {
+      val amount = pigeonVar_list[0] as Long
+      val currency = pigeonVar_list[1] as String
+      return KnPrequalificationData(amount, currency)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      amount,
+      currency,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other !is KnPrequalificationData) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    return MessagesPigeonUtils.deepEquals(toList(), other.toList())  }
+
+  override fun hashCode(): Int = toList().hashCode()
+}
+
+/**
+ * Transport type for the native prequalification result. The public Dart API
+ * maps it to a sealed hierarchy. `expiresAtMillis` (epoch milliseconds, UTC)
+ * is only set when `status` is `approved`.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class KnPrequalificationResult (
+  val status: KnPrequalificationStatus,
+  val expiresAtMillis: Long? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): KnPrequalificationResult {
+      val status = pigeonVar_list[0] as KnPrequalificationStatus
+      val expiresAtMillis = pigeonVar_list[1] as Long?
+      return KnPrequalificationResult(status, expiresAtMillis)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      status,
+      expiresAtMillis,
+    )
+  }
+  override fun equals(other: Any?): Boolean {
+    if (other !is KnPrequalificationResult) {
+      return false
+    }
+    if (this === other) {
+      return true
+    }
+    return MessagesPigeonUtils.deepEquals(toList(), other.toList())  }
+
+  override fun hashCode(): Int = toList().hashCode()
+}
+private open class MessagesPigeonCodec : StandardMessageCodec() {
+  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+    return when (type) {
+      129.toByte() -> {
+        return (readValue(buffer) as Long?)?.let {
+          KnPrequalificationStatus.ofRaw(it.toInt())
+        }
+      }
+      130.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          KnPrequalificationData.fromList(it)
+        }
+      }
+      131.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          KnPrequalificationResult.fromList(it)
+        }
+      }
+      else -> super.readValueOfType(type, buffer)
+    }
+  }
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
+    when (value) {
+      is KnPrequalificationStatus -> {
+        stream.write(129)
+        writeValue(stream, value.raw)
+      }
+      is KnPrequalificationData -> {
+        stream.write(130)
+        writeValue(stream, value.toList())
+      }
+      is KnPrequalificationResult -> {
+        stream.write(131)
+        writeValue(stream, value.toList())
+      }
+      else -> super.writeValue(stream, value)
+    }
+  }
+}
+
 
 /** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
 class KnMessagingFlutterApi(private val binaryMessenger: BinaryMessenger, private val messageChannelSuffix: String = "") {
@@ -62,6 +227,43 @@ class KnMessagingFlutterApi(private val binaryMessenger: BinaryMessenger, privat
       } else {
         callback(Result.failure(MessagesPigeonUtils.createConnectionError(channelName)))
       } 
+    }
+  }
+}
+/** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+interface KnMessagingHostApi {
+  fun prequalificationInitiate(instanceId: String, data: KnPrequalificationData, callback: (Result<KnPrequalificationResult>) -> Unit)
+
+  companion object {
+    /** The codec used by KnMessagingHostApi. */
+    val codec: MessageCodec<Any?> by lazy {
+      MessagesPigeonCodec()
+    }
+    /** Sets up an instance of `KnMessagingHostApi` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: KnMessagingHostApi?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.klarna_network_messaging.KnMessagingHostApi.prequalificationInitiate$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val instanceIdArg = args[0] as String
+            val dataArg = args[1] as KnPrequalificationData
+            api.prequalificationInitiate(instanceIdArg, dataArg) { result: Result<KnPrequalificationResult> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(MessagesPigeonUtils.wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(MessagesPigeonUtils.wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
     }
   }
 }

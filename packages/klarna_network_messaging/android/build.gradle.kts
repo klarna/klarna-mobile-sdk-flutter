@@ -2,23 +2,23 @@ group = "com.klarna.mobile.sdk.klarna_network_messaging"
 version = "1.0-SNAPSHOT"
 
 buildscript {
-    val kotlinVersion = "2.4.20"
+    val kotlinVersion = "2.4.21"
 
     configurations.classpath {
         resolutionStrategy {
-            force("io.netty:netty-codec:4.1.137.Final")
-            force("io.netty:netty-codec-http:4.1.137.Final")
-            force("io.netty:netty-codec-http2:4.1.137.Final")
-            force("io.netty:netty-handler:4.1.137.Final")
-            force("io.netty:netty-handler-proxy:4.1.137.Final")
-            force("io.netty:netty-common:4.1.137.Final")
-            force("io.grpc:grpc-netty:1.75.0")
-            force("org.bouncycastle:bcprov-jdk18on:1.85")
-            force("org.bouncycastle:bcpkix-jdk18on:1.85")
-            force("org.bouncycastle:bcutil-jdk18on:1.85")
+            force("io.netty:netty-codec:4.2.19.Final")
+            force("io.netty:netty-codec-http:4.2.19.Final")
+            force("io.netty:netty-codec-http2:4.2.19.Final")
+            force("io.netty:netty-handler:4.2.19.Final")
+            force("io.netty:netty-handler-proxy:4.2.19.Final")
+            force("io.netty:netty-common:4.2.19.Final")
+            force("io.grpc:grpc-netty:1.84.2")
+            force("org.bouncycastle:bcprov-jdk18on:1.86")
+            force("org.bouncycastle:bcpkix-jdk18on:1.86")
+            force("org.bouncycastle:bcutil-jdk18on:1.86")
             force("org.jdom:jdom2:2.0.6.1")
-            force("org.bitbucket.b_c:jose4j:0.9.6")
-            force("org.apache.commons:commons-compress:1.26.0")
+            force("org.bitbucket.b_c:jose4j:0.9.7")
+            force("org.apache.commons:commons-compress:1.28.0")
         }
     }
 
@@ -93,9 +93,9 @@ kotlin {
 }
 
 dependencies {
-    implementation("com.klarna.mobile.sdk:klarna-network-messaging:2.15.0")
-    implementation("com.klarna.mobile.sdk:klarna-network-core:2.15.0")
+    implementation("com.klarna.mobile.sdk:klarna-network-messaging:2.16.1")
+    implementation("com.klarna.mobile.sdk:klarna-network-core:2.16.1")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.mockito:mockito-core:5.23.0")
+    testImplementation("org.mockito:mockito-core:5.24.0")
 }

@@ -15,7 +15,36 @@ import 'package:pigeon/pigeon.dart';
     dartPackageName: 'klarna_network_messaging',
   ),
 )
+enum KnPrequalificationStatus { approved, aborted }
+
+/// Input for `klarna.messaging.prequalification.initiate`.
+class KnPrequalificationData {
+  KnPrequalificationData({required this.amount, required this.currency});
+
+  int amount;
+  String currency;
+}
+
+/// Transport type for the native prequalification result. The public Dart API
+/// maps it to a sealed hierarchy. `expiresAtMillis` (epoch milliseconds, UTC)
+/// is only set when `status` is `approved`.
+class KnPrequalificationResult {
+  KnPrequalificationResult({required this.status, this.expiresAtMillis});
+
+  KnPrequalificationStatus status;
+  int? expiresAtMillis;
+}
+
 @FlutterApi()
 abstract class KnMessagingFlutterApi {
   void onResized(int viewId, double height);
+}
+
+@HostApi()
+abstract class KnMessagingHostApi {
+  @async
+  KnPrequalificationResult prequalificationInitiate(
+    String instanceId,
+    KnPrequalificationData data,
+  );
 }

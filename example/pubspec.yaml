@@ -1,7 +1,7 @@
 name: klarna_mobile_sdk_flutter_example
 description: Demonstrates how to use the klarna_mobile_sdk_flutter plugin.
 publish_to: "none"
-version: 2.1.0
+version: 2.2.0
 
 resolution: workspace
 
@@ -23,6 +23,9 @@ dependencies:
   # Example-only.
   flutter_svg: ^2.0.10+1
 
+  klarna_mobile_sdk_flutter:
+    path: ../packages/klarna_mobile_sdk_flutter
+
   klarna_network_core:
     path: ../packages/klarna_network_core
 
@@ -35,9 +38,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  klarna_mobile_sdk_flutter:
-    path: ../packages/klarna_mobile_sdk_flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

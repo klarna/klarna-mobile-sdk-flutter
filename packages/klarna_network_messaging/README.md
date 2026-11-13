@@ -74,6 +74,36 @@ view collapses to zero height. You do not need to set a height yourself.
 | `KlarnaMessagingPlacementConfiguration.creditPromotionAutoSize` | A placement that auto-sizes to fit its content. |
 | `KlarnaMessagingPlacementConfiguration.creditPromotionBadge` | A compact badge-style placement. |
 
+## Prequalification
+
+Messaging placements are the recommended way to surface Klarna messaging and
+prequalification to your customers. Use `klarna.messaging.prequalification.initiate`
+only when a placement cannot be rendered in the relevant part of your app.
+
+```dart
+final result = await klarna.messaging.prequalification.initiate(
+  const KlarnaMessagingPrequalificationData(amount: 9999, currency: 'USD'),
+);
+
+switch (result) {
+  case KlarnaMessagingPrequalificationApproved(:final expiresAt):
+    // The customer was prequalified until `expiresAt` (UTC).
+    break;
+  case KlarnaMessagingPrequalificationAborted():
+    // Not prequalified, or the customer closed the flow. Leave app state as is.
+    break;
+}
+```
+
+- `amount` is in minor units and must be greater than 0; `currency` is a
+  non-empty ISO 4217 code. Otherwise `initiate` throws an `ArgumentError`.
+- Every customer outcome (approved, not prequalified, closed or abandoned) is a
+  successful result. Only a flow that could not be started throws a
+  `KlarnaSDKError`, with name `OPERATION_FAILED` or
+  `INITIATE_ALREADY_IN_PROGRESS`.
+- On Android the app needs a foreground `Activity`; otherwise `initiate` throws a
+  `KlarnaSDKError` named `KlarnaNetworkMessaging` ("Main Activity not found.").
+
 ## Architecture
 
 The package uses:
@@ -82,7 +112,8 @@ The package uses:
    (`UiKitView`) and Android (hybrid-composition `AndroidView`).
 2. **Pigeon** for the typed native → Dart event channel
    (`pigeons/kn_messaging.dart`), which carries per-view height and error
-   events keyed by a unique view id.
+   events keyed by a unique view id, and for the Dart → native
+   prequalification host API.
 
 ## Regenerating the Pigeon code
 

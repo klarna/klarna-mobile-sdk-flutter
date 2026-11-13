@@ -6,3 +6,12 @@ export 'src/klarna_messaging_configuration.dart'
     show KlarnaMessagingPlacementConfiguration;
 export 'src/klarna_messaging_placement_view.dart'
     show KlarnaMessagingPlacementView;
+export 'src/klarna_messaging_prequalification.dart'
+    show
+        KlarnaMessaging,
+        KlarnaMessagingPrequalification,
+        KlarnaMessagingPrequalificationAborted,
+        KlarnaMessagingPrequalificationApproved,
+        KlarnaMessagingPrequalificationData,
+        KlarnaMessagingPrequalificationResult,
+        KlarnaNetworkMessagingX;

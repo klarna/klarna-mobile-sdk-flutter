@@ -8,6 +8,13 @@ import 'dart:typed_data' show Float64List, Int32List, Int64List, Uint8List;
 import 'package:flutter/foundation.dart' show ReadBuffer, WriteBuffer;
 import 'package:flutter/services.dart';
 
+PlatformException _createConnectionError(String channelName) {
+  return PlatformException(
+    code: 'channel-error',
+    message: 'Unable to establish connection on channel: "$channelName".',
+  );
+}
+
 List<Object?> wrapResponse(
     {Object? result, PlatformException? error, bool empty = false}) {
   if (empty) {
@@ -19,6 +26,123 @@ List<Object?> wrapResponse(
   return <Object?>[error.code, error.message, error.details];
 }
 
+bool _deepEquals(Object? a, Object? b) {
+  if (a is List && b is List) {
+    return a.length == b.length &&
+        a.indexed
+            .every(((int, dynamic) item) => _deepEquals(item.$2, b[item.$1]));
+  }
+  if (a is Map && b is Map) {
+    return a.length == b.length &&
+        a.entries.every((MapEntry<Object?, Object?> entry) =>
+            (b as Map<Object?, Object?>).containsKey(entry.key) &&
+            _deepEquals(entry.value, b[entry.key]));
+  }
+  return a == b;
+}
+
+enum KnPrequalificationStatus {
+  approved,
+  aborted,
+}
+
+/// Input for `klarna.messaging.prequalification.initiate`.
+class KnPrequalificationData {
+  KnPrequalificationData({
+    required this.amount,
+    required this.currency,
+  });
+
+  int amount;
+
+  String currency;
+
+  List<Object?> _toList() {
+    return <Object?>[
+      amount,
+      currency,
+    ];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static KnPrequalificationData decode(Object result) {
+    result as List<Object?>;
+    return KnPrequalificationData(
+      amount: result[0]! as int,
+      currency: result[1]! as String,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! KnPrequalificationData || other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(encode(), other.encode());
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => Object.hashAll(_toList());
+}
+
+/// Transport type for the native prequalification result. The public Dart API
+/// maps it to a sealed hierarchy. `expiresAtMillis` (epoch milliseconds, UTC)
+/// is only set when `status` is `approved`.
+class KnPrequalificationResult {
+  KnPrequalificationResult({
+    required this.status,
+    this.expiresAtMillis,
+  });
+
+  KnPrequalificationStatus status;
+
+  int? expiresAtMillis;
+
+  List<Object?> _toList() {
+    return <Object?>[
+      status,
+      expiresAtMillis,
+    ];
+  }
+
+  Object encode() {
+    return _toList();
+  }
+
+  static KnPrequalificationResult decode(Object result) {
+    result as List<Object?>;
+    return KnPrequalificationResult(
+      status: result[0]! as KnPrequalificationStatus,
+      expiresAtMillis: result[1] as int?,
+    );
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  bool operator ==(Object other) {
+    if (other is! KnPrequalificationResult ||
+        other.runtimeType != runtimeType) {
+      return false;
+    }
+    if (identical(this, other)) {
+      return true;
+    }
+    return _deepEquals(encode(), other.encode());
+  }
+
+  @override
+  // ignore: avoid_equals_and_hash_code_on_mutable_classes
+  int get hashCode => Object.hashAll(_toList());
+}
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -26,6 +150,15 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
+    } else if (value is KnPrequalificationStatus) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.index);
+    } else if (value is KnPrequalificationData) {
+      buffer.putUint8(130);
+      writeValue(buffer, value.encode());
+    } else if (value is KnPrequalificationResult) {
+      buffer.putUint8(131);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -34,6 +167,13 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
+      case 129:
+        final int? value = readValue(buffer) as int?;
+        return value == null ? null : KnPrequalificationStatus.values[value];
+      case 130:
+        return KnPrequalificationData.decode(readValue(buffer)!);
+      case 131:
+        return KnPrequalificationResult.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -83,6 +223,54 @@ abstract class KnMessagingFlutterApi {
           }
         });
       }
+    }
+  }
+}
+
+class KnMessagingHostApi {
+  /// Constructor for [KnMessagingHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  KnMessagingHostApi(
+      {BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix =
+            messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  Future<KnPrequalificationResult> prequalificationInitiate(
+      String instanceId, KnPrequalificationData data) async {
+    final String pigeonVar_channelName =
+        'dev.flutter.pigeon.klarna_network_messaging.KnMessagingHostApi.prequalificationInitiate$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel =
+        BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture =
+        pigeonVar_channel.send(<Object?>[instanceId, data]);
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_sendFuture as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as KnPrequalificationResult?)!;
     }
   }
 }

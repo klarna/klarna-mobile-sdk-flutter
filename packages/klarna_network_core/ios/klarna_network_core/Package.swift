@@ -13,7 +13,7 @@ let package = Package(
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
         // Pinned exactly for deterministic CI resolution and to match
         // klarna_network_payment (a floating `from:` can drift). Bump deliberately.
-        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.15.0")
+        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.16.1")
     ],
     targets: [
         .target(

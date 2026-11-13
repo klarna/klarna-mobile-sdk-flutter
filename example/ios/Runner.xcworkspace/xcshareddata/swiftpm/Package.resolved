@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/klarna/klarna-mobile-sdk-ios",
       "state" : {
-        "revision" : "ee0a5e2fec07a9cc7c06eb90e348f11e34457fa4",
-        "version" : "2.15.0"
+        "revision" : "3e9e11b18926168f6b98f35b5deaadb051f45aff",
+        "version" : "2.16.1"
       }
     }
   ],

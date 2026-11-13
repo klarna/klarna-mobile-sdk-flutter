@@ -2,6 +2,10 @@
 
 All notable changes to this package will be documented in this file.
 
+## 2.2.0
+
+- Updated the Klarna Mobile SDK to iOS 2.16.1 and Android 2.16.1.
+
 ## 2.1.0
 
 - Added shared `KlarnaButtonShape`, `KlarnaButtonState`,
