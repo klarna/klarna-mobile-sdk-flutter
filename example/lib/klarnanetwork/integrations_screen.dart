@@ -57,7 +57,7 @@ class KlarnaNetworkIntegrationsScreen extends StatelessWidget {
           ListTile(
             title: const Text('Klarna Network Messaging'),
             subtitle: const Text(
-              'Render a messaging placement (banner or badge).',
+              'Render a messaging placement (banner or badge) or run prequalification.',
             ),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(

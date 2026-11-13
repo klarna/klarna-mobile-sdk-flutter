@@ -29,6 +29,32 @@ final class PigeonError: Error {
   }
 }
 
+private func wrapResult(_ result: Any?) -> [Any?] {
+  return [result]
+}
+
+private func wrapError(_ error: Any) -> [Any?] {
+  if let pigeonError = error as? PigeonError {
+    return [
+      pigeonError.code,
+      pigeonError.message,
+      pigeonError.details,
+    ]
+  }
+  if let flutterError = error as? FlutterError {
+    return [
+      flutterError.code,
+      flutterError.message,
+      flutterError.details,
+    ]
+  }
+  return [
+    "\(error)",
+    "\(type(of: error))",
+    "Stacktrace: \(Thread.callStackSymbols)",
+  ]
+}
+
 private func createConnectionError(withChannelName channelName: String) -> PigeonError {
   return PigeonError(code: "channel-error", message: "Unable to establish connection on channel: '\(channelName)'.", details: "")
 }
@@ -42,11 +68,173 @@ private func nilOrValue<T>(_ value: Any?) -> T? {
   return value as! T?
 }
 
+func deepEqualsMessages(_ lhs: Any?, _ rhs: Any?) -> Bool {
+  let cleanLhs = nilOrValue(lhs) as Any?
+  let cleanRhs = nilOrValue(rhs) as Any?
+  switch (cleanLhs, cleanRhs) {
+  case (nil, nil):
+    return true
+
+  case (nil, _), (_, nil):
+    return false
+
+  case is (Void, Void):
+    return true
+
+  case let (cleanLhsHashable, cleanRhsHashable) as (AnyHashable, AnyHashable):
+    return cleanLhsHashable == cleanRhsHashable
+
+  case let (cleanLhsArray, cleanRhsArray) as ([Any?], [Any?]):
+    guard cleanLhsArray.count == cleanRhsArray.count else { return false }
+    for (index, element) in cleanLhsArray.enumerated() {
+      if !deepEqualsMessages(element, cleanRhsArray[index]) {
+        return false
+      }
+    }
+    return true
+
+  case let (cleanLhsDictionary, cleanRhsDictionary) as ([AnyHashable: Any?], [AnyHashable: Any?]):
+    guard cleanLhsDictionary.count == cleanRhsDictionary.count else { return false }
+    for (key, cleanLhsValue) in cleanLhsDictionary {
+      guard cleanRhsDictionary.index(forKey: key) != nil else { return false }
+      if !deepEqualsMessages(cleanLhsValue, cleanRhsDictionary[key]!) {
+        return false
+      }
+    }
+    return true
+
+  default:
+    // Any other type shouldn't be able to be used with pigeon. File an issue if you find this to be untrue.
+    return false
+  }
+}
+
+func deepHashMessages(value: Any?, hasher: inout Hasher) {
+  if let valueList = value as? [AnyHashable] {
+     for item in valueList { deepHashMessages(value: item, hasher: &hasher) }
+     return
+  }
+
+  if let valueDict = value as? [AnyHashable: AnyHashable] {
+    for key in valueDict.keys { 
+      hasher.combine(key)
+      deepHashMessages(value: valueDict[key]!, hasher: &hasher)
+    }
+    return
+  }
+
+  if let hashableValue = value as? AnyHashable {
+    hasher.combine(hashableValue.hashValue)
+  }
+
+  return hasher.combine(String(describing: value))
+}
+
+    
+
+enum KnPrequalificationStatus: Int {
+  case approved = 0
+  case aborted = 1
+}
+
+/// Input for `klarna.messaging.prequalification.initiate`.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct KnPrequalificationData: Hashable {
+  var amount: Int64
+  var currency: String
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> KnPrequalificationData? {
+    let amount = pigeonVar_list[0] as! Int64
+    let currency = pigeonVar_list[1] as! String
+
+    return KnPrequalificationData(
+      amount: amount,
+      currency: currency
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      amount,
+      currency,
+    ]
+  }
+  static func == (lhs: KnPrequalificationData, rhs: KnPrequalificationData) -> Bool {
+    return deepEqualsMessages(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashMessages(value: toList(), hasher: &hasher)
+  }
+}
+
+/// Transport type for the native prequalification result. The public Dart API
+/// maps it to a sealed hierarchy. `expiresAtMillis` (epoch milliseconds, UTC)
+/// is only set when `status` is `approved`.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct KnPrequalificationResult: Hashable {
+  var status: KnPrequalificationStatus
+  var expiresAtMillis: Int64? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> KnPrequalificationResult? {
+    let status = pigeonVar_list[0] as! KnPrequalificationStatus
+    let expiresAtMillis: Int64? = nilOrValue(pigeonVar_list[1])
+
+    return KnPrequalificationResult(
+      status: status,
+      expiresAtMillis: expiresAtMillis
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      status,
+      expiresAtMillis,
+    ]
+  }
+  static func == (lhs: KnPrequalificationResult, rhs: KnPrequalificationResult) -> Bool {
+    return deepEqualsMessages(lhs.toList(), rhs.toList())  }
+  func hash(into hasher: inout Hasher) {
+    deepHashMessages(value: toList(), hasher: &hasher)
+  }
+}
 
 private class MessagesPigeonCodecReader: FlutterStandardReader {
+  override func readValue(ofType type: UInt8) -> Any? {
+    switch type {
+    case 129:
+      let enumResultAsInt: Int? = nilOrValue(self.readValue() as! Int?)
+      if let enumResultAsInt = enumResultAsInt {
+        return KnPrequalificationStatus(rawValue: enumResultAsInt)
+      }
+      return nil
+    case 130:
+      return KnPrequalificationData.fromList(self.readValue() as! [Any?])
+    case 131:
+      return KnPrequalificationResult.fromList(self.readValue() as! [Any?])
+    default:
+      return super.readValue(ofType: type)
+    }
+  }
 }
 
 private class MessagesPigeonCodecWriter: FlutterStandardWriter {
+  override func writeValue(_ value: Any) {
+    if let value = value as? KnPrequalificationStatus {
+      super.writeByte(129)
+      super.writeValue(value.rawValue)
+    } else if let value = value as? KnPrequalificationData {
+      super.writeByte(130)
+      super.writeValue(value.toList())
+    } else if let value = value as? KnPrequalificationResult {
+      super.writeByte(131)
+      super.writeValue(value.toList())
+    } else {
+      super.writeValue(value)
+    }
+  }
 }
 
 private class MessagesPigeonCodecReaderWriter: FlutterStandardReaderWriter {
@@ -62,6 +250,7 @@ private class MessagesPigeonCodecReaderWriter: FlutterStandardReaderWriter {
 class MessagesPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
   static let shared = MessagesPigeonCodec(readerWriter: MessagesPigeonCodecReaderWriter())
 }
+
 
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol KnMessagingFlutterApiProtocol {
@@ -93,6 +282,37 @@ class KnMessagingFlutterApi: KnMessagingFlutterApiProtocol {
       } else {
         completion(.success(()))
       }
+    }
+  }
+}
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol KnMessagingHostApi {
+  func prequalificationInitiate(instanceId: String, data: KnPrequalificationData, completion: @escaping (Result<KnPrequalificationResult, Error>) -> Void)
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class KnMessagingHostApiSetup {
+  static var codec: FlutterStandardMessageCodec { MessagesPigeonCodec.shared }
+  /// Sets up an instance of `KnMessagingHostApi` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: KnMessagingHostApi?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    let prequalificationInitiateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.klarna_network_messaging.KnMessagingHostApi.prequalificationInitiate\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      prequalificationInitiateChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let instanceIdArg = args[0] as! String
+        let dataArg = args[1] as! KnPrequalificationData
+        api.prequalificationInitiate(instanceId: instanceIdArg, data: dataArg) { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      prequalificationInitiateChannel.setMessageHandler(nil)
     }
   }
 }

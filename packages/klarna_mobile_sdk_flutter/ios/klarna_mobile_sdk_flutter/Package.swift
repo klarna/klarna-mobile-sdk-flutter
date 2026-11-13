@@ -12,7 +12,7 @@ let package = Package(
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
         // Pin exactly so CI resolves deterministically. Bump deliberately.
-        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.15.0")
+        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.16.1")
     ],
     targets: [
         .target(

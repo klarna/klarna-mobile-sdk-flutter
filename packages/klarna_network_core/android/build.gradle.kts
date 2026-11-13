@@ -2,7 +2,7 @@ group = "com.klarna.mobile.sdk.klarna_network_core"
 version = "1.0-SNAPSHOT"
 
 buildscript {
-    val kotlinVersion = "2.4.20"
+    val kotlinVersion = "2.4.21"
     repositories {
         google()
         mavenCentral()
@@ -79,7 +79,7 @@ configurations.all {
         // CVE-2024-29371: force patched jose4j version
         force("org.bitbucket.b_c:jose4j:0.9.7")
         // CVE-2025-48924: force patched commons-lang3 version
-        force("org.apache.commons:commons-lang3:3.20.0")
+        force("org.apache.commons:commons-lang3:3.21.0")
         // CVE-2026-5588: force patched bcpkix-jdk18on version
         force("org.bouncycastle:bcpkix-jdk18on:1.86")
         // CVE-2026-0636: force patched bcprov-jdk18on version
@@ -88,7 +88,7 @@ configurations.all {
 }
 
 dependencies {
-    implementation("com.klarna.mobile.sdk:klarna-network-core:2.15.0")
+    implementation("com.klarna.mobile.sdk:klarna-network-core:2.16.1")
 
     // @RestrictTo on the instance-store accessor. Declared without a version:
     // the Flutter embedding pins `androidx.annotation` `strictly 1.9.0` under
@@ -98,5 +98,5 @@ dependencies {
     compileOnly("androidx.annotation:annotation")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.mockito:mockito-core:5.23.0")
+    testImplementation("org.mockito:mockito-core:5.24.0")
 }

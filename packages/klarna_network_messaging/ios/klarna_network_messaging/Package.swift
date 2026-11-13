@@ -14,7 +14,7 @@ let package = Package(
         // Sibling-symlink path (like FlutterFramework); a repo-tree path gives SwiftPM two identities.
         .package(name: "klarna_network_core", path: "../klarna_network_core"),
         // Pin exactly, in lockstep with core/payment, so CI resolves one SDK version.
-        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.15.0")
+        .package(url: "https://github.com/klarna/klarna-mobile-sdk-ios", exact: "2.16.1")
     ],
     targets: [
         .target(
